@@ -1,9 +1,9 @@
 import { Credentials } from "./GitHub/authentication";
 import * as config from "./config";
-import * as tracing from "./tracing";
+import * as trace from "./tracing";
 import { commands, ExtensionContext, window, workspace } from "vscode";
 
-export let output: tracing.Output;
+export let output: trace.Output;
 
 export async function activate(context: ExtensionContext) {
     const credentials = new Credentials();
@@ -21,11 +21,15 @@ export async function activate(context: ExtensionContext) {
         }
     );
 
+    if (config.get("EnableTracing")) {
+        output = new trace.Output();
+    }
+
     context.subscriptions.push(
         workspace.onDidChangeConfiguration((e) => {
-            if (e.affectsConfiguration("gistpad.output")) {
+            if (e.affectsConfiguration("Repos.EnableTracing")) {
                 if (config.get("EnableTracing")) {
-                    output = new tracing.Output();
+                    output = new trace.Output();
                 } else {
                     output.dispose();
                 }
