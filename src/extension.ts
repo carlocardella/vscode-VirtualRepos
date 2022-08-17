@@ -1,26 +1,37 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from "vscode";
 import { Credentials } from "./GitHub/authentication";
+import * as config from "./config";
+import * as tracing from "./tracing";
+import { commands, ExtensionContext, window, workspace } from "vscode";
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
-export async function activate(context: vscode.ExtensionContext) {
+export let output: tracing.Output;
+
+export async function activate(context: ExtensionContext) {
     const credentials = new Credentials();
     await credentials.initialize(context);
 
-    const disposable = vscode.commands.registerCommand(
+    const disposable = commands.registerCommand(
         "extension.getGitHubUser",
         async () => {
             const octokit = await credentials.getOctokit();
             const userInfo = await octokit.users.getAuthenticated();
 
-            vscode.window.showInformationMessage(
+            window.showInformationMessage(
                 `Logged into GitHub as ${userInfo.data.login}`
             );
         }
     );
 
+    context.subscriptions.push(
+        workspace.onDidChangeConfiguration((e) => {
+            if (e.affectsConfiguration("gistpad.output")) {
+                if (config.get("EnableTracing")) {
+                    output = new tracing.Output();
+                } else {
+                    output.dispose();
+                }
+            }
+        })
+    );
     context.subscriptions.push(disposable);
 }
 

@@ -15,7 +15,17 @@
     ],
     "main": "./dist/extension.js",
     "contributes": {
-        "commands": []
+        "commands": [],
+        "configuration": {
+            "title": "Remote Repositories",
+            "properties": {
+                "Repos.EnableTracing": {
+                    "type": "boolean",
+                    "description": "Enable tracing of the extension",
+                    "default": false
+                }
+            }
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run package",
