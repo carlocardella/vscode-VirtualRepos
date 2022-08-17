@@ -9,6 +9,11 @@ export class RepoNode extends TreeItem {
 
 export class RepoFileNode extends TreeItem {
     constructor(public repo: Repo, public file: RepoFile) {
-        super(file.name, TreeItemCollapsibleState.None);
+        super(
+            file.name,
+            file.isDirectory
+                ? TreeItemCollapsibleState.Collapsed
+                : TreeItemCollapsibleState.None
+        );
     }
 }
