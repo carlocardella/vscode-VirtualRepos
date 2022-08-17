@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import * as Octokit from "@octokit/rest";
+import { authentication } from "vscode";
 
 const GITHUB_AUTH_PROVIDER_ID = "github";
 // The GitHub Authentication Provider accepts the scopes described here:
@@ -8,6 +9,7 @@ const SCOPES = ["user:email"];
 
 export class Credentials {
     private octokit: Octokit.Octokit | undefined;
+    isAuthenticated = false;
 
     async initialize(context: vscode.ExtensionContext): Promise<void> {
         this.registerListeners(context);
@@ -23,7 +25,7 @@ export class Credentials {
         const session = await vscode.authentication.getSession(
             GITHUB_AUTH_PROVIDER_ID,
             SCOPES,
-            { createIfNone: false }
+            { createIfNone: true }
         );
 
         if (session) {
@@ -69,5 +71,18 @@ export class Credentials {
         });
 
         return this.octokit;
+    }
+
+    async getAccessToken(): Promise<string | undefined> {
+        const session = await authentication.getSession(
+            GITHUB_AUTH_PROVIDER_ID,
+            SCOPES
+        );
+
+        session
+            ? (this.isAuthenticated = true)
+            : (this.isAuthenticated = false);
+
+        return Promise.resolve(session?.accessToken);
     }
 }

@@ -1,13 +1,26 @@
 import { Credentials } from "./GitHub/authentication";
 import * as config from "./config";
 import * as trace from "./tracing";
-import { commands, ExtensionContext, window, workspace } from "vscode";
+import { commands, ExtensionContext, workspace } from "vscode";
+import * as github from "./GitHub/commands";
 
 export let output: trace.Output;
+export const credentials = new Credentials();
 
 export async function activate(context: ExtensionContext) {
-    const credentials = new Credentials();
+    if (config.get("EnableTracing")) {
+        output = new trace.Output();
+    }
+
+    output.appendLine(
+        "Repos extension is now active!",
+        output.messageType.info
+    );
+
     await credentials.initialize(context);
+    if (!credentials.isAuthenticated) {
+        credentials.initialize(context);
+    }
 
     const disposable = commands.registerCommand(
         "extension.getGitHubUser",
@@ -15,15 +28,30 @@ export async function activate(context: ExtensionContext) {
             const octokit = await credentials.getOctokit();
             const userInfo = await octokit.users.getAuthenticated();
 
-            window.showInformationMessage(
-                `Logged into GitHub as ${userInfo.data.login}`
+            output.appendLine(
+                `Logged into GitHub as ${userInfo.data.login}`,
+                output.messageType.info
             );
         }
     );
 
-    if (config.get("EnableTracing")) {
-        output = new trace.Output();
-    }
+    context.subscriptions.push(
+        commands.registerTextEditorCommand(
+            "Repos.getGitHubAuthenticatedUser",
+            async () => {
+                (await github.getGitHubUser()) as string;
+            }
+        )
+    );
+
+    context.subscriptions.push(
+        commands.registerTextEditorCommand(
+            "Repos.listRepositories",
+            async () => {
+                (await github.getGitHubRepos()) as string;
+            }
+        )
+    );
 
     context.subscriptions.push(
         workspace.onDidChangeConfiguration((e) => {
@@ -36,6 +64,7 @@ export async function activate(context: ExtensionContext) {
             }
         })
     );
+
     context.subscriptions.push(disposable);
 }
 
