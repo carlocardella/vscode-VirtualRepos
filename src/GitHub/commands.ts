@@ -7,14 +7,16 @@ export async function getGitHubUser() {
         auth: await credentials.getAccessToken(),
     });
     const userInfo = await octokit.users.getAuthenticated();
-    output.appendLine(`${userInfo.data}`, output.messageType.info);
 
-    return userInfo.data.name;
+    return userInfo.data;
 }
 
 export async function getGitHubRepos() {
-    const octokit = new rest.Octokit();
-    return await (
-        await octokit.repos.listForAuthenticatedUser()
-    ).data.toString();
+    const octokit = new rest.Octokit({
+        auth: await credentials.getAccessToken(),
+    });
+
+    const userRepos = await octokit.repos.listForAuthenticatedUser({visibility: "all", per_page: 100});
+
+    return userRepos.data;
 }

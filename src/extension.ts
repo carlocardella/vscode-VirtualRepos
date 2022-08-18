@@ -39,7 +39,7 @@ export async function activate(context: ExtensionContext) {
         commands.registerTextEditorCommand(
             "Repos.getGitHubAuthenticatedUser",
             async () => {
-                (await github.getGitHubUser()) as string;
+                // (await github.getGitHubUser()) as string;
             }
         )
     );
