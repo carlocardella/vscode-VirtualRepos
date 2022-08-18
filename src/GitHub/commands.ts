@@ -1,14 +1,17 @@
 import * as rest from "@octokit/rest";
 import { output } from "../extension";
 import { credentials } from "./../extension";
+import * as octoTypes from "./types";
 
-export async function getGitHubUser() {
+export async function getGitHubUser(): Promise<
+    octoTypes.getUserResponse["data"]
+> {
     const octokit = new rest.Octokit({
         auth: await credentials.getAccessToken(),
     });
     const userInfo = await octokit.users.getAuthenticated();
 
-    return userInfo.data;
+    return Promise.resolve(userInfo.data);
 }
 
 export async function getGitHubRepos() {
@@ -16,7 +19,9 @@ export async function getGitHubRepos() {
         auth: await credentials.getAccessToken(),
     });
 
-    const userRepos = await octokit.repos.listForAuthenticatedUser({visibility: "all", per_page: 100});
+    const userRepos = await octokit.repos.listForAuthenticatedUser({
+        type: "owner",
+    });
 
-    return userRepos.data;
+    return Promise.resolve(userRepos.data);
 }
