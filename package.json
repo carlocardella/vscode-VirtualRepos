@@ -16,7 +16,7 @@
         "Other"
     ],
     "activationEvents": [
-        "*"
+        "onView:Repositories"
     ],
     "main": "./dist/extension.js",
     "contributes": {
@@ -30,6 +30,11 @@
                 "title": "List Repositories",
                 "command": "Repos.listRepositories",
                 "category": "Repos"
+            },
+            {
+                "command": "Repos.refreshTree",
+                "title": "Refresh",
+                "icon": "$(refresh)"
             }
         ],
         "configuration": {
@@ -41,6 +46,36 @@
                     "default": false
                 }
             }
+        },
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "Repositories",
+                    "title": "Repositories",
+                    "icon": "./src/assets/8678518_git_repository_line_icon.svg"
+                }
+            ]
+        },
+        "views": {
+            "Repositories": [
+                {
+                    "id": "Repositories",
+                    "name": "Repositories",
+                    "icon": "./src/assets/8678518_git_repository_line_icon.svg",
+                    "contextualTitle": "Repositories",
+                    "type": "tree",
+                    "visibility": "collapsed"
+                }
+            ]
+        },
+        "menus": {
+            "view/title": [
+                {
+                    "command": "Repos.refreshTree",
+                    "when": "view == Repositories",
+                    "group": "navigation"
+                }
+            ]
         }
     },
     "scripts": {
@@ -56,6 +91,7 @@
     },
     "devDependencies": {
         "@types/glob": "^7.2.0",
+        "@types/lodash": "^4.14.184",
         "@types/mocha": "^9.1.1",
         "@types/node": "16.x",
         "@types/vscode": "^1.63.0",
@@ -73,9 +109,11 @@
     },
     "dependencies": {
         "@octokit/core": "^4.0.5",
+        "@octokit/openapi-types": "^13.3.0",
         "@octokit/plugin-rest-endpoint-methods": "^6.3.0",
         "@octokit/request": "^6.2.1",
         "@octokit/rest": "^19.0.4",
-        "@octokit/types": "^7.1.0"
+        "@octokit/types": "^7.1.0",
+        "lodash": "^4.17.21"
     }
 }
