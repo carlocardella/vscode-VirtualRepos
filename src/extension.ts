@@ -1,8 +1,9 @@
 import { Credentials } from "./GitHub/authentication";
 import * as config from "./config";
 import * as trace from "./tracing";
-import { commands, ExtensionContext, workspace } from "vscode";
+import { commands, ExtensionContext, workspace, window } from "vscode";
 import * as github from "./GitHub/commands";
+import { RepoProvider } from "./Tree/nodes";
 
 export let output: trace.Output;
 export const credentials = new Credentials();
@@ -36,21 +37,18 @@ export async function activate(context: ExtensionContext) {
     );
 
     context.subscriptions.push(
-        commands.registerTextEditorCommand(
+        commands.registerCommand(
             "Repos.getGitHubAuthenticatedUser",
             async () => {
-                (await github.getGitHubUser()) as string;
+                // (await github.getGitHubUser()) as string;
             }
         )
     );
 
     context.subscriptions.push(
-        commands.registerTextEditorCommand(
-            "Repos.listRepositories",
-            async () => {
-                (await github.getGitHubRepos()) as string;
-            }
-        )
+        commands.registerCommand("Repos.listRepositories", async () => {
+            // (await github.getGitHubRepos()) as string;
+        })
     );
 
     context.subscriptions.push(
@@ -64,6 +62,10 @@ export async function activate(context: ExtensionContext) {
             }
         })
     );
+
+    window.createTreeView("Repositories", {
+        treeDataProvider: new RepoProvider(),
+    });
 
     context.subscriptions.push(disposable);
 }
