@@ -13,7 +13,7 @@ export async function activate(context: ExtensionContext) {
         output = new trace.Output();
     }
 
-    output.appendLine(
+    output?.appendLine(
         "Repos extension is now active!",
         output.messageType.info
     );
@@ -29,7 +29,7 @@ export async function activate(context: ExtensionContext) {
             const octokit = await credentials.getOctokit();
             const userInfo = await octokit.users.getAuthenticated();
 
-            output.appendLine(
+            output?.appendLine(
                 `Logged into GitHub as ${userInfo.data.login}`,
                 output.messageType.info
             );
