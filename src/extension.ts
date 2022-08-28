@@ -2,7 +2,6 @@ import { Credentials } from "./GitHub/authentication";
 import * as config from "./config";
 import * as trace from "./tracing";
 import { commands, ExtensionContext, workspace, window } from "vscode";
-import * as github from "./GitHub/commands";
 import { RepoProvider } from "./Tree/nodes";
 
 export let output: trace.Output;
@@ -13,36 +12,24 @@ export async function activate(context: ExtensionContext) {
         output = new trace.Output();
     }
 
-    output?.appendLine(
-        "Repos extension is now active!",
-        output.messageType.info
-    );
+    output?.appendLine("Repos extension is now active!", output.messageType.info);
 
     await credentials.initialize(context);
     if (!credentials.isAuthenticated) {
         credentials.initialize(context);
     }
 
-    const disposable = commands.registerCommand(
-        "extension.getGitHubUser",
-        async () => {
-            const octokit = await credentials.getOctokit();
-            const userInfo = await octokit.users.getAuthenticated();
+    const disposable = commands.registerCommand("extension.getGitHubUser", async () => {
+        const octokit = await credentials.getOctokit();
+        const userInfo = await octokit.users.getAuthenticated();
 
-            output?.appendLine(
-                `Logged into GitHub as ${userInfo.data.login}`,
-                output.messageType.info
-            );
-        }
-    );
+        output?.appendLine(`Logged into GitHub as ${userInfo.data.login}`, output.messageType.info);
+    });
 
     context.subscriptions.push(
-        commands.registerCommand(
-            "Repos.getGitHubAuthenticatedUser",
-            async () => {
-                // (await github.getGitHubUser()) as string;
-            }
-        )
+        commands.registerCommand("Repos.getGitHubAuthenticatedUser", async () => {
+            // (await github.getGitHubUser()) as string;
+        })
     );
 
     context.subscriptions.push(
