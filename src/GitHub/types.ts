@@ -2,10 +2,12 @@
 // import { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods";
 // import { Uri } from "vscode";
 // import { components } from "@octokit/openapi-types";
-// import { GetResponseTypeFromEndpointMethod, GetResponseDataTypeFromEndpointMethod } from "@octokit/types";
-// import { Octokit } from "@octokit/rest";
+import { GetResponseTypeFromEndpointMethod, GetResponseDataTypeFromEndpointMethod } from "@octokit/types";
+import { Octokit } from "@octokit/rest";
 
-// const octokit = new Octokit();
+const octokit = new Octokit();
+
+import * as rest from "@octokit/rest";
 
 export enum ContentType {
     "dir" = "dir",
@@ -245,3 +247,137 @@ export type TRepo = {
     network_count?: number;
     subscribers_count?: number;
 };
+
+export type TGitHubBranchList = {
+    name: string;
+    commit: {
+        sha: string;
+        url: string;
+    };
+    protected?: boolean | undefined;
+    protection: {
+        enabled?: boolean | undefined;
+        url?: string | undefined;
+        required_status_checks?: {
+            url?: string | undefined;
+            enforcement_level?: string | undefined;
+            contexts: string[] | null;
+            checks: {
+                context: string;
+                app_id: number | null;
+            } | null;
+        };
+    };
+    protection_url: string;
+};
+
+// export type TRepoBranch = GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.listBranches>;
+
+export type TGitHubBranch = {
+    name: string;
+    commit: {
+        sha: string;
+        node_id: string;
+        commit?: {
+            author: {
+                name?: string | undefined;
+                email?: string | undefined;
+                date?: string | undefined;
+            } | null;
+            committer: {
+                name?: string | undefined;
+                email?: string | undefined;
+                date?: string | undefined;
+            } | null;
+            message: string;
+            tree: {
+                sha: string;
+                url: string;
+            };
+            url: string;
+            comment_count: number;
+            verification?:
+                | {
+                      verified: boolean;
+                      reason: string;
+                      payload: string | null;
+                      signature: string | null;
+                  }
+                | undefined;
+        };
+        url: string;
+        html_url: string;
+        comments_url: string;
+        author: {
+            followers_url: string;
+            following_url: string;
+            gists_url: string;
+            starred_url: string;
+            subscriptions_url: string;
+            organizations_url: string;
+            repos_url: string;
+            events_url: string;
+            received_events_url: string;
+            type: string;
+            site_admin: boolean;
+            name?: string | null | undefined;
+            email?: string | null | undefined;
+            login: string;
+            id: number;
+            node_id: string;
+            avatar_url: string | null;
+            gravatar_id: string | null;
+            url: string;
+            html_url: string | null;
+        } | null;
+        // author: TGitHubUser | null;
+        committer: {
+            followers_url: string;
+            following_url: string;
+            gists_url: string;
+            starred_url: string;
+            subscriptions_url: string;
+            organizations_url: string;
+            repos_url: string;
+            events_url: string;
+            received_events_url: string;
+            type: string;
+            site_admin: boolean;
+            name?: string | null | undefined;
+            email?: string | null | undefined;
+            login: string;
+            id: number;
+            node_id: string;
+            avatar_url: string;
+            gravatar_id: string | null;
+            url: string;
+            html_url: string;
+        } | null;
+        parents: {
+            sha: string;
+            url: string;
+            html_url?: string | undefined;
+        }[];
+    };
+    _links?: {
+        self: string;
+        html: string;
+    };
+    protected: boolean;
+    protection: {
+        enabled?: boolean | undefined;
+        required_status_checks?:
+            | {
+                  enforcement_level?: string | undefined;
+                  contexts: string[] | null;
+                  checks: {
+                      context: string;
+                      app_id: number | null;
+                  }[];
+              }
+            | undefined;
+    };
+    protection_url: string;
+};
+
+// export type TGitHubBranch = GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.getBranch>;

@@ -1,17 +1,13 @@
-import {
-    ThemeIcon,
-    TreeDataProvider,
-    TreeItem,
-    TreeItemCollapsibleState,
-    Uri,
-} from "vscode";
-import { getGitHubRepo, getGitHubRepoContent } from "../GitHub/commands";
-import { TRepo, TContent, ContentType } from "../GitHub/types";
+import { ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
+import { output } from "../extension";
+import { getGitHubReposForAuthenticatedUser, getGitHubRepoContent, getGitHubTree, listGitHubBranches, getGitHubBranch } from "../GitHub/commands";
+import { TRepo, ContentType, TGitHubTree, TRepoContent } from "../GitHub/types";
 
 export class RepoNode extends TreeItem {
     owner: string;
+    tree?: any;
 
-    constructor(public repo: TRepo) {
+    constructor(public repo: TRepo, tree?: any) {
         super(repo.name, TreeItemCollapsibleState.Collapsed);
 
         this.tooltip = `${repo.name}`;
@@ -19,6 +15,7 @@ export class RepoNode extends TreeItem {
         this.iconPath = new ThemeIcon(iconName);
         this.repo = repo;
         this.owner = repo.owner.login;
+        this.tree = tree;
     }
 }
 
@@ -26,18 +23,13 @@ export class RepoContentNode extends TreeItem {
     owner: string;
     repo: TRepo;
     path: string;
+    repoName: string;
 
-    constructor(public node: TContent, repo: TRepo) {
-        super(
-            node.name,
-            node.type === ContentType.file
-                ? TreeItemCollapsibleState.None
-                : TreeItemCollapsibleState.Collapsed
-        );
+    constructor(public node: TRepoContent, repo: TRepo) {
+        super(node.name, node.type === ContentType.file ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed);
 
         this.tooltip = node.path;
-        this.iconPath =
-            node.type === ContentType.file ? ThemeIcon.File : ThemeIcon.Folder;
+        this.iconPath = node.type === ContentType.file ? ThemeIcon.File : ThemeIcon.Folder;
         if (node.type === ContentType.file) {
             this.command = {
                 command: "vscode.open",
@@ -50,6 +42,7 @@ export class RepoContentNode extends TreeItem {
         this.node = node;
         this.repo = repo;
         this.path = node.path;
+        this.repoName = repo.name;
     }
 }
 
@@ -59,23 +52,31 @@ export class RepoProvider implements TreeDataProvider<RepoContentNode> {
     async getChildren(element?: RepoContentNode): Promise<any[]> {
         // @update: any
         if (element) {
-            const content = await getGitHubRepoContent(
-                element.owner,
-                // "carlocardella",
-                element.repo.name, // this exists despite the error
-                element?.node?.path
-            );
+            const content = await getGitHubRepoContent(element.owner, element.repo.name, element?.node?.path);
             let childNodes = Object.values(content)
-                .map(
-                    (node) => new RepoContentNode(<TContent>node, element.repo)
-                )
+                .map((node) => new RepoContentNode(<TRepoContent>node, element.repo))
                 .sort((a, b) => a.node.name.localeCompare(b.node.name))
                 .sort((a, b) => a.node.type.localeCompare(b.node.type));
 
             return Promise.resolve(childNodes);
         } else {
-            let repos = await getGitHubRepo();
-            let childNodes = repos.map((repo: TRepo) => new RepoNode(repo));
+            let repos = await getGitHubReposForAuthenticatedUser();
+
+            let childNodes = await Promise.all(
+                repos.map(async (repo: TRepo) => {
+                    try {
+                        let branch = await getGitHubBranch(repo, repo.default_branch);
+                        let tree = (await getGitHubTree(repo.owner.login, repo.name, branch.commit.sha)) ?? undefined;
+                        return new RepoNode(repo, tree);
+                    } catch (error: any) {
+                        if (error.name === "HttpError") {
+                            output?.appendLine(`Error reading ${repo.name}: ${error.response.data.message}`, output.messageType.error);
+                        } else {
+                            output?.appendLine(error.response, output.messageType.error);
+                        }
+                    }
+                })
+            );
 
             return Promise.resolve(childNodes);
         }
