@@ -1,4 +1,4 @@
-import { ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
+import { Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
 import { output } from "../extension";
 import { getGitHubReposForAuthenticatedUser, getGitHubRepoContent, getGitHubTree, listGitHubBranches, getGitHubBranch } from "../GitHub/commands";
 import { TRepo, ContentType, TGitHubTree, TRepoContent } from "../GitHub/types";
@@ -80,5 +80,12 @@ export class RepoProvider implements TreeDataProvider<RepoContentNode> {
 
             return Promise.resolve(childNodes);
         }
+    }
+
+    private _onDidChangeTreeData: EventEmitter<RepoContentNode | undefined | null | void> = new EventEmitter<RepoContentNode | undefined | null | void>();
+    readonly onDidChangeTreeData: Event<RepoContentNode | undefined | null | void> = this._onDidChangeTreeData.event;
+
+    refresh(): void {
+        this._onDidChangeTreeData.fire();
     }
 }

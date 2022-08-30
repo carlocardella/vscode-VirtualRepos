@@ -19,24 +19,21 @@ export async function activate(context: ExtensionContext) {
         credentials.initialize(context);
     }
 
+    const repoProvider = new RepoProvider();
+
     const disposable = commands.registerCommand("extension.getGitHubUser", async () => {
         const octokit = await credentials.getOctokit();
         const userInfo = await octokit.users.getAuthenticated();
 
-        output?.appendLine(`Logged into GitHub as ${userInfo.data.login}`, output.messageType.info);
+        output?.appendLine(`Logged to GitHub as ${userInfo.data.login}`, output.messageType.info);
     });
 
     context.subscriptions.push(
-        commands.registerCommand("Repos.getGitHubAuthenticatedUser", async () => {
-            // (await github.getGitHubUser()) as string;
+        commands.registerCommand("Repos.refreshTree", async () => {
+            repoProvider.refresh();
         })
     );
 
-    context.subscriptions.push(
-        commands.registerCommand("Repos.listRepositories", async () => {
-            // (await github.getGitHubRepos()) as string;
-        })
-    );
 
     context.subscriptions.push(
         workspace.onDidChangeConfiguration((e) => {
@@ -51,7 +48,7 @@ export async function activate(context: ExtensionContext) {
     );
 
     window.createTreeView("Repositories", {
-        treeDataProvider: new RepoProvider(),
+        treeDataProvider: repoProvider,
     });
 
     context.subscriptions.push(disposable);
