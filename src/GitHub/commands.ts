@@ -1,4 +1,5 @@
 import * as rest from "@octokit/rest";
+import { RepoNode } from "../Tree/nodes";
 import { credentials } from "./../extension";
 import { TRepo, TGitHubTree, TGitHubUser, TGitHubBranch, TGitHubBranchList } from "./types";
 
@@ -73,8 +74,8 @@ export async function getGitHubRepoContent(owner: string, repoName: string, path
  * @param {string} filePath The path to the file in the repository.
  * @returns {Promise<Uint8Array>}
  */
-export async function getRepoFile(repo: TRepo, filePath: string): Promise<Uint8Array> {
-    const data = await getGitHubRepoContent(repo.owner.login, repo.name, filePath);
+export async function getRepoFile(repo: RepoNode, filePath: string): Promise<Uint8Array> {
+    const data = await getGitHubRepoContent(repo.owner, repo.name, filePath);
 
     return new Uint8Array(Buffer.from(data.content, "base64").toString("latin1").split("").map(charCodeAt));
 }

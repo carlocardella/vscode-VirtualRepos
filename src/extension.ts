@@ -3,6 +3,7 @@ import * as config from "./config";
 import * as trace from "./tracing";
 import { commands, ExtensionContext, workspace, window } from "vscode";
 import { RepoProvider } from "./Tree/nodes";
+import { RepoFileSystemProvider, REPO_SCHEME } from "./FileSystem/fileSystem";
 
 export let output: trace.Output;
 export const credentials = new Credentials();
@@ -34,6 +35,12 @@ export async function activate(context: ExtensionContext) {
         })
     );
 
+    const repoFileSystemProvider = new RepoFileSystemProvider();
+    context.subscriptions.push(
+        workspace.registerFileSystemProvider(REPO_SCHEME, repoFileSystemProvider, {
+            isCaseSensitive: true,
+        })
+    );
 
     context.subscriptions.push(
         workspace.onDidChangeConfiguration((e) => {
