@@ -255,20 +255,24 @@ export type TGitHubBranchList = {
         url: string;
     };
     protected?: boolean | undefined;
-    protection: {
-        enabled?: boolean | undefined;
-        url?: string | undefined;
-        required_status_checks?: {
-            url?: string | undefined;
-            enforcement_level?: string | undefined;
-            contexts: string[] | null;
-            checks: {
-                context: string;
-                app_id: number | null;
-            } | null;
-        };
-    };
-    protection_url: string;
+    protection?:
+        | {
+              url?: string | undefined;
+              enabled?: boolean | undefined;
+              required_status_checks?: {
+                  url?: string | undefined;
+                  enforcement_level?: string | undefined;
+                  contexts: string[];
+                  checks: {
+                      context: string;
+                      app_id: number | null;
+                  }[];
+              };
+              contexts_url?: string | undefined;
+              strict?: boolean | undefined;
+          }
+        | undefined;
+    protection_url?: string | undefined;
 };
 
 // export type TRepoBranch = GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.listBranches>;
