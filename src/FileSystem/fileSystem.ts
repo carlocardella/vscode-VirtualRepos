@@ -49,13 +49,13 @@ export class RepoFileSystemProvider implements FileSystemProvider {
 
     async readFile(uri: Uri): Promise<Uint8Array> {
         const [repository, file] = RepoFileSystemProvider.getRepoInfo(uri)!;
-        return await getRepoFile(repository, file!.path);
+        return await getRepoFile(repository, file);
     }
 
     static getRepoInfo(uri: Uri): [RepoNode, TRepoContent] | undefined {
         const match = RepoFileSystemProvider.getFileInfo(uri);
 
-        if (!match) {
+        if (!match) { // investigate: really needed? This likely always matches since getFileInfo does nothing more that parse the uri
             return;
         }
 
