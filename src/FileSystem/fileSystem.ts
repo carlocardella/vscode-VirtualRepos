@@ -2,7 +2,7 @@ import { Disposable, Event, EventEmitter, FileChangeEvent, FileStat, FileSystemE
 import { getRepoFileContent, setRepoFileContent } from "../GitHub/commands";
 import { TGitHubUpdateContent, TRepoContent } from "../GitHub/types";
 import { RepoNode } from "../Tree/nodes";
-import { store } from "./store";
+import { store } from "./storage";
 
 export const REPO_SCHEME = "github-repo";
 const REPO_QUERY = `${REPO_SCHEME}=`;

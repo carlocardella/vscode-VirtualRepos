@@ -1,8 +1,8 @@
 import { Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
-import { output } from "../extension";
+import { extensionContext, output } from "../extension";
 import { RepoFileSystemProvider } from "../FileSystem/fileSystem";
-import { store } from "../FileSystem/store";
-import { getGitHubReposForAuthenticatedUser, getGitHubRepoContent, getGitHubTree, getGitHubBranch } from "../GitHub/commands";
+import { store, getReposFromGlobalStorage } from "../FileSystem/storage";
+import { getGitHubReposForAuthenticatedUser, getGitHubRepoContent, getGitHubTree, getGitHubBranch, openRepository, getRepoDetails } from "../GitHub/commands";
 import { TRepo, ContentType, TRepoContent } from "../GitHub/types";
 
 export class RepoNode extends TreeItem {
@@ -66,22 +66,36 @@ export class RepoProvider implements TreeDataProvider<RepoContentNode> {
 
             return Promise.resolve(childNodes);
         } else {
-            let repos = await getGitHubReposForAuthenticatedUser();
+            // let repos = await getGitHubReposForAuthenticatedUser(); // update
+            const reposFromGlobalStorage = getReposFromGlobalStorage(extensionContext);
+            if (!reposFromGlobalStorage) {
+                output?.appendLine("No repos found in global storage", output.messageType.info);
+                return Promise.resolve([]);
+            }
+
+            let repos = await Promise.all(
+                reposFromGlobalStorage?.map(async (repo: string) => {
+                    let [owner, name] = getRepoDetails(repo);
+                    return await openRepository(owner, name);
+                })
+            );
 
             let childNodes = await Promise.all(
-                repos!.map(async (repo: TRepo) => {
-                    try {
-                        let branch = await getGitHubBranch(repo, repo.default_branch);
-                        let tree = (await getGitHubTree(repo, branch!.commit.sha)) ?? undefined;
-                        return new RepoNode(repo, tree);
-                    } catch (error: any) {
-                        if (error.name === "HttpError") {
-                            output?.appendLine(`Error reading repo ${repo.name}: ${error.response.data.message}`, output.messageType.error);
-                        } else {
-                            output?.appendLine(`${repo.name}: ${error.response}`, output.messageType.error);
+                repos
+                    .filter((repo) => repo !== undefined)
+                    .map(async (repo) => {
+                        try {
+                            let branch = await getGitHubBranch(repo!, repo!.default_branch);
+                            let tree = (await getGitHubTree(repo!, branch!.commit.sha)) ?? undefined;
+                            return new RepoNode(repo!, tree);
+                        } catch (error: any) {
+                            if (error.name === "HttpError") {
+                                output?.appendLine(`Error reading repo ${repo!.name}: ${error.response.data.message}`, output.messageType.error);
+                            } else {
+                                output?.appendLine(`${repo!.name}: ${error.response}`, output.messageType.error);
+                            }
                         }
-                    }
-                })
+                    })
             );
 
             store.repos = childNodes ?? [];

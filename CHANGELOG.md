@@ -13,10 +13,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Download repository (tar/zip)
 * Fork repository
 * Star repository
+* Open starred repository
+  * Choose from a list
 * Unstar repository
 * Delete repository
 * Create repository
-  * Set proper visibility
+  * Set proper visibility (privatt/public)
 * Change repository visibility (private/public)
 
 ### Repository content
@@ -29,3 +31,11 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Delete folder
 * Move file
 * Move folder
+
+## [0.0.1] - 2022-09-04
+
+### Added
+
+* Browse repository tree
+* Open file
+* Update file (automatic commit)

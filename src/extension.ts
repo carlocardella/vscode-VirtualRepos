@@ -5,13 +5,16 @@ import { commands, ExtensionContext, workspace, window } from "vscode";
 import { RepoProvider } from "./Tree/nodes";
 import { RepoFileSystemProvider, REPO_SCHEME } from "./FileSystem/fileSystem";
 import { getGitHubAuthenticatedUser } from "./GitHub/commands";
-import { TGitHubUser } from './GitHub/types';
+import { TGitHubUser } from "./GitHub/types";
+import { error } from "console";
 
 export let output: trace.Output;
 export const credentials = new Credentials();
 export let gitHubAuthenticatedUser: TGitHubUser;
+export let extensionContext: ExtensionContext;
 
 export async function activate(context: ExtensionContext) {
+    extensionContext = context;
     if (config.get("EnableTracing")) {
         output = new trace.Output();
     }
@@ -42,7 +45,7 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("Repos.openRepository", async () => {
-            repoProvider.refresh();
+            throw error("Not implemented");
         })
     );
 
@@ -64,6 +67,10 @@ export async function activate(context: ExtensionContext) {
             isCaseSensitive: true,
         })
     );
+
+    //   const keysForSync = ["followedUsers", "repos"].map((key) => `gistpad.${key}`);
+    const keysForSync = ["Repos.OpesRepos"];
+    context.globalState.setKeysForSync(keysForSync);
 
     context.subscriptions.push(
         workspace.onDidChangeConfiguration((e) => {

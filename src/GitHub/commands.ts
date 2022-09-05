@@ -1,6 +1,6 @@
 import * as rest from "@octokit/rest";
 import { TextDecoder } from "util";
-import { store } from "../FileSystem/store";
+import { store } from "../FileSystem/storage";
 import { RepoNode } from "../Tree/nodes";
 import { credentials, gitHubAuthenticatedUser, output } from "./../extension";
 import { COMMIT_MESSAGE } from "./constants";
@@ -192,6 +192,15 @@ export async function getGitHubRepo(repo: TRepo, repoName: string): Promise<TRep
     return Promise.reject(undefined);
 }
 
+/**
+ * Returns a GitHub branch
+ *
+ * @export
+ * @async
+ * @param {TRepo} repo The repository to get the branch from
+ * @param {string} branchName The name of the branch
+ * @returns {(Promise<TGitHubBranch | undefined>)}
+ */
 export async function getGitHubBranch(repo: TRepo, branchName: string): Promise<TGitHubBranch | undefined> {
     const octokit = new rest.Octokit({
         auth: await credentials.getAccessToken(),
@@ -212,6 +221,14 @@ export async function getGitHubBranch(repo: TRepo, branchName: string): Promise<
     return undefined;
 }
 
+/**
+ * Lists the branches of a repository.
+ *
+ * @export
+ * @async
+ * @param {TRepo} repo The repository to get the branches from
+ * @returns {(Promise<TGitHubBranchList[] | undefined>)}
+ */
 export async function listGitHubBranches(repo: TRepo): Promise<TGitHubBranchList[] | undefined> {
     const octokit = new rest.Octokit({
         auth: await credentials.getAccessToken(),
@@ -235,6 +252,17 @@ export async function createFolder(): Promise<void> {
     throw new Error("Not implemented");
 }
 
+/**
+ * Create a new file or update an existing file in a repository.
+ *
+ * @export
+ * @async
+ * @param {TRepo} repo The repository to create the file in
+ * @param {string} path The path to the file
+ * @param {string} content The content of the file (base64 encoded)
+ * @param {?string} [sha] The SHA of the file to update; if not provided, a new file will be created
+ * @returns {Promise<void>}
+ */
 export async function createOrUpdateFile(repo: TRepo, path: string, content: string, sha?: string): Promise<void> {
     const octokit = new rest.Octokit({
         auth: await credentials.getAccessToken(),
@@ -246,10 +274,6 @@ export async function createOrUpdateFile(repo: TRepo, path: string, content: str
             repo: repo.name,
             path,
             message: "Created file",
-            // committer: {
-            //     name: gitHubAuthenticatedUser.name!,
-            //     email: gitHubAuthenticatedUser.email!,
-            // },
             content,
             sha: sha,
         });
@@ -262,4 +286,44 @@ export async function createOrUpdateFile(repo: TRepo, path: string, content: str
     }
 
     return Promise.reject();
+}
+
+/**
+ * Open a new GitHub repository
+ *
+ * @export
+ * @async
+ * @param {string} owner The owner of the repository
+ * @param {string} repoName The name of the repository
+ * @returns {(Promise<TRepo | undefined>)}
+ */
+export async function openRepository(owner: string, repoName: string): Promise<TRepo | undefined> {
+    const octokit = new rest.Octokit({
+        auth: await credentials.getAccessToken(),
+    });
+
+    try {
+        const { data } = await octokit.repos.get({
+            owner,
+            repo: repoName,
+        });
+
+        return Promise.resolve(data);
+    } catch (e: any) {
+        output.appendLine(e.Message, output.messageType.error);
+    }
+
+    return Promise.reject();
+}
+
+/**
+ * Returns repository owner and name from <owner>/<repo> string
+ *
+ * @export
+ * @param {string} repo The repository string
+ * @returns {[string, string]}
+ */
+export function getRepoDetails(repo: string): [string, string] {
+    const parts = repo.split("/");
+    return [parts[0], parts[1]];
 }
