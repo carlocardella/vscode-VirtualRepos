@@ -69,10 +69,10 @@ export class RepoProvider implements TreeDataProvider<RepoContentNode> {
             let repos = await getGitHubReposForAuthenticatedUser();
 
             let childNodes = await Promise.all(
-                repos.map(async (repo: TRepo) => {
+                repos!.map(async (repo: TRepo) => {
                     try {
                         let branch = await getGitHubBranch(repo, repo.default_branch);
-                        let tree = (await getGitHubTree(repo.owner.login, repo.name, branch.commit.sha)) ?? undefined;
+                        let tree = (await getGitHubTree(repo, branch!.commit.sha)) ?? undefined;
                         return new RepoNode(repo, tree);
                     } catch (error: any) {
                         if (error.name === "HttpError") {

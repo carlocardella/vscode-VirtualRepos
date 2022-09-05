@@ -6,4 +6,26 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-- Initial release
+### Repository management
+
+* Open repository
+* Clone repository
+* Download repository (tar/zip)
+* Fork repository
+* Star repository
+* Unstar repository
+* Delete repository
+* Create repository
+  * Set proper visibility
+* Change repository visibility (private/public)
+
+### Repository content
+
+* Create file
+* Create folder
+* Rename file
+* Rename folder
+* Delete file
+* Delete folder
+* Move file
+* Move folder

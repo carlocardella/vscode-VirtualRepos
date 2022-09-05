@@ -1,6 +1,6 @@
 import { Disposable, Event, EventEmitter, FileChangeEvent, FileStat, FileSystemError, FileSystemProvider, FileType, TextDocument, Uri } from "vscode";
-import { getRepoFile } from "../GitHub/commands";
-import { TRepoContent } from "../GitHub/types";
+import { getRepoFileContent, setRepoFileContent } from "../GitHub/commands";
+import { TGitHubUpdateContent, TRepoContent } from "../GitHub/types";
 import { RepoNode } from "../Tree/nodes";
 import { store } from "./store";
 
@@ -49,13 +49,14 @@ export class RepoFileSystemProvider implements FileSystemProvider {
 
     async readFile(uri: Uri): Promise<Uint8Array> {
         const [repository, file] = RepoFileSystemProvider.getRepoInfo(uri)!;
-        return await getRepoFile(repository, file);
+        return await getRepoFileContent(repository, file);
     }
 
     static getRepoInfo(uri: Uri): [RepoNode, TRepoContent] | undefined {
         const match = RepoFileSystemProvider.getFileInfo(uri);
 
-        if (!match) { // investigate: really needed? This likely always matches since getFileInfo does nothing more that parse the uri
+        if (!match) {
+            // investigate: really needed? This likely always matches since getFileInfo does nothing more that parse the uri
             return;
         }
 
@@ -128,10 +129,19 @@ export class RepoFileSystemProvider implements FileSystemProvider {
     }
 
     createDirectory(uri: Uri): void {
-        throw new Error("Method not implemented.");
+        // Folders do not really exist in Git, no action needed
     }
 
-    writeFile(uri: Uri, content: Uint8Array, options: { readonly create: boolean; readonly overwrite: boolean }): void | Thenable<void> {
-        throw new Error("Method not implemented.");
+    writeFile(uri: Uri, content: Uint8Array, options: { create: boolean; overwrite: boolean }): void | Thenable<void> {
+        let repository = store.repos.find((repo) => repo!.name === uri.authority)!;
+        let file = repository!.tree?.tree.find((file: TRepoContent) => file.path === uri.fsPath.substring(1));
+
+        setRepoFileContent(repository, file, content).then((response: TGitHubUpdateContent) => {
+            file.sha = response.content?.sha;
+            file.size = response.content?.size;
+            file.url = response.content?.git_url;
+        });
+
+        return Promise.resolve();
     }
 }

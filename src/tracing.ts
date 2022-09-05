@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import * as config from "./config";
+import { TRepo } from "./GitHub/types";
 
 export enum MessageType {
     info = "Info",
@@ -26,9 +27,7 @@ export class Output {
 
     public appendLine(message: string, messageType: MessageType) {
         if (config.get("EnableTracing")) {
-            this._outputChannel.appendLine(
-                `${this.getDate()} - ${messageType}: ${message}`
-            );
+            this._outputChannel.appendLine(`${this.getDate()} - ${messageType}: ${message}`);
         }
     }
 
@@ -42,5 +41,29 @@ export class Output {
 
     public dispose() {
         this._outputChannel.dispose();
+    }
+
+    public logError(repo: TRepo, error: any) {
+        this.log(repo, error, this.messageType.error);
+    }
+    public logWarning(repo: TRepo, error: any) {
+        this.log(repo, error, this.messageType.warning);
+    }
+    public logInfo(repo: TRepo, error: any) {
+        this.log(repo, error, this.messageType.info);
+    }
+    public logDebug(repo: TRepo, error: any) {
+        this.log(repo, error, this.messageType.debug);
+    }
+    public logVerbose(repo: TRepo, error: any) {
+        this.log(repo, error, this.messageType.verbose);
+    }
+
+    private log(repo: TRepo, error: any, messageType: MessageType) {
+        if (error.name === "HttpError") {
+            this.appendLine(`Error reading repo ${repo.name}: ${error.response.data.message}`, messageType);
+        } else {
+            this.appendLine(`${repo.name}: ${error.response}`, this.messageType.error);
+        }
     }
 }

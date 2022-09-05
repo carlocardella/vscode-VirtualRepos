@@ -12,6 +12,7 @@
         "vscode": "^1.63.0"
     },
     "preview": true,
+    "icon": "./src/assets/git_repo_line.svg",
     "categories": [
         "Other"
     ],
@@ -22,18 +23,28 @@
     "contributes": {
         "commands": [
             {
-                "title": "Get GitHub authenticated user",
-                "command": "Repos.getGitHubAuthenticatedUser",
-                "category": "Repos"
-            },
-            {
                 "title": "List Repositories",
                 "command": "Repos.listRepositories",
                 "category": "Repos"
             },
             {
-                "command": "Repos.refreshTree",
+                "title": "Open Repository",
+                "command": "Repos.openRepository",
+                "icon": "$(repo-create)"
+            },
+            {
+                "title": "New Folder",
+                "command": "Repos.addFolder",
+                "icon": "$(new-folder)"
+            },
+            {
+                "title": "New file",
+                "command": "Repos.addFile",
+                "icon": "$(new-file)"
+            },
+            {
                 "title": "Refresh",
+                "command": "Repos.refreshTree",
                 "icon": "$(refresh)"
             }
         ],
@@ -52,7 +63,7 @@
                 {
                     "id": "Repositories",
                     "title": "Repositories",
-                    "icon": "./src/assets/8678518_git_repository_line_icon.svg"
+                    "icon": "./src/assets/git_repo_line.svg"
                 }
             ]
         },
@@ -61,7 +72,7 @@
                 {
                     "id": "Repositories",
                     "name": "Repositories",
-                    "icon": "./src/assets/8678518_git_repository_line_icon.svg",
+                    "icon": "./src/assets/git_repo_line.svg",
                     "contextualTitle": "Repositories",
                     "type": "tree",
                     "visibility": "collapsed"
@@ -74,6 +85,41 @@
                     "command": "Repos.refreshTree",
                     "when": "view == Repositories",
                     "group": "navigation"
+                },
+                {
+                    "command": "Repos.addFolder",
+                    "when": "view == Repositories",
+                    "group": "navigation"
+                },
+                {
+                    "command": "Repos.addFile",
+                    "when": "view == Repositories",
+                    "group": "navigation"
+                },
+                {
+                    "command": "Repos.openRepository",
+                    "when": "view == Repositories",
+                    "group": "navigation"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "Repos.addFolder",
+                    "when": "view == Repositories",
+                    "group": "inline"
+                },
+                {
+                    "command": "Repos.addFile",
+                    "when": "view == Repositories",
+                    "group": "inline"
+                },
+                {
+                    "command": "Repos.addFolder",
+                    "when": "view == Repositories"
+                },
+                {
+                    "command": "Repos.addFile",
+                    "when": "view == Repositories"
                 }
             ]
         }
