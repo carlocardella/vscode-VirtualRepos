@@ -87,11 +87,6 @@
         "menus": {
             "view/title": [
                 {
-                    "command": "Repos.refreshTree",
-                    "when": "view == Repositories",
-                    "group": "navigation"
-                },
-                {
                     "command": "Repos.addFolder",
                     "when": "view == Repositories",
                     "group": "navigation"
@@ -120,15 +115,18 @@
                 },
                 {
                     "command": "Repos.addFolder",
-                    "when": "view == Repositories"
+                    "when": "view == Repositories",
+                    "group": "1_add@1"
                 },
                 {
                     "command": "Repos.addFile",
-                    "when": "view == Repositories"
+                    "when": "view == Repositories",
+                    "group": "1_add@2"
                 },
                 {
                     "command": "Repos.closeRepository",
-                    "when": "view == Repositories"
+                    "when": "view == Repositories",
+                    "group": "2_close@1"
                 }
             ]
         }

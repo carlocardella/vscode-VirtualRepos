@@ -61,13 +61,13 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("Repos.addFolder", async () => {
-            repoProvider.refresh();
+            throw error("Not implemented");
         })
     );
 
     context.subscriptions.push(
         commands.registerCommand("Repos.addFile", async () => {
-            repoProvider.refresh();
+            throw error("Not implemented");
         })
     );
 
