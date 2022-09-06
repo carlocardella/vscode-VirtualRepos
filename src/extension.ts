@@ -4,14 +4,17 @@ import * as trace from "./tracing";
 import { commands, ExtensionContext, workspace, window } from "vscode";
 import { RepoProvider } from "./Tree/nodes";
 import { RepoFileSystemProvider, REPO_SCHEME } from "./FileSystem/fileSystem";
-import { getGitHubAuthenticatedUser } from "./GitHub/commands";
+import { getGitHubAuthenticatedUser, pickRepository } from "./GitHub/commands";
 import { TGitHubUser } from "./GitHub/types";
 import { error } from "console";
+import { addToGlobalStorage, removeFromGlobalStorage } from "./FileSystem/storage";
+import { GLOBAL_STORAGE_KEY } from "./GitHub/constants";
 
 export let output: trace.Output;
 export const credentials = new Credentials();
 export let gitHubAuthenticatedUser: TGitHubUser;
 export let extensionContext: ExtensionContext;
+export const repoProvider = new RepoProvider();
 
 export async function activate(context: ExtensionContext) {
     extensionContext = context;
@@ -28,8 +31,6 @@ export async function activate(context: ExtensionContext) {
         credentials.initialize(context);
     }
 
-    const repoProvider = new RepoProvider();
-
     const disposable = commands.registerCommand("extension.getGitHubUser", async () => {
         const octokit = await credentials.getOctokit();
         const userInfo = await octokit.users.getAuthenticated();
@@ -45,7 +46,16 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("Repos.openRepository", async () => {
-            throw error("Not implemented");
+            const pick = await pickRepository();
+            if (pick) {
+                addToGlobalStorage(context, pick);
+            }
+        })
+    );
+
+    context.subscriptions.push(
+        commands.registerCommand("Repos.closeRepository", async (e) => {
+            removeFromGlobalStorage(context, e.repo.full_name);
         })
     );
 
@@ -68,8 +78,8 @@ export async function activate(context: ExtensionContext) {
         })
     );
 
-    //   const keysForSync = ["followedUsers", "repos"].map((key) => `gistpad.${key}`);
-    const keysForSync = ["Repos.OpesRepos"];
+    // register global storage
+    const keysForSync = [GLOBAL_STORAGE_KEY];
     context.globalState.setKeysForSync(keysForSync);
 
     context.subscriptions.push(
@@ -84,9 +94,11 @@ export async function activate(context: ExtensionContext) {
         })
     );
 
-    window.createTreeView("Repositories", {
+    let tv = window.createTreeView("Repositories", {
         treeDataProvider: repoProvider,
     });
+
+    window.registerTreeDataProvider("Repositories", repoProvider);
 
     context.subscriptions.push(disposable);
 }

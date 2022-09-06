@@ -28,6 +28,11 @@
                 "category": "Repos"
             },
             {
+                "title": "Close repository",
+                "command": "Repos.closeRepository",
+                "category": "Repos"
+            },
+            {
                 "title": "Open Repository",
                 "command": "Repos.openRepository",
                 "icon": "$(repo-create)"
@@ -119,6 +124,10 @@
                 },
                 {
                     "command": "Repos.addFile",
+                    "when": "view == Repositories"
+                },
+                {
+                    "command": "Repos.closeRepository",
                     "when": "view == Repositories"
                 }
             ]

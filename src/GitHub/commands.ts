@@ -1,5 +1,6 @@
 import * as rest from "@octokit/rest";
 import { TextDecoder } from "util";
+import { window } from "vscode";
 import { store } from "../FileSystem/storage";
 import { RepoNode } from "../Tree/nodes";
 import { credentials, gitHubAuthenticatedUser, output } from "./../extension";
@@ -327,3 +328,35 @@ export function getRepoDetails(repo: string): [string, string] {
     const parts = repo.split("/");
     return [parts[0], parts[1]];
 }
+
+/**
+ * Ask the user to enter a repository to open: <owner>/<repo>
+ *
+ * @export
+ * @async
+ * @returns {(Promise<string | undefined>)}
+ */
+export async function pickRepository(): Promise<string | undefined> {
+    const pick = await window.showInputBox({ ignoreFocusOut: true, placeHolder: "owner/repo", title: "Enter the repository to open, e.g. 'owner/repo'" });
+    if (!pick) {
+        return undefined;
+    }
+
+    return pick;
+}
+
+// export async function getGitHubUserOrganizations(): Promise<TGitHubOrganization[] | undefined> {
+//     const octokit = new rest.Octokit({
+//         auth: await credentials.getAccessToken(),
+//     });
+
+//     try {
+//         const { data } = await octokit.orgs.listForAuthenticatedUser();
+
+//         return Promise.resolve(data);
+//     } catch (e: any) {
+//         output.logError(undefined, e);
+//     }
+
+//     return Promise.reject(undefined);
+// }

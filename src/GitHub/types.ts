@@ -448,3 +448,5 @@ export type TGitHubUpdateContent = {
             | undefined;
     } | null;
 };
+
+export type TGitHubOrganization = {};

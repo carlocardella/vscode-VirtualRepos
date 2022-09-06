@@ -1,7 +1,7 @@
 import { RepoNode } from "../Tree/nodes";
 import { ExtensionContext } from "vscode";
 import { GLOBAL_STORAGE_KEY } from "../GitHub/constants";
-import { output } from "../extension";
+import { output, repoProvider } from "../extension";
 
 export const store = {
     repos: [] as (RepoNode | undefined)[],
@@ -15,9 +15,11 @@ export const store = {
  * @param {string} value Repository to add
  */
 export function addToGlobalStorage(context: ExtensionContext, value: string): void {
-    let globalStorage = getReposFromGlobalStorage(context) as string[];
+    let globalStorage: string[] = getReposFromGlobalStorage(context);
     globalStorage.push(value);
     context.globalState.update(GLOBAL_STORAGE_KEY, globalStorage);
+
+    repoProvider.refresh();
 
     output.appendLine(`Added ${value} to global storage`, output.messageType.info);
     output.appendLine(`Global storage: ${globalStorage}`, output.messageType.info);
@@ -36,6 +38,8 @@ export function removeFromGlobalStorage(context: ExtensionContext, value: string
         globalStorage = globalStorage.filter((item) => item !== value);
         context.globalState.update(GLOBAL_STORAGE_KEY, globalStorage);
 
+        repoProvider.refresh();
+
         output.appendLine(`Removed ${value} from global storage`, output.messageType.info);
         output.appendLine(`Global storage: ${globalStorage}`, output.messageType.info);
     }
@@ -49,5 +53,5 @@ export function removeFromGlobalStorage(context: ExtensionContext, value: string
  * @returns {string[]}
  */
 export function getReposFromGlobalStorage(context: ExtensionContext): string[] {
-    return context.globalState.get(GLOBAL_STORAGE_KEY) as string[];
+    return context.globalState.get(GLOBAL_STORAGE_KEY, []);
 }
