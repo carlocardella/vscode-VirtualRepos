@@ -12,9 +12,24 @@
         "vscode": "^1.63.0"
     },
     "preview": true,
-    "icon": "./src/assets/git_repo_line.svg",
+    "icon": "assets/git_repo_line.png",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/carlocardella/vscode-Repos.git"
+    },
+    "bugs": {
+        "url": "https://github.com/carlocardella/vscode-Repos/issues"
+    },
     "categories": [
         "Other"
+    ],
+    "keywords": [
+        "git",
+        "github",
+        "gitlab",
+        "remote",
+        "repository",
+        "repo"
     ],
     "activationEvents": [
         "onView:Repositories"
@@ -22,11 +37,6 @@
     "main": "./dist/extension.js",
     "contributes": {
         "commands": [
-            {
-                "title": "List Repositories",
-                "command": "Repos.listRepositories",
-                "category": "Repos"
-            },
             {
                 "title": "Close repository",
                 "command": "Repos.closeRepository",
@@ -51,6 +61,11 @@
                 "title": "Refresh",
                 "command": "Repos.refreshTree",
                 "icon": "$(refresh)"
+            },
+            {
+                "title": "Clear global storage",
+                "command": "Repos.clearGlobalStorage",
+                "category": "Repos"
             }
         ],
         "configuration": {
@@ -68,7 +83,7 @@
                 {
                     "id": "Repositories",
                     "title": "Repositories",
-                    "icon": "./src/assets/git_repo_line.png"
+                    "icon": "assets/git_repo_line.png"
                 }
             ]
         },
@@ -77,7 +92,7 @@
                 {
                     "id": "Repositories",
                     "name": "Repositories",
-                    "icon": "./src/assets/git_repo_line.svg",
+                    "icon": "assets/git_repo_line.png",
                     "contextualTitle": "Repositories",
                     "type": "tree",
                     "visibility": "collapsed"
@@ -86,6 +101,11 @@
         },
         "menus": {
             "view/title": [
+                {
+                    "command": "Repos.refreshTree",
+                    "when": "view == Repositories",
+                    "group": "navigation"
+                },
                 {
                     "command": "Repos.addFolder",
                     "when": "view == Repositories",

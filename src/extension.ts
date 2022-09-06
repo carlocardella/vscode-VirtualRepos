@@ -7,7 +7,7 @@ import { RepoFileSystemProvider, REPO_SCHEME } from "./FileSystem/fileSystem";
 import { getGitHubAuthenticatedUser, pickRepository } from "./GitHub/commands";
 import { TGitHubUser } from "./GitHub/types";
 import { error } from "console";
-import { addToGlobalStorage, removeFromGlobalStorage } from "./FileSystem/storage";
+import { addToGlobalStorage, clearGlobalStorage, removeFromGlobalStorage } from "./FileSystem/storage";
 import { GLOBAL_STORAGE_KEY } from "./GitHub/constants";
 
 export let output: trace.Output;
@@ -68,6 +68,12 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("Repos.addFile", async () => {
             throw error("Not implemented");
+        })
+    );
+
+    context.subscriptions.push(
+        commands.registerCommand("Repos.clearGlobalStorage", async () => {
+            clearGlobalStorage(context);
         })
     );
 

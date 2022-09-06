@@ -55,3 +55,9 @@ export function removeFromGlobalStorage(context: ExtensionContext, value: string
 export function getReposFromGlobalStorage(context: ExtensionContext): string[] {
     return context.globalState.get(GLOBAL_STORAGE_KEY, []);
 }
+
+export function clearGlobalStorage(context: ExtensionContext) { 
+    context.globalState.update(GLOBAL_STORAGE_KEY, []);
+    output.appendLine(`Cleared global storage`, output.messageType.info);
+    repoProvider.refresh();
+}
