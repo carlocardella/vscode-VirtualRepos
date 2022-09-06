@@ -68,7 +68,7 @@
                 {
                     "id": "Repositories",
                     "title": "Repositories",
-                    "icon": "./src/assets/git_repo_line.svg"
+                    "icon": "./src/assets/git_repo_line.png"
                 }
             ]
         },
