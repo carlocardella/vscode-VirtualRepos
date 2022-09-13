@@ -58,6 +58,11 @@
                 "icon": "$(new-file)"
             },
             {
+                "title": "Delete",
+                "command": "Repos.deleteNode",
+                "icon": "$(new-file)"
+            },
+            {
                 "title": "Refresh",
                 "command": "Repos.refreshTree",
                 "icon": "$(refresh)"
@@ -147,6 +152,11 @@
                     "command": "Repos.closeRepository",
                     "when": "view == Repositories",
                     "group": "2_close@1"
+                },
+                {
+                    "command": "Repos.deleteNode",
+                    "when": "view == Repositories",
+                    "group": "3_delete@1"
                 }
             ]
         }

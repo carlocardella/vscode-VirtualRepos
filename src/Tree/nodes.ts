@@ -2,8 +2,8 @@ import { Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCol
 import { extensionContext, output } from "../extension";
 import { RepoFileSystemProvider } from "../FileSystem/fileSystem";
 import { store, getReposFromGlobalStorage } from "../FileSystem/storage";
-import { getGitHubReposForAuthenticatedUser, getGitHubRepoContent, getGitHubTree, getGitHubBranch, openRepository, getRepoDetails } from "../GitHub/commands";
-import { TRepo, ContentType, TRepoContent } from "../GitHub/types";
+import { getGitHubRepoContent, getGitHubTree, getGitHubBranch, openRepository, getRepoDetails } from "../GitHub/commands";
+import { TRepo, ContentType, TContent } from "../GitHub/types";
 
 export class RepoNode extends TreeItem {
     owner: string;
@@ -23,26 +23,26 @@ export class RepoNode extends TreeItem {
     }
 }
 
-export class RepoContentNode extends TreeItem {
+export class ContentNode extends TreeItem {
     owner: string;
     repo: TRepo;
     path: string;
-    repoName: string;
+    name: string;
     uri: Uri;
 
-    constructor(public node: TRepoContent, repo: TRepo) {
-        super(node.name, node.type === ContentType.file ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed);
+    constructor(public nodeContent: TContent, repo: TRepo) {
+        super(nodeContent.name, nodeContent.type === ContentType.file ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed);
 
-        this.tooltip = node.path;
-        this.iconPath = node.type === ContentType.file ? ThemeIcon.File : ThemeIcon.Folder;
-        this.path = node.path;
+        this.tooltip = nodeContent.path;
+        this.iconPath = nodeContent.type === ContentType.file ? ThemeIcon.File : ThemeIcon.Folder;
+        this.path = nodeContent.path;
         this.uri = RepoFileSystemProvider.getFileUri(repo.name, this.path);
         this.owner = repo.owner.login;
-        this.node = node;
+        this.nodeContent = nodeContent;
         this.repo = repo;
-        this.repoName = repo.name;
+        this.name = repo.name;
 
-        if (node.type === ContentType.file) {
+        if (nodeContent.type === ContentType.file) {
             this.command = {
                 command: "vscode.open",
                 title: "Open file",
@@ -52,21 +52,23 @@ export class RepoContentNode extends TreeItem {
     }
 }
 
-export class RepoProvider implements TreeDataProvider<RepoContentNode> {
-    getTreeItem = (node: RepoContentNode) => node;
+export class RepoProvider implements TreeDataProvider<ContentNode> {
+    getTreeItem = (node: ContentNode) => node;
+    // getTreeItem(node: RepoContentNode) {
+    //     return node;
+    // }
 
-    async getChildren(element?: RepoContentNode): Promise<any[]> {
+    async getChildren(element?: ContentNode): Promise<any[]> {
         // @update: any
         if (element) {
-            const content = await getGitHubRepoContent(element.owner, element.repo.name, element?.node?.path);
+            const content = await getGitHubRepoContent(element.owner, element.repo.name, element?.nodeContent?.path);
             let childNodes = Object.values(content)
-                .map((node) => new RepoContentNode(<TRepoContent>node, element.repo))
-                .sort((a, b) => a.node.name.localeCompare(b.node.name))
-                .sort((a, b) => a.node.type.localeCompare(b.node.type));
+                .map((node) => new ContentNode(<TContent>node, element.repo))
+                .sort((a, b) => a.nodeContent.name.localeCompare(b.nodeContent.name))
+                .sort((a, b) => a.nodeContent.type.localeCompare(b.nodeContent.type));
 
             return Promise.resolve(childNodes);
         } else {
-            // let repos = await getGitHubReposForAuthenticatedUser(); // update
             const reposFromGlobalStorage = getReposFromGlobalStorage(extensionContext);
             if (!reposFromGlobalStorage) {
                 output?.appendLine("No repos found in global storage", output.messageType.info);
@@ -103,10 +105,31 @@ export class RepoProvider implements TreeDataProvider<RepoContentNode> {
         }
     }
 
-    private _onDidChangeTreeData: EventEmitter<RepoContentNode | undefined | null | void> = new EventEmitter<RepoContentNode | undefined | null | void>();
-    readonly onDidChangeTreeData: Event<RepoContentNode | undefined | null | void> = this._onDidChangeTreeData.event;
+    private _onDidChangeTreeData: EventEmitter<ContentNode | undefined | null | void> = new EventEmitter<ContentNode | undefined | null | void>();
+    readonly onDidChangeTreeData: Event<ContentNode | undefined | null | void> = this._onDidChangeTreeData.event;
 
     refresh(): void {
         this._onDidChangeTreeData.fire();
     }
+}
+
+export class FileContent implements TContent {
+    name = "";
+    path = "";
+    type = ContentType.file;
+    content = "";
+    encoding = "";
+    size = 0;
+    sha = "";
+    url = "";
+    git_url = "";
+    html_url = "";
+    download_url = "";
+    _links = {
+        git: "",
+        self: "",
+        html: "",
+    };
+
+    constructor() {}
 }

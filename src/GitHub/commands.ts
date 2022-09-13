@@ -1,11 +1,12 @@
 import * as rest from "@octokit/rest";
-import { TextDecoder } from "util";
-import { window } from "vscode";
+import { TextDecoder, TextEncoder } from "util";
+import { Uri, window, workspace } from "vscode";
+import { RepoFileSystemProvider, REPO_SCHEME } from "../FileSystem/fileSystem";
 import { store } from "../FileSystem/storage";
-import { RepoNode } from "../Tree/nodes";
-import { credentials, gitHubAuthenticatedUser, output } from "./../extension";
+import { ContentNode, RepoNode } from "../Tree/nodes";
+import { credentials, output } from "./../extension";
 import { COMMIT_MESSAGE } from "./constants";
-import { TRepo, TGitHubTree, TGitHubUser, TGitHubBranch, TGitHubBranchList, TRepoContent, TGitHubUpdateContent } from "./types";
+import { TRepo, TTree, TGitHubUser, TBranch, TContent, TGitHubUpdateContent } from "./types";
 
 /**
  * Get the authenticated GitHub user
@@ -85,7 +86,7 @@ export async function getGitHubRepoContent(owner: string, repoName: string, path
  * @param {string} filePath The path to the file in the repository.
  * @returns {Promise<Uint8Array>}
  */
-export async function getRepoFileContent(repo: RepoNode, file: TRepoContent): Promise<Uint8Array> {
+export async function getRepoFileContent(repo: RepoNode, file: TContent): Promise<Uint8Array> {
     let data: any;
     if (!file.content) {
         data = await getGitHubRepoContent(repo.owner, repo.name, file.path);
@@ -97,8 +98,8 @@ export async function getRepoFileContent(repo: RepoNode, file: TRepoContent): Pr
     return new Uint8Array(Buffer.from(data.content, "base64").toString("latin1").split("").map(charCodeAt));
 }
 
-export async function setRepoFileContent(repo: RepoNode, file: TRepoContent, content: Uint8Array): Promise<TGitHubUpdateContent> {
-    const fileContentString = (file.content = new TextDecoder().decode(content));
+export async function createOrUpdateFile(repo: RepoNode, file: TContent, content: Uint8Array): Promise<TGitHubUpdateContent> {
+    const fileContentString = new TextDecoder().decode(content);
     file.content = fileContentString;
 
     const octokit = new rest.Octokit({
@@ -106,15 +107,26 @@ export async function setRepoFileContent(repo: RepoNode, file: TRepoContent, con
     });
 
     try {
-        const { data } = await octokit.repos.createOrUpdateFileContents({
-            owner: repo.owner,
-            repo: repo.name,
-            path: file.path,
-            message: `${COMMIT_MESSAGE} ${file.path}`,
-            // message: `Repos: update file ${file.path}`,
-            content: Buffer.from(fileContentString).toString("base64"),
-            sha: file.sha,
-        });
+        let data: any;
+        if (file.mode === 100644) {
+            // todo: file.mode should be an enum
+            data = await octokit.repos.createOrUpdateFileContents({
+                owner: repo.owner,
+                repo: repo.name,
+                path: file.path,
+                message: `${COMMIT_MESSAGE} ${file.path}`,
+                content: Buffer.from(fileContentString).toString("base64"),
+            });
+        } else {
+            data = await octokit.repos.createOrUpdateFileContents({
+                owner: repo.owner,
+                repo: repo.name,
+                path: file.path,
+                message: `${COMMIT_MESSAGE} ${file.path}`,
+                content: Buffer.from(fileContentString).toString("base64"),
+                sha: file.sha,
+            });
+        }
 
         return Promise.resolve(data);
     } catch (e: any) {
@@ -142,9 +154,9 @@ function charCodeAt(c: string) {
  * @param {string} repoOwner The repo to get the tree of
  * @param {string} repoName
  * @param {string} treeSHA
- * @returns {Promise<TGitHubTree>}
+ * @returns {Promise<TTree>}
  */
-export async function getGitHubTree(repo: TRepo, treeSHA: string): Promise<TGitHubTree | undefined> {
+export async function getGitHubTree(repo: TRepo, treeSHA: string): Promise<TTree | undefined> {
     const octokit = new rest.Octokit({
         auth: await credentials.getAccessToken(),
     });
@@ -200,9 +212,9 @@ export async function getGitHubRepo(repo: TRepo, repoName: string): Promise<TRep
  * @async
  * @param {TRepo} repo The repository to get the branch from
  * @param {string} branchName The name of the branch
- * @returns {(Promise<TGitHubBranch | undefined>)}
+ * @returns {(Promise<TBranch | undefined>)}
  */
-export async function getGitHubBranch(repo: TRepo, branchName: string): Promise<TGitHubBranch | undefined> {
+export async function getGitHubBranch(repo: TRepo, branchName: string): Promise<TBranch | undefined> {
     const octokit = new rest.Octokit({
         auth: await credentials.getAccessToken(),
     });
@@ -230,7 +242,7 @@ export async function getGitHubBranch(repo: TRepo, branchName: string): Promise<
  * @param {TRepo} repo The repository to get the branches from
  * @returns {(Promise<TGitHubBranchList[] | undefined>)}
  */
-export async function listGitHubBranches(repo: TRepo): Promise<TGitHubBranchList[] | undefined> {
+export async function listGitHubBranches(repo: TRepo): Promise<TBranch[] | undefined> {
     const octokit = new rest.Octokit({
         auth: await credentials.getAccessToken(),
     });
@@ -251,42 +263,6 @@ export async function listGitHubBranches(repo: TRepo): Promise<TGitHubBranchList
 
 export async function createFolder(): Promise<void> {
     throw new Error("Not implemented");
-}
-
-/**
- * Create a new file or update an existing file in a repository.
- *
- * @export
- * @async
- * @param {TRepo} repo The repository to create the file in
- * @param {string} path The path to the file
- * @param {string} content The content of the file (base64 encoded)
- * @param {?string} [sha] The SHA of the file to update; if not provided, a new file will be created
- * @returns {Promise<void>}
- */
-export async function createOrUpdateFile(repo: TRepo, path: string, content: string, sha?: string): Promise<void> {
-    const octokit = new rest.Octokit({
-        auth: await credentials.getAccessToken(),
-    });
-
-    try {
-        const { data } = await octokit.repos.createOrUpdateFileContents({
-            owner: repo.owner.login,
-            repo: repo.name,
-            path,
-            message: "Created file",
-            content,
-            sha: sha,
-        });
-
-        // todo: update the virtual file system
-
-        return Promise.resolve();
-    } catch (e: any) {
-        output.logError(repo, e);
-    }
-
-    return Promise.reject();
 }
 
 /**
@@ -339,26 +315,65 @@ export function getRepoDetails(repo: string): [string, string] {
 export async function pickRepository(): Promise<string | undefined> {
     const pick = await window.showInputBox({ ignoreFocusOut: true, placeHolder: "owner/repo", title: "Enter the repository to open, e.g. 'owner/repo'" });
     if (!pick) {
-        return undefined;
+        return Promise.reject();
     }
 
     return pick;
 }
 
+export function stringToByteArray(value: string) {
+    return new TextEncoder().encode(value);
+}
 
+export async function addFile(e: ContentNode) {
+    // todo: add the file to the tree
+    const newFileName = await window.showInputBox({ ignoreFocusOut: true, placeHolder: "filename", title: "Enter the filename" });
+    if (!newFileName) {
+        return;
+    }
 
-// export async function getGitHubUserOrganizations(): Promise<TGitHubOrganization[] | undefined> {
-//     const octokit = new rest.Octokit({
-//         auth: await credentials.getAccessToken(),
-//     });
+    const [repoName, path] = RepoFileSystemProvider.getFileInfo(e.uri)!;
+    const content = "";
 
-//     try {
-//         const { data } = await octokit.orgs.listForAuthenticatedUser();
+    const fileSystemProvider = new RepoFileSystemProvider();
+    fileSystemProvider.writeFile(Uri.parse(`${REPO_SCHEME}://${repoName}/${path}/${newFileName}`), stringToByteArray(content), {
+        create: true,
+        overwrite: true,
+    });
 
-//         return Promise.resolve(data);
-//     } catch (e: any) {
-//         output.logError(undefined, e);
-//     }
+    // todo: add the file to GitHub
 
-//     return Promise.reject(undefined);
-// }
+    // todo: add file to local storage
+
+    // todo: refresh the tree
+}
+
+export async function deleteNode(node: ContentNode) {
+    // const [repoName, path] = RepoFileSystemProvider.getFileInfo(node.uri)!;
+    // const fileSystemProvider = new RepoFileSystemProvider();
+    // const fileExists = await fileSystemProvider.exists(node.uri);
+    // if (fileExists) {
+    //     fileSystemProvider.delete(node.uri);
+    // }
+    const fileSystemProvider = new RepoFileSystemProvider();
+    fileSystemProvider.delete(node.uri);
+}
+
+export async function deleteGitHubFile(repo: TRepo, path: string) {
+    
+    const octokit = new rest.Octokit({
+        auth: await credentials.getAccessToken(),
+    });
+
+    try {
+        await octokit.repos.deleteFile({
+            owner: repo.owner.login,
+            repo: repo.name,
+            path,
+            message: `Delete ${path}`,
+            sha: "todo",
+        });
+    } catch (e: any) {
+        output.logError(repo, e);
+    }
+}

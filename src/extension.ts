@@ -2,12 +2,12 @@ import { Credentials } from "./GitHub/authentication";
 import * as config from "./config";
 import * as trace from "./tracing";
 import { commands, ExtensionContext, workspace, window } from "vscode";
-import { RepoProvider } from "./Tree/nodes";
+import { ContentNode, RepoProvider } from "./Tree/nodes";
 import { RepoFileSystemProvider, REPO_SCHEME } from "./FileSystem/fileSystem";
-import { getGitHubAuthenticatedUser, pickRepository } from "./GitHub/commands";
+import { addFile, deleteNode, getGitHubAuthenticatedUser, pickRepository } from "./GitHub/commands";
 import { TGitHubUser } from "./GitHub/types";
 import { error } from "console";
-import { addToGlobalStorage, clearGlobalStorage, removeFromGlobalStorage } from "./FileSystem/storage";
+import { addToGlobalStorage, clearGlobalStorage, removeFromGlobalStorage, store } from "./FileSystem/storage";
 import { GLOBAL_STORAGE_KEY } from "./GitHub/constants";
 
 export let output: trace.Output;
@@ -54,8 +54,8 @@ export async function activate(context: ExtensionContext) {
     );
 
     context.subscriptions.push(
-        commands.registerCommand("Repos.closeRepository", async (e) => {
-            removeFromGlobalStorage(context, e.repo.full_name);
+        commands.registerCommand("Repos.closeRepository", async (node) => {
+            removeFromGlobalStorage(context, node.repo.full_name);
         })
     );
 
@@ -66,14 +66,20 @@ export async function activate(context: ExtensionContext) {
     );
 
     context.subscriptions.push(
-        commands.registerCommand("Repos.addFile", async () => {
-            throw error("Not implemented");
+        commands.registerCommand("Repos.addFile", async (node) => {
+            addFile(<ContentNode>node);
         })
     );
 
     context.subscriptions.push(
         commands.registerCommand("Repos.clearGlobalStorage", async () => {
             clearGlobalStorage(context);
+        })
+    );
+
+    context.subscriptions.push(
+        commands.registerCommand("Repos.deleteNode", async (node) => {
+            deleteNode(<ContentNode>node);
         })
     );
 
@@ -101,10 +107,11 @@ export async function activate(context: ExtensionContext) {
     );
 
     let tv = window.createTreeView("Repositories", {
-        treeDataProvider: repoProvider,
+        treeDataProvider: repoProvider
     });
+    tv.reveal(store.repos);
 
-    window.registerTreeDataProvider("Repositories", repoProvider);
+    // window.registerTreeDataProvider("Repositories", repoProvider);
 
     context.subscriptions.push(disposable);
 }
