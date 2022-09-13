@@ -9,3 +9,5 @@
 ☐ rename file
 ☐ rename folder
 ☐ upload file from disk
+☐ "Close Repository" command should appear only when right-click on a repo node
+☐ "Add Folder" and "Add file" commands should appear only when right-click on a folder node
