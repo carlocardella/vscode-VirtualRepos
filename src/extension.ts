@@ -1,7 +1,7 @@
 import { Credentials } from "./GitHub/authentication";
 import * as config from "./config";
 import * as trace from "./tracing";
-import { commands, ExtensionContext, workspace, window } from "vscode";
+import { commands, ExtensionContext, workspace, window, ProgressLocation } from "vscode";
 import { ContentNode, RepoProvider } from "./Tree/nodes";
 import { RepoFileSystemProvider, REPO_SCHEME } from "./FileSystem/fileSystem";
 import { addFile, deleteNode, getGitHubAuthenticatedUser, pickRepository } from "./GitHub/commands";
@@ -59,15 +59,24 @@ export async function activate(context: ExtensionContext) {
         })
     );
 
-    context.subscriptions.push(
-        commands.registerCommand("Repos.addFolder", async () => {
-            throw error("Not implemented");
-        })
-    );
+    // context.subscriptions.push(
+    //     commands.registerCommand("Repos.addFolder", async () => {
+    //         throw error("Not implemented");
+    //     })
+    // );
 
     context.subscriptions.push(
         commands.registerCommand("Repos.addFile", async (node) => {
-            addFile(<ContentNode>node);
+            window.withProgress(
+                {
+                    location: ProgressLocation.Notification,
+                    title: `New file`,
+                    cancellable: true,
+                },
+                () => {
+                    return addFile(<ContentNode>node);
+                }
+            );
         })
     );
 
@@ -79,7 +88,16 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("Repos.deleteNode", async (node) => {
-            deleteNode(<ContentNode>node);
+            window.withProgress(
+                {
+                    location: ProgressLocation.Notification,
+                    title: `Deleting "${node.owner}/${node.path}"`,
+                    cancellable: true,
+                },
+                () => {
+                    return deleteNode(<ContentNode>node);
+                }
+            );
         })
     );
 
@@ -107,7 +125,7 @@ export async function activate(context: ExtensionContext) {
     );
 
     let tv = window.createTreeView("Repositories", {
-        treeDataProvider: repoProvider
+        treeDataProvider: repoProvider,
     });
     // tv.reveal(store.repos);
 
