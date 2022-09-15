@@ -26,10 +26,11 @@
     "keywords": [
         "git",
         "github",
-        "gitlab",
         "remote",
         "repository",
-        "repo"
+        "repo",
+        "virtual file system",
+        "virtual repo"
     ],
     "activationEvents": [
         "onView:Repositories"

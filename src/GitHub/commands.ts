@@ -108,24 +108,27 @@ export async function createOrUpdateFile(repo: RepoNode, file: TContent, content
 
     try {
         let data: any;
-        if (file?.mode === "100644") {
-            // todo: file.mode should be an enum
-            data = await octokit.repos.createOrUpdateFileContents({
+        if (!file?.sha) {
+            // new file
+            ({ data } = await octokit.repos.createOrUpdateFileContents({
                 owner: repo.owner,
                 repo: repo.name,
                 path: file!.path!,
                 message: `${COMMIT_MESSAGE} ${file!.path}`,
                 content: Buffer.from(fileContentString).toString("base64"),
-            });
+            }));
         } else {
-            data = await octokit.repos.createOrUpdateFileContents({
+            // the file already exists, update it
+            ({ data } = await octokit.repos.createOrUpdateFileContents({
                 owner: repo.owner,
                 repo: repo.name,
                 path: file!.path!,
                 message: `${COMMIT_MESSAGE} ${file!.path}`,
                 content: Buffer.from(fileContentString).toString("base64"),
                 sha: file!.sha,
-            });
+            }));
+
+            // file = data.commit;
         }
 
         return Promise.resolve(data);

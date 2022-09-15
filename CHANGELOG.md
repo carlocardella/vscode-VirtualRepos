@@ -23,14 +23,23 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Repository content
 
-* Create file
-* Create folder
 * Rename file
 * Rename folder
-* Delete file
-* Delete folder
+* Delete multiple files
+  * Delete folder (delete all files in folder)
 * Move file
+  * Move multiple files
 * Move folder
+* Upload file from disk
+  * upload multiple files from disk
+
+## [0.0.2] - 2022-09-15
+
+### Added
+
+* Create file
+  * Folders can be created passing a path as file name, e.g. `folder/file`
+* Delete file
 
 ## [0.0.1] - 2022-09-04
 

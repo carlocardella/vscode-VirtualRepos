@@ -35,7 +35,8 @@ export class ContentNode extends TreeItem {
         super(nodeContent!.name!, nodeContent?.type === ContentType.file ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed);
 
         this.tooltip = nodeContent?.path;
-        this.iconPath = nodeContent?.type === ContentType.file ? ThemeIcon.File : ThemeIcon.Folder;
+        // this.iconPath = nodeContent?.type === ContentType.file ? ThemeIcon.File : ThemeIcon.Folder;
+        this.iconPath = nodeContent?.type === ContentType.file ? new ThemeIcon("file") : new ThemeIcon("folder");
         this.path = nodeContent?.path ?? "";
         this.uri = RepoFileSystemProvider.getFileUri(repo.name, this.path);
         this.owner = repo.owner.login;
