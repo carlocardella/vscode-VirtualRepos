@@ -88,11 +88,11 @@ export async function getGitHubRepoContent(owner: string, repoName: string, path
  */
 export async function getRepoFileContent(repo: RepoNode, file: TContent): Promise<Uint8Array> {
     let data: any;
-    if (!file.content) {
-        data = await getGitHubRepoContent(repo.owner, repo.name, file.path);
-        file.content = data;
+    if (!file!.content) {
+        data = await getGitHubRepoContent(repo.owner, repo.name, file!.path);
+        file!.content = data;
     } else {
-        data = file.content;
+        data = file!.content;
     }
 
     return new Uint8Array(Buffer.from(data.content, "base64").toString("latin1").split("").map(charCodeAt));
@@ -100,7 +100,7 @@ export async function getRepoFileContent(repo: RepoNode, file: TContent): Promis
 
 export async function createOrUpdateFile(repo: RepoNode, file: TContent, content: Uint8Array): Promise<TGitHubUpdateContent> {
     const fileContentString = new TextDecoder().decode(content);
-    file.content = fileContentString;
+    file!.content = fileContentString;
 
     const octokit = new rest.Octokit({
         auth: await credentials.getAccessToken(),
@@ -108,23 +108,23 @@ export async function createOrUpdateFile(repo: RepoNode, file: TContent, content
 
     try {
         let data: any;
-        if (file.mode === 100644) {
+        if (file?.mode === "100644") {
             // todo: file.mode should be an enum
             data = await octokit.repos.createOrUpdateFileContents({
                 owner: repo.owner,
                 repo: repo.name,
-                path: file.path,
-                message: `${COMMIT_MESSAGE} ${file.path}`,
+                path: file!.path!,
+                message: `${COMMIT_MESSAGE} ${file!.path}`,
                 content: Buffer.from(fileContentString).toString("base64"),
             });
         } else {
             data = await octokit.repos.createOrUpdateFileContents({
                 owner: repo.owner,
                 repo: repo.name,
-                path: file.path,
-                message: `${COMMIT_MESSAGE} ${file.path}`,
+                path: file!.path!,
+                message: `${COMMIT_MESSAGE} ${file!.path}`,
                 content: Buffer.from(fileContentString).toString("base64"),
-                sha: file.sha,
+                sha: file!.sha,
             });
         }
 
@@ -359,8 +359,8 @@ export async function deleteNode(node: ContentNode) {
     fileSystemProvider.delete(node.uri);
 }
 
-export async function deleteGitHubFile(repo: TRepo, path: string) {
-    
+export async function deleteGitHubFile(repo: TRepo, file: TContent) {
+// export async function deleteGitHubFile(node: ContentNode) {
     const octokit = new rest.Octokit({
         auth: await credentials.getAccessToken(),
     });
@@ -369,9 +369,9 @@ export async function deleteGitHubFile(repo: TRepo, path: string) {
         await octokit.repos.deleteFile({
             owner: repo.owner.login,
             repo: repo.name,
-            path,
-            message: `Delete ${path}`,
-            sha: "todo",
+            path: file!.path!,
+            message: `Delete ${file!.path!}`,
+            sha: file!.sha!,
         });
     } catch (e: any) {
         output.logError(repo, e);

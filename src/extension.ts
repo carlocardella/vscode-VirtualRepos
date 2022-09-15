@@ -109,7 +109,7 @@ export async function activate(context: ExtensionContext) {
     let tv = window.createTreeView("Repositories", {
         treeDataProvider: repoProvider
     });
-    tv.reveal(store.repos);
+    // tv.reveal(store.repos);
 
     // window.registerTreeDataProvider("Repositories", repoProvider);
 

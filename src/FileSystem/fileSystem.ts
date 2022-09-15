@@ -13,9 +13,9 @@ import {
     Uri,
 } from "vscode";
 import { repoProvider } from "../extension";
-import { createOrUpdateFile, getRepoFileContent } from "../GitHub/commands";
+import { createOrUpdateFile, deleteGitHubFile, getRepoFileContent } from "../GitHub/commands";
 import { TGitHubUpdateContent, TContent } from "../GitHub/types";
-import { FileContent, RepoNode } from "../Tree/nodes";
+import { RepoNode } from "../Tree/nodes";
 import { store } from "./storage";
 
 export const REPO_SCHEME = "github-repo";
@@ -79,7 +79,7 @@ export class RepoFileSystemProvider implements FileSystemProvider {
         }
 
         const repository = store.repos.find((repo) => repo!.name === match[0])!;
-        const file = repository!.tree?.tree.find((file: TContent) => file.path === match[1]);
+        const file: TContent = repository!.tree?.tree.find((file: TContent) => file?.path === match[1]);
 
         return [repository, file];
     }
@@ -131,9 +131,13 @@ export class RepoFileSystemProvider implements FileSystemProvider {
     }
 
     async delete(uri: Uri): Promise<void> {
-        // const repository = store.repos.find((repo) => repo!.name === match[0])!;
-        // const file = repository!.tree?.tree.find((file: TContent) => file.path === match[1]);
-        throw new Error("Method not implemented.");
+        const repository = store.repos.find((repo) => repo!.name === uri.authority);
+        const file = repository!.tree?.tree.find((file: TContent) => file!.path === uri.path.substring(1));
+
+        await deleteGitHubFile(repository!.repo!, file);
+
+        this._onDidChangeFile.fire([{ type: FileChangeType.Deleted, uri }]); // investigate: needed?
+        repoProvider.refresh();
     }
 
     async rename(uri: Uri): Promise<void> {
@@ -154,26 +158,30 @@ export class RepoFileSystemProvider implements FileSystemProvider {
 
     writeFile(uri: Uri, content: Uint8Array, options: { create: boolean; overwrite: boolean }): Promise<void> {
         let repository = store.repos.find((repo) => repo!.name === uri.authority)!;
-        let file: TContent = repository!.tree?.tree.find((file: TContent) => file.path === uri.path.substring(1));
+        let file: TContent = repository!.tree?.tree.find((file: TContent) => file?.path === uri.path.substring(1));
 
         if (!file) {
-            file = new FileContent();
+            // file = new FileContent();
+            file = {};
             file.path = uri.path.substring(1);
             createOrUpdateFile(repository, file, content).then((response: TGitHubUpdateContent) => {
-                file.sha = response.content?.sha;
-                file.size = response.content?.size;
-                file.url = response.content?.git_url;
+                file!.sha = response.content?.sha;
+                file!.size = response.content?.size;
+                file!.url = response.content?.git_url;
             });
 
+            // repository.tree?.tree.push(file);
+
             this._onDidChangeFile.fire([{ type: FileChangeType.Created, uri }]); // investigate: needed?
-            repoProvider.refresh();
+            // repoProvider.refresh();
             // commands.executeCommand("vscode.open", uri, );
+            repoProvider.refresh();
         } else {
             file.path = uri.path.substring(1);
             createOrUpdateFile(repository, file, content).then((response: TGitHubUpdateContent) => {
-                file.sha = response.content?.sha;
-                file.size = response.content?.size;
-                file.url = response.content?.git_url;
+                file!.sha = response.content?.sha;
+                file!.size = response.content?.size;
+                file!.url = response.content?.git_url;
             });
 
             this._onDidChangeFile.fire([{ type: FileChangeType.Created, uri }]); // investigate: needed?

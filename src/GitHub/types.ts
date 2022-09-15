@@ -59,25 +59,27 @@ export type TTree = {
     }[];
 };
 
-export type TContent = {
-    name: string;
-    path: string;
-    sha?: string;
-    size?: number;
-    mode?: number;
-    url?: string;
-    html_url: string;
-    git_url: string;
-    download_url: string;
-    type: string;
-    content: string;
-    encoding: string;
-    _links: {
-        self: string;
-        git: string;
-        html: string;
-    };
-};
+export type TContent =
+    | {
+          content?: string | undefined;
+          download_url?: string | undefined;
+          encoding?: string | undefined;
+          git_url?: string | undefined;
+          html_url?: string | undefined;
+          mode?: string | undefined;
+          name?: string | undefined;
+          path?: string | undefined;
+          sha?: string | undefined;
+          size?: number | undefined;
+          type?: string | undefined;
+          url?: string | undefined;
+          _links?: {
+              self: string;
+              git: string;
+              html: string;
+          };
+      }
+    | undefined;
 
 export type TBranch = {
     name: string;
