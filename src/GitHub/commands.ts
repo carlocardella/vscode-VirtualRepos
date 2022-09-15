@@ -326,7 +326,6 @@ export function stringToByteArray(value: string) {
 }
 
 export async function addFile(e: ContentNode) {
-    // todo: add the file to the tree
     const newFileName = await window.showInputBox({ ignoreFocusOut: true, placeHolder: "filename", title: "Enter the filename" });
     if (!newFileName) {
         return;
@@ -340,27 +339,19 @@ export async function addFile(e: ContentNode) {
         create: true,
         overwrite: true,
     });
-
-    // todo: add the file to GitHub
-
-    // todo: add file to local storage
-
-    // todo: refresh the tree
 }
 
 export async function deleteNode(node: ContentNode) {
-    // const [repoName, path] = RepoFileSystemProvider.getFileInfo(node.uri)!;
-    // const fileSystemProvider = new RepoFileSystemProvider();
-    // const fileExists = await fileSystemProvider.exists(node.uri);
-    // if (fileExists) {
-    //     fileSystemProvider.delete(node.uri);
-    // }
+    const confirm = await window.showWarningMessage(`Are you sure you want to delete '${node.path}'?`, "Yes", "No", "Cancel");
+    if (confirm !== "Yes") {
+        return;
+    }
+
     const fileSystemProvider = new RepoFileSystemProvider();
     fileSystemProvider.delete(node.uri);
 }
 
 export async function deleteGitHubFile(repo: TRepo, file: TContent) {
-// export async function deleteGitHubFile(node: ContentNode) {
     const octokit = new rest.Octokit({
         auth: await credentials.getAccessToken(),
     });
