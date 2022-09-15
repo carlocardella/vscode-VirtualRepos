@@ -59,12 +59,6 @@ export async function activate(context: ExtensionContext) {
         })
     );
 
-    // context.subscriptions.push(
-    //     commands.registerCommand("Repos.addFolder", async () => {
-    //         throw error("Not implemented");
-    //     })
-    // );
-
     context.subscriptions.push(
         commands.registerCommand("Repos.addFile", async (node) => {
             window.withProgress(

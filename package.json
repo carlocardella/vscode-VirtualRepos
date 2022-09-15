@@ -48,11 +48,6 @@
                 "icon": "$(repo-create)"
             },
             {
-                "title": "New Folder",
-                "command": "Repos.addFolder",
-                "icon": "$(new-folder)"
-            },
-            {
                 "title": "New file",
                 "command": "Repos.addFile",
                 "icon": "$(new-file)"
@@ -112,11 +107,6 @@
                     "group": "navigation"
                 },
                 {
-                    "command": "Repos.addFolder",
-                    "when": "view == Repositories",
-                    "group": "navigation"
-                },
-                {
                     "command": "Repos.addFile",
                     "when": "view == Repositories",
                     "group": "navigation"
@@ -129,19 +119,9 @@
             ],
             "view/item/context": [
                 {
-                    "command": "Repos.addFolder",
-                    "when": "view == Repositories",
-                    "group": "inline"
-                },
-                {
                     "command": "Repos.addFile",
                     "when": "view == Repositories",
                     "group": "inline"
-                },
-                {
-                    "command": "Repos.addFolder",
-                    "when": "view == Repositories",
-                    "group": "1_add@1"
                 },
                 {
                     "command": "Repos.addFile",
