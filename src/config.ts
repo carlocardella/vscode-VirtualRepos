@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-const CONFIG_SECTION = "Repos";
+const CONFIG_SECTION = "VirtualRepos";
 
 export function get(key: "EnableTracing"): boolean;
 

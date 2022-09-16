@@ -1,5 +1,5 @@
 {
-    "name": "vscode-Repos",
+    "name": "vscode-VirtualRepos",
     "displayName": "Remote Repositories for Visual Studio Code",
     "description": "Easily open and update remote repositories without cloning",
     "publisher": "carlocardella",
@@ -15,10 +15,10 @@
     "icon": "assets/git_repo_line.png",
     "repository": {
         "type": "git",
-        "url": "https://github.com/carlocardella/vscode-Repos.git"
+        "url": "https://github.com/carlocardella/vscode-VirtualRepos.git"
     },
     "bugs": {
-        "url": "https://github.com/carlocardella/vscode-Repos/issues"
+        "url": "https://github.com/carlocardella/vscode-VirtualRepos/issues"
     },
     "categories": [
         "Other"
@@ -40,39 +40,39 @@
         "commands": [
             {
                 "title": "Close repository",
-                "command": "Repos.closeRepository",
-                "category": "Repos"
+                "command": "VirtualRepos.closeRepository",
+                "category": "VirtualRepos"
             },
             {
                 "title": "Open Repository",
-                "command": "Repos.openRepository",
+                "command": "VirtualRepos.openRepository",
                 "icon": "$(repo-create)"
             },
             {
                 "title": "New file",
-                "command": "Repos.addFile",
+                "command": "VirtualRepos.addFile",
                 "icon": "$(new-file)"
             },
             {
                 "title": "Delete",
-                "command": "Repos.deleteNode",
+                "command": "VirtualRepos.deleteNode",
                 "icon": "$(new-file)"
             },
             {
                 "title": "Refresh",
-                "command": "Repos.refreshTree",
+                "command": "VirtualRepos.refreshTree",
                 "icon": "$(refresh)"
             },
             {
                 "title": "Clear global storage",
-                "command": "Repos.clearGlobalStorage",
-                "category": "Repos"
+                "command": "VirtualRepos.clearGlobalStorage",
+                "category": "VirtualRepos"
             }
         ],
         "configuration": {
             "title": "Remote Repositories",
             "properties": {
-                "Repos.EnableTracing": {
+                "VirtualRepos.EnableTracing": {
                     "type": "boolean",
                     "description": "Enable tracing of the extension",
                     "default": false
@@ -103,39 +103,39 @@
         "menus": {
             "view/title": [
                 {
-                    "command": "Repos.refreshTree",
+                    "command": "VirtualRepos.refreshTree",
                     "when": "view == Repositories",
                     "group": "navigation"
                 },
                 {
-                    "command": "Repos.addFile",
+                    "command": "VirtualRepos.addFile",
                     "when": "view == Repositories",
                     "group": "navigation"
                 },
                 {
-                    "command": "Repos.openRepository",
+                    "command": "VirtualRepos.openRepository",
                     "when": "view == Repositories",
                     "group": "navigation"
                 }
             ],
             "view/item/context": [
                 {
-                    "command": "Repos.addFile",
+                    "command": "VirtualRepos.addFile",
                     "when": "view == Repositories",
                     "group": "inline"
                 },
                 {
-                    "command": "Repos.addFile",
+                    "command": "VirtualRepos.addFile",
                     "when": "view == Repositories",
                     "group": "1_add@2"
                 },
                 {
-                    "command": "Repos.closeRepository",
+                    "command": "VirtualRepos.closeRepository",
                     "when": "view == Repositories",
                     "group": "2_close@1"
                 },
                 {
-                    "command": "Repos.deleteNode",
+                    "command": "VirtualRepos.deleteNode",
                     "when": "view == Repositories",
                     "group": "3_delete@1"
                 }

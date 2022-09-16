@@ -24,7 +24,7 @@ export async function activate(context: ExtensionContext) {
 
     gitHubAuthenticatedUser = await getGitHubAuthenticatedUser();
 
-    output?.appendLine("Repos extension is now active!", output.messageType.info);
+    output?.appendLine("VirtualRepos extension is now active!", output.messageType.info);
 
     await credentials.initialize(context);
     if (!credentials.isAuthenticated) {
@@ -39,13 +39,13 @@ export async function activate(context: ExtensionContext) {
     });
 
     context.subscriptions.push(
-        commands.registerCommand("Repos.refreshTree", async () => {
+        commands.registerCommand("VirtualRepos.refreshTree", async () => {
             repoProvider.refresh();
         })
     );
 
     context.subscriptions.push(
-        commands.registerCommand("Repos.openRepository", async () => {
+        commands.registerCommand("VirtualRepos.openRepository", async () => {
             const pick = await pickRepository();
             if (pick) {
                 addToGlobalStorage(context, pick);
@@ -54,13 +54,13 @@ export async function activate(context: ExtensionContext) {
     );
 
     context.subscriptions.push(
-        commands.registerCommand("Repos.closeRepository", async (node) => {
+        commands.registerCommand("VirtualRepos.closeRepository", async (node) => {
             removeFromGlobalStorage(context, node.repo.full_name);
         })
     );
 
     context.subscriptions.push(
-        commands.registerCommand("Repos.addFile", async (node) => {
+        commands.registerCommand("VirtualRepos.addFile", async (node) => {
             window.withProgress(
                 {
                     location: ProgressLocation.Notification,
@@ -75,13 +75,13 @@ export async function activate(context: ExtensionContext) {
     );
 
     context.subscriptions.push(
-        commands.registerCommand("Repos.clearGlobalStorage", async () => {
+        commands.registerCommand("VirtualRepos.clearGlobalStorage", async () => {
             clearGlobalStorage(context);
         })
     );
 
     context.subscriptions.push(
-        commands.registerCommand("Repos.deleteNode", async (node) => {
+        commands.registerCommand("VirtualRepos.deleteNode", async (node) => {
             window.withProgress(
                 {
                     location: ProgressLocation.Notification,
@@ -108,7 +108,7 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         workspace.onDidChangeConfiguration((e) => {
-            if (e.affectsConfiguration("Repos.EnableTracing")) {
+            if (e.affectsConfiguration("VirtualRepos.EnableTracing")) {
                 if (config.get("EnableTracing")) {
                     output = new trace.Output();
                 } else {
