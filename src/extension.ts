@@ -118,7 +118,7 @@ export async function activate(context: ExtensionContext) {
         })
     );
 
-    let tv = window.createTreeView("Repositories", {
+    let tv = window.createTreeView("VirtualRepositories", {
         treeDataProvider: repoProvider,
     });
     // tv.reveal(store.repos);

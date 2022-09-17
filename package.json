@@ -1,7 +1,7 @@
 {
     "name": "vscode-VirtualRepos",
-    "displayName": "Remote Repositories for Visual Studio Code",
-    "description": "Easily open and update remote repositories without cloning",
+    "displayName": "Virtual Repositories for Visual Studio Code",
+    "description": "Easily open and update virtual repositories without cloning",
     "publisher": "carlocardella",
     "author": {
         "name": "Carlo Cardella",
@@ -33,7 +33,7 @@
         "virtual repo"
     ],
     "activationEvents": [
-        "onView:Repositories"
+        "onView:VirtualRepositories"
     ],
     "main": "./dist/extension.js",
     "contributes": {
@@ -56,7 +56,7 @@
             {
                 "title": "Delete",
                 "command": "VirtualRepos.deleteNode",
-                "icon": "$(new-file)"
+                "icon": "$(trash)"
             },
             {
                 "title": "Refresh",
@@ -70,7 +70,7 @@
             }
         ],
         "configuration": {
-            "title": "Remote Repositories",
+            "title": "Virtual Repositories",
             "properties": {
                 "VirtualRepos.EnableTracing": {
                     "type": "boolean",
@@ -82,17 +82,17 @@
         "viewsContainers": {
             "activitybar": [
                 {
-                    "id": "Repositories",
-                    "title": "Repositories",
+                    "id": "VirtualRepositories",
+                    "title": "Virtual Repositories",
                     "icon": "assets/git_repo_line.png"
                 }
             ]
         },
         "views": {
-            "Repositories": [
+            "VirtualRepositories": [
                 {
-                    "id": "Repositories",
-                    "name": "Repositories",
+                    "id": "VirtualRepositories",
+                    "name": "Virtual Repositories",
                     "icon": "assets/git_repo_line.png",
                     "contextualTitle": "Repositories",
                     "type": "tree",
