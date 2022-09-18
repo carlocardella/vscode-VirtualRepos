@@ -101,42 +101,52 @@
             ]
         },
         "menus": {
+            "commandPalette": [
+                {
+                    "command": "VirtualRepos.openRepository",
+                    "when": "view == VirtualRepositories"
+                },
+                {
+                    "command": "VirtualRepos.clearGlobalStorage",
+                    "when": "view == VirtualRepositories"
+                }
+            ],
             "view/title": [
                 {
                     "command": "VirtualRepos.refreshTree",
-                    "when": "view == Repositories",
+                    "when": "view == VirtualRepositories",
                     "group": "navigation"
                 },
                 {
                     "command": "VirtualRepos.addFile",
-                    "when": "view == Repositories",
+                    "when": "view == VirtualRepositories",
                     "group": "navigation"
                 },
                 {
                     "command": "VirtualRepos.openRepository",
-                    "when": "view == Repositories",
+                    "when": "view == VirtualRepositories",
                     "group": "navigation"
                 }
             ],
             "view/item/context": [
                 {
                     "command": "VirtualRepos.addFile",
-                    "when": "view == Repositories",
+                    "when": "viewItem == folder",
                     "group": "inline"
                 },
                 {
                     "command": "VirtualRepos.addFile",
-                    "when": "view == Repositories",
+                    "when": "viewItem == folder || viewItem == repo",
                     "group": "1_add@2"
                 },
                 {
                     "command": "VirtualRepos.closeRepository",
-                    "when": "view == Repositories",
+                    "when": "viewItem == repo",
                     "group": "2_close@1"
                 },
                 {
                     "command": "VirtualRepos.deleteNode",
-                    "when": "view == Repositories",
+                    "when": "viewItem == folder || viewItem == file",
                     "group": "3_delete@1"
                 }
             ]

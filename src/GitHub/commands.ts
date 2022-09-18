@@ -329,7 +329,7 @@ export function stringToByteArray(value: string) {
 }
 
 export async function addFile(e: ContentNode) {
-    const newFileName = await window.showInputBox({ ignoreFocusOut: true, placeHolder: "filename", title: "Enter the filename" });
+    const newFileName = await window.showInputBox({ ignoreFocusOut: true, placeHolder: "path/filename", title: "Enter the filename (optional path)" });
     if (!newFileName) {
         return;
     }

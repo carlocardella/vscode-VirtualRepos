@@ -120,6 +120,8 @@ export async function activate(context: ExtensionContext) {
 
     let tv = window.createTreeView("VirtualRepositories", {
         treeDataProvider: repoProvider,
+        showCollapseAll: true,
+        canSelectMany: true,
     });
     // tv.reveal(store.repos);
 
