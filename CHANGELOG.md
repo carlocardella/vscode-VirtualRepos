@@ -33,6 +33,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Upload file from disk
   * upload multiple files from disk
 
+## [0.0.3] - 2022-09-18
+
+### Changed
+
+* Renamed View to `Virtual Repositories`
+* Optimized context menu commands
+
 ## [0.0.2] - 2022-09-15
 
 ### Added
