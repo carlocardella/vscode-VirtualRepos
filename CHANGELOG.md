@@ -29,8 +29,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Move file
   * Move multiple files
 * Move folder
-* Upload file from disk
-  * Upload multiple files from disk
+
+## [0.0.4] - 2022-09-18
+
+### Added
+
+* `Upload file(s)...` from local disk to remote repository
 
 ## [0.0.3] - 2022-09-18
 
