@@ -371,3 +371,30 @@ export async function deleteGitHubFile(repo: TRepo, file: TContent) {
         output.logError(repo, e);
     }
 }
+
+export async function uploadFiles(destination: ContentNode | RepoNode): Promise<void> {
+    const files = await window.showOpenDialog({ canSelectFiles: true, canSelectFolders: false, canSelectMany: true, title: "Select files to upload" });
+    if (!files) {
+        return Promise.reject();
+    }
+
+    const fileSystemProvider = new RepoFileSystemProvider();
+    files.forEach(async (file) => {
+        const content = await workspace.fs.readFile(file);
+        // let uri = Uri.parse(`${REPO_SCHEME}://${destination.repo.name}/${destination?.path ?? ""}/${file.path.split("/").pop()}`);
+        let uriPath = "path" in destination ? destination.path : "";
+        let uriFile = file.path.split("/").pop();
+        let uri = Uri.from({
+            scheme: REPO_SCHEME,
+            authority: destination.repo.name,
+            path: `${uriPath}/${uriFile}`,
+        });
+
+        fileSystemProvider.writeFile(uri, content, {
+            create: true,
+            overwrite: false,
+        });
+    });
+
+    return Promise.reject();
+}

@@ -4,9 +4,8 @@ import * as trace from "./tracing";
 import { commands, ExtensionContext, workspace, window, ProgressLocation } from "vscode";
 import { ContentNode, RepoProvider } from "./Tree/nodes";
 import { RepoFileSystemProvider, REPO_SCHEME } from "./FileSystem/fileSystem";
-import { addFile, deleteNode, getGitHubAuthenticatedUser, pickRepository } from "./GitHub/commands";
+import { addFile, deleteNode, getGitHubAuthenticatedUser, pickRepository, uploadFiles } from "./GitHub/commands";
 import { TGitHubUser } from "./GitHub/types";
-import { error } from "console";
 import { addToGlobalStorage, clearGlobalStorage, removeFromGlobalStorage, store } from "./FileSystem/storage";
 import { GLOBAL_STORAGE_KEY } from "./GitHub/constants";
 
@@ -24,7 +23,7 @@ export async function activate(context: ExtensionContext) {
 
     gitHubAuthenticatedUser = await getGitHubAuthenticatedUser();
 
-    output?.appendLine("VirtualRepos extension is now active!", output.messageType.info);
+    output?.appendLine("Virtual Repositories: extension is now active!", output.messageType.info);
 
     await credentials.initialize(context);
     if (!credentials.isAuthenticated) {
@@ -50,6 +49,12 @@ export async function activate(context: ExtensionContext) {
             if (pick) {
                 addToGlobalStorage(context, pick);
             }
+        })
+    );
+
+    context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.uploadFile", async (node) => {
+            uploadFiles(node);
         })
     );
 
