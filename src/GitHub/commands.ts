@@ -2,7 +2,6 @@ import * as rest from "@octokit/rest";
 import { TextDecoder, TextEncoder } from "util";
 import { Uri, window, workspace } from "vscode";
 import { RepoFileSystemProvider, REPO_SCHEME } from "../FileSystem/fileSystem";
-import { store } from "../FileSystem/storage";
 import { ContentNode, RepoNode } from "../Tree/nodes";
 import { credentials, output } from "./../extension";
 import { COMMIT_MESSAGE } from "./constants";
@@ -44,7 +43,7 @@ export async function getGitHubReposForAuthenticatedUser(): Promise<TRepo[] | un
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output.appendLine(`Could not get repositories for the authenticated user. ${e.message}`, output.messageType.error);
+        output?.appendLine(`Could not get repositories for the authenticated user. ${e.message}`, output.messageType.error);
     }
 
     return Promise.reject(undefined);
@@ -133,7 +132,7 @@ export async function createOrUpdateFile(repo: RepoNode, file: TContent, content
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output.logError(repo.repo, e);
+        output?.logError(repo.repo, e);
     }
 
     return Promise.reject();
@@ -174,7 +173,7 @@ export async function getGitHubTree(repo: TRepo, treeSHA: string): Promise<TTree
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output.logError(repo, e);
+        output?.logError(repo, e);
     }
 
     return Promise.reject(undefined);
@@ -202,7 +201,7 @@ export async function getGitHubRepo(repo: TRepo, repoName: string): Promise<TRep
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output.logError(repo, e);
+        output?.logError(repo, e);
     }
 
     return Promise.reject(undefined);
@@ -231,7 +230,7 @@ export async function getGitHubBranch(repo: TRepo, branchName: string): Promise<
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output.logError(repo, e);
+        output?.logError(repo, e);
     }
 
     return undefined;
@@ -258,7 +257,7 @@ export async function listGitHubBranches(repo: TRepo): Promise<TBranch[] | undef
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output.logError(repo, e);
+        output?.logError(repo, e);
     }
 
     return Promise.reject(undefined);
@@ -290,10 +289,10 @@ export async function openRepository(owner: string, repoName: string): Promise<T
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output.appendLine(e.Message, output.messageType.error);
+        output?.appendLine(`${e.message}: ${owner}/${repoName}`, output.messageType.error);
     }
 
-    return Promise.reject();
+    return undefined;
 }
 
 /**
@@ -317,9 +316,6 @@ export function getRepoDetails(repo: string): [string, string] {
  */
 export async function pickRepository(): Promise<string | undefined> {
     const pick = await window.showInputBox({ ignoreFocusOut: true, placeHolder: "owner/repo", title: "Enter the repository to open, e.g. 'owner/repo'" });
-    if (!pick) {
-        return Promise.reject();
-    }
 
     return pick;
 }
@@ -368,7 +364,7 @@ export async function deleteGitHubFile(repo: TRepo, file: TContent) {
             sha: file!.sha!,
         });
     } catch (e: any) {
-        output.logError(repo, e);
+        output?.logError(repo, e);
     }
 }
 
@@ -381,7 +377,6 @@ export async function uploadFiles(destination: ContentNode | RepoNode): Promise<
     const fileSystemProvider = new RepoFileSystemProvider();
     files.forEach(async (file) => {
         const content = await workspace.fs.readFile(file);
-        // let uri = Uri.parse(`${REPO_SCHEME}://${destination.repo.name}/${destination?.path ?? ""}/${file.path.split("/").pop()}`);
         let uriPath = "path" in destination ? destination.path : "";
         let uriFile = file.path.split("/").pop();
         let uri = Uri.from({

@@ -6,7 +6,7 @@ import { ContentNode, RepoProvider } from "./Tree/nodes";
 import { RepoFileSystemProvider, REPO_SCHEME } from "./FileSystem/fileSystem";
 import { addFile, deleteNode, getGitHubAuthenticatedUser, pickRepository, uploadFiles } from "./GitHub/commands";
 import { TGitHubUser } from "./GitHub/types";
-import { addToGlobalStorage, clearGlobalStorage, removeFromGlobalStorage, store } from "./FileSystem/storage";
+import { addToGlobalStorage, clearGlobalStorage, getReposFromGlobalStorage, purgeGlobalStorage, removeFromGlobalStorage, store } from "./FileSystem/storage";
 import { GLOBAL_STORAGE_KEY } from "./GitHub/constants";
 
 export let output: trace.Output;
@@ -44,10 +44,22 @@ export async function activate(context: ExtensionContext) {
     );
 
     context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.getGlobalStorage", async () => {
+            const reposFromGlobalStorage = await getReposFromGlobalStorage(context);
+            if (reposFromGlobalStorage.length > 0) { 
+                output?.appendLine(`Global storage: ${reposFromGlobalStorage}`, output.messageType.info);
+            }
+            else {
+                output?.appendLine(`Global storage is empty`, output.messageType.info);
+            }
+        })
+    );
+
+    context.subscriptions.push(
         commands.registerCommand("VirtualRepos.openRepository", async () => {
             const pick = await pickRepository();
             if (pick) {
-                addToGlobalStorage(context, pick);
+                await addToGlobalStorage(context, pick);
             }
         })
     );
@@ -55,6 +67,12 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.uploadFile", async (node) => {
             uploadFiles(node);
+        })
+    );
+
+    context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.purgeGlobalStorage", async () => {
+            purgeGlobalStorage(extensionContext);
         })
     );
 
@@ -117,13 +135,13 @@ export async function activate(context: ExtensionContext) {
                 if (config.get("EnableTracing")) {
                     output = new trace.Output();
                 } else {
-                    output.dispose();
+                    output?.dispose();
                 }
             }
         })
     );
 
-    let tv = window.createTreeView("VirtualRepositories", {
+    window.createTreeView("virtualReposView", {
         treeDataProvider: repoProvider,
         showCollapseAll: true,
         canSelectMany: true,

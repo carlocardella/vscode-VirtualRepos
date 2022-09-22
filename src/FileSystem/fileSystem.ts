@@ -1,5 +1,4 @@
 import {
-    commands,
     Disposable,
     Event,
     EventEmitter,
@@ -161,7 +160,6 @@ export class RepoFileSystemProvider implements FileSystemProvider {
         let file: TContent = repository!.tree?.tree.find((file: TContent) => file?.path === uri.path.substring(1));
 
         if (!file) {
-            // file = new FileContent();
             file = {};
             file.path = uri.path.substring(1);
             createOrUpdateFile(repository, file, content).then((response: TGitHubUpdateContent) => {
@@ -170,11 +168,7 @@ export class RepoFileSystemProvider implements FileSystemProvider {
                 file!.url = response.content?.git_url;
             });
 
-            // repository.tree?.tree.push(file);
-
             this._onDidChangeFile.fire([{ type: FileChangeType.Created, uri }]); // investigate: needed?
-            // repoProvider.refresh();
-            // commands.executeCommand("vscode.open", uri, );
             repoProvider.refresh();
         } else {
             file.path = uri.path.substring(1);
@@ -184,7 +178,7 @@ export class RepoFileSystemProvider implements FileSystemProvider {
                 file!.url = response.content?.git_url;
             });
 
-            this._onDidChangeFile.fire([{ type: FileChangeType.Created, uri }]); // investigate: needed?
+            this._onDidChangeFile.fire([{ type: FileChangeType.Changed, uri }]); // investigate: needed?
             // repoProvider.refresh();
         }
 

@@ -1,4 +1,4 @@
-import { Event, EventEmitter, ThemeColor, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
+import { Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
 import { extensionContext, output } from "../extension";
 import { RepoFileSystemProvider } from "../FileSystem/fileSystem";
 import { store, getReposFromGlobalStorage } from "../FileSystem/storage";
@@ -59,9 +59,6 @@ export class ContentNode extends TreeItem {
 
 export class RepoProvider implements TreeDataProvider<ContentNode> {
     getTreeItem = (node: ContentNode) => node;
-    // getTreeItem(node: RepoContentNode) {
-    //     return node;
-    // }
 
     async getChildren(element?: ContentNode): Promise<any[]> {
         // @update: any
@@ -74,8 +71,8 @@ export class RepoProvider implements TreeDataProvider<ContentNode> {
 
             return Promise.resolve(childNodes);
         } else {
-            const reposFromGlobalStorage = getReposFromGlobalStorage(extensionContext);
-            if (!reposFromGlobalStorage) {
+            const reposFromGlobalStorage = await getReposFromGlobalStorage(extensionContext);
+            if (reposFromGlobalStorage.length === 0) {
                 output?.appendLine("No repos found in global storage", output.messageType.info);
                 return Promise.resolve([]);
             }
@@ -83,7 +80,11 @@ export class RepoProvider implements TreeDataProvider<ContentNode> {
             let repos = await Promise.all(
                 reposFromGlobalStorage?.map(async (repo: string) => {
                     let [owner, name] = getRepoDetails(repo);
-                    return await openRepository(owner, name);
+                    let repoFromGitHub = await openRepository(owner, name);
+                    if (repoFromGitHub) {
+                        return repoFromGitHub;
+                    }
+                    return;
                 })
             );
 

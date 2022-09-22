@@ -30,6 +30,21 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
   * Move multiple files
 * Move folder
 
+## [0.0.5] - 2022-09-22
+
+### Added
+
+* Added `Get Global Storage`, help to see (in the Output channel) the current extension storage
+* Added `Purge Global Storage` to remove invalid repos and items
+
+### Fixed
+
+* Fixes around output tracing and global storage management
+
+### Changed
+
+* Updated tree context menu commands and groups
+
 ## [0.0.4] - 2022-09-18
 
 ### Added
