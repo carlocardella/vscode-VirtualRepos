@@ -46,10 +46,9 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.getGlobalStorage", async () => {
             const reposFromGlobalStorage = await getReposFromGlobalStorage(context);
-            if (reposFromGlobalStorage.length > 0) { 
+            if (reposFromGlobalStorage.length > 0) {
                 output?.appendLine(`Global storage: ${reposFromGlobalStorage}`, output.messageType.info);
-            }
-            else {
+            } else {
                 output?.appendLine(`Global storage is empty`, output.messageType.info);
             }
         })
@@ -79,6 +78,20 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.closeRepository", async (node) => {
             removeFromGlobalStorage(context, node.repo.full_name);
+        })
+    );
+
+    context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.removeFromGlobalStorage", async () => {
+            const reposFromGlobalStorage = await getReposFromGlobalStorage(context);
+            const repoToRemove = await window.showQuickPick(reposFromGlobalStorage, {
+                placeHolder: "Select repository to remove from global storage",
+                ignoreFocusOut: true,
+                canPickMany: false
+            });
+            if (repoToRemove) {
+                removeFromGlobalStorage(context, repoToRemove);
+            }
         })
     );
 

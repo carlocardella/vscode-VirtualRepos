@@ -91,8 +91,10 @@ export async function purgeGlobalStorage(context: ExtensionContext, repos?: stri
                 let repoOwner = repo.split("/")[0];
                 let repoName = repo.split("/")[1];
                 let validRepo = await openRepository(repoOwner, repoName);
-                if (validRepo) {
-                    return Promise.resolve(`${validRepo.owner.login}/${validRepo.name}`);
+                if (!validRepo) {
+                    removeFromGlobalStorage(context, repo);
+                    output?.appendLine(`Removed ${repo} from global storage`, output.messageType.info);
+                    return Promise.resolve(repo);
                 } else {
                     return Promise.reject();
                 }

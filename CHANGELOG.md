@@ -30,6 +30,16 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
   * Move multiple files
 * Move folder
 
+## [0.0.7] - @todo
+
+### Added
+
+* `Remove from Global Storage` allows to remove a repository from Global Storage, even if it does not show up in the TreeView. Invalid repositories are not added to the TreeView are to the Global Storage, this command is useful to selectively remove those bad repositories.
+
+### Changed
+
+* `Purge Global Storage` now internally use `Remove from Global Storage` to remove all invalid repositories
+
 ## [0.0.6] - 2022-09-23
 
 ### Fixed

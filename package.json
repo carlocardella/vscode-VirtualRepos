@@ -44,6 +44,11 @@
                 "category": "Virtual Repositories"
             },
             {
+                "title": "Remove from Global Storage",
+                "command": "VirtualRepos.removeFromGlobalStorage",
+                "category": "Virtual Repositories"
+            },
+            {
                 "title": "Open Repository",
                 "command": "VirtualRepos.openRepository",
                 "icon": "$(plug)",
