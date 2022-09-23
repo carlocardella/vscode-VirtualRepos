@@ -97,6 +97,16 @@ export async function getRepoFileContent(repo: RepoNode, file: TContent): Promis
     return new Uint8Array(Buffer.from(data.content, "base64").toString("latin1").split("").map(charCodeAt));
 }
 
+/**
+ * Create a new file or update an existing file in a GitHub repository.
+ *
+ * @export
+ * @async
+ * @param {RepoNode} repo The repository to create the file in.
+ * @param {TContent} file The file to create or update.
+ * @param {Uint8Array} content The content of the file.
+ * @returns {Promise<TGitHubUpdateContent>}
+ */
 export async function createOrUpdateFile(repo: RepoNode, file: TContent, content: Uint8Array): Promise<TGitHubUpdateContent> {
     const fileContentString = new TextDecoder().decode(content);
     file!.content = fileContentString;
@@ -320,10 +330,25 @@ export async function pickRepository(): Promise<string | undefined> {
     return pick;
 }
 
+/**
+ * Converts a string to a byte array
+ *
+ * @export
+ * @param {string} value The string to convert
+ * @returns {*}
+ */
 export function stringToByteArray(value: string) {
     return new TextEncoder().encode(value);
 }
 
+/**
+ * Create a new file in a GitHub repository
+ *
+ * @export
+ * @async
+ * @param {ContentNode} e The TreeItem containing the file to create
+ * @returns {*}
+ */
 export async function addFile(e: ContentNode) {
     const newFileName = await window.showInputBox({ ignoreFocusOut: true, placeHolder: "path/filename", title: "Enter the filename (optional path)" });
     if (!newFileName) {
@@ -340,6 +365,14 @@ export async function addFile(e: ContentNode) {
     });
 }
 
+/**
+ * Delete the file or folder from the repository
+ *
+ * @export
+ * @async
+ * @param {ContentNode} node TreeView node to delete
+ * @returns {*}
+ */
 export async function deleteNode(node: ContentNode) {
     const confirm = await window.showWarningMessage(`Are you sure you want to delete '${node.path}'?`, "Yes", "No", "Cancel");
     if (confirm !== "Yes") {
@@ -350,6 +383,15 @@ export async function deleteNode(node: ContentNode) {
     fileSystemProvider.delete(node.uri);
 }
 
+/**
+ * Delete the selected files from GitHub
+ *
+ * @export
+ * @async
+ * @param {TRepo} repo The repository to delete the files from
+ * @param {TContent} file The file to delete
+ * @returns {*}
+ */
 export async function deleteGitHubFile(repo: TRepo, file: TContent) {
     const octokit = new rest.Octokit({
         auth: await credentials.getAccessToken(),
@@ -368,6 +410,14 @@ export async function deleteGitHubFile(repo: TRepo, file: TContent) {
     }
 }
 
+/**
+ * Upload files from the local disk to GitHub
+ *
+ * @export
+ * @async
+ * @param {(ContentNode | RepoNode)} destination The destination to upload the files to
+ * @returns {Promise<void>}
+ */
 export async function uploadFiles(destination: ContentNode | RepoNode): Promise<void> {
     const files = await window.showOpenDialog({ canSelectFiles: true, canSelectFolders: false, canSelectMany: true, title: "Select files to upload" });
     if (!files) {

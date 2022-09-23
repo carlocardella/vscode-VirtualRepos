@@ -30,6 +30,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
   * Move multiple files
 * Move folder
 
+## [0.0.6] - 2022-09-23
+
+### Fixed
+
+* Fixed `Close Repository` command
+
 ## [0.0.5] - 2022-09-22
 
 ### Added

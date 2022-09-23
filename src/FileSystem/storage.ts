@@ -31,17 +31,17 @@ export async function addToGlobalStorage(context: ExtensionContext, value: strin
  *
  * @export
  * @param {ExtensionContext} context Extension context
- * @param {string} value Repository to remove
+ * @param {string} repoFullName Repository to remove
  */
-export function removeFromGlobalStorage(context: ExtensionContext, value: string): void {
+export function removeFromGlobalStorage(context: ExtensionContext, repoFullName: string): void {
     let globalStorage = context.globalState.get(GLOBAL_STORAGE_KEY) as string[];
     if (globalStorage) {
-        globalStorage = globalStorage.filter((item) => item !== value);
+        globalStorage = globalStorage.filter((item) => item.toLocaleLowerCase() !== repoFullName.toLocaleLowerCase());
         context.globalState.update(GLOBAL_STORAGE_KEY, globalStorage);
 
         repoProvider.refresh();
 
-        output?.appendLine(`Removed ${value} from global storage`, output.messageType.info);
+        output?.appendLine(`Removed ${repoFullName} from global storage`, output.messageType.info);
         output?.appendLine(`Global storage: ${globalStorage}`, output.messageType.info);
     }
 }
@@ -58,12 +58,27 @@ export async function getReposFromGlobalStorage(context: ExtensionContext): Prom
     // return await purgeGlobalStorage(context);
 }
 
+/**
+ * Remove all repositories from Global Storage
+ *
+ * @export
+ * @param {ExtensionContext} context
+ */
 export function clearGlobalStorage(context: ExtensionContext) {
     context.globalState.update(GLOBAL_STORAGE_KEY, []);
     output?.appendLine(`Cleared global storage`, output.messageType.info);
     repoProvider.refresh();
 }
 
+/**
+ * Remove invalid repositories from Global Storage
+ *
+ * @export
+ * @async
+ * @param {ExtensionContext} context Extension context
+ * @param {?string[]} [repos] Repositories to check
+ * @returns {Promise<string[]>}
+ */
 export async function purgeGlobalStorage(context: ExtensionContext, repos?: string[]): Promise<string[]> {
     let cleanedGlobalStorage: string[] = [];
     if (repos) {
