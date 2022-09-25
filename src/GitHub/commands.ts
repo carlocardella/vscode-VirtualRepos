@@ -190,6 +190,35 @@ export async function getGitHubTree(repo: TRepo, treeSHA: string): Promise<TTree
 }
 
 /**
+ * Refresh the GitHub tree for a given repository and branch
+ *
+ * @export
+ * @async
+ * @param {TRepo} repo The repository to refresh the tree for
+ * @param {string} branchName The branch to refresh the tree for
+ * @returns {(Promise<TTree | undefined>)}
+ */
+export async function refreshGitHubTree(repo: TRepo, branchName: string): Promise<TTree | undefined> {
+    const octokit = new rest.Octokit({
+        auth: await credentials.getAccessToken(),
+    });
+
+    try {
+        const { data } = await octokit.git.getRef({
+            owner: repo.owner.login,
+            repo: repo.name,
+            ref: `heads/${branchName}`,
+        });
+
+        return getGitHubTree(repo, data.object.sha);
+    } catch (e: any) {
+        output?.logError(repo, e);
+    }
+
+    return Promise.reject(undefined);
+}
+
+/**
  * Returns a GitHub repo
  *
  * @export
@@ -435,7 +464,7 @@ export async function uploadFiles(destination: ContentNode | RepoNode): Promise<
             path: `${uriPath}/${uriFile}`,
         });
 
-        fileSystemProvider.writeFile(uri, content, {
+        await fileSystemProvider.writeFile(uri, content, {
             create: true,
             overwrite: false,
         });

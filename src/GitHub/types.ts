@@ -206,3 +206,14 @@ export type TUser = {
     type: string;
     site_admin: boolean;
 };
+
+export type TRef = {
+    ref: string;
+    node_id: string;
+    url: string;
+    object: {
+        type: string;
+        sha: string;
+        url: string;
+    };
+};

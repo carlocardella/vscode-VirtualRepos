@@ -12,7 +12,7 @@ import {
     Uri,
 } from "vscode";
 import { repoProvider } from "../extension";
-import { createOrUpdateFile, deleteGitHubFile, getRepoFileContent } from "../GitHub/commands";
+import { createOrUpdateFile, deleteGitHubFile, getRepoFileContent, refreshGitHubTree } from "../GitHub/commands";
 import { TGitHubUpdateContent, TContent } from "../GitHub/types";
 import { RepoNode } from "../Tree/nodes";
 import { store } from "./storage";
@@ -162,11 +162,17 @@ export class RepoFileSystemProvider implements FileSystemProvider {
         if (!file) {
             file = {};
             file.path = uri.path.substring(1);
-            createOrUpdateFile(repository, file, content).then((response: TGitHubUpdateContent) => {
-                file!.sha = response.content?.sha;
-                file!.size = response.content?.size;
-                file!.url = response.content?.git_url;
-            });
+            createOrUpdateFile(repository, file, content)
+                .then((response: TGitHubUpdateContent) => {
+                    file!.sha = response.content?.sha;
+                    file!.size = response.content?.size;
+                    file!.url = response.content?.git_url;
+                })
+                .then(() => {
+                    refreshGitHubTree(repository.repo, repository.repo.default_branch).then((tree) => {
+                        repository.repo.tree = tree;
+                    });
+                });
 
             this._onDidChangeFile.fire([{ type: FileChangeType.Created, uri }]); // investigate: needed?
             repoProvider.refresh();
@@ -176,6 +182,10 @@ export class RepoFileSystemProvider implements FileSystemProvider {
                 file!.sha = response.content?.sha;
                 file!.size = response.content?.size;
                 file!.url = response.content?.git_url;
+            });
+
+            refreshGitHubTree(repository.repo, repository.repo.default_branch).then((tree) => {
+                repository.repo.tree = tree;
             });
 
             this._onDidChangeFile.fire([{ type: FileChangeType.Changed, uri }]); // investigate: needed?
