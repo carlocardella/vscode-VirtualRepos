@@ -49,6 +49,24 @@
         "category": "Virtual Repositories"
       },
       {
+        "title": "Clone repository",
+        "command": "VirtualRepos.cloneRepository",
+        "category": "Virtual Repositories",
+        "icon": "$(repo-clone)"
+      },
+      {
+        "title": "Fork repository",
+        "command": "VirtualRepos.forkRepository",
+        "category": "Virtual Repositories",
+        "icon": "$(repo-forked)"
+      },
+      {
+        "title": "Download repository",
+        "command": "VirtualRepos.downloadRepository",
+        "category": "Virtual Repositories",
+        "icon": "$(cloud-download)"
+      },
+      {
         "title": "Open Repository",
         "command": "VirtualRepos.openRepository",
         "icon": "$(plug)",
@@ -146,6 +164,18 @@
           "when": "false"
         },
         {
+          "command": "VirtualRepos.downloadRepository",
+          "when": "false"
+        },
+        {
+          "command": "VirtualRepos.forkRepository",
+          "when": "false"
+        },
+        {
+          "command": "VirtualRepos.cloneRepository",
+          "when": "false"
+        },
+        {
           "command": "VirtualRepos.refreshTree"
         },
         {
@@ -182,6 +212,21 @@
           "command": "VirtualRepos.uploadFile",
           "when": "viewItem == folder || viewItem == repo",
           "group": "1_add@2"
+        },
+        {
+          "command": "VirtualRepos.cloneRepository",
+          "when": "viewItem == repo",
+          "group": "2_repoOperations@1"
+        },
+        {
+          "command": "VirtualRepos.forkRepository",
+          "when": "viewItem == repo",
+          "group": "2_repoOperations@2"
+        },
+        {
+          "command": "VirtualRepos.downloadRepository",
+          "when": "viewItem == repo",
+          "group": "2_repoOperations@3"
         },
         {
           "command": "VirtualRepos.closeRepository",

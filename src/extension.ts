@@ -82,6 +82,24 @@ export async function activate(context: ExtensionContext) {
     );
 
     context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.downloadRepository", async (node) => {
+            throw new Error("Not implemented");
+        })
+    );
+
+    context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.forkRepository", async (node) => {
+            throw new Error("Not implemented");
+        })
+    );
+
+    context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.cloneRepository", async (node) => {
+            throw new Error("Not implemented");
+        })
+    );
+
+    context.subscriptions.push(
         commands.registerCommand("VirtualRepos.removeFromGlobalStorage", async () => {
             const reposFromGlobalStorage = await getReposFromGlobalStorage(context);
             const repoToRemove = await window.showQuickPick(reposFromGlobalStorage, {
