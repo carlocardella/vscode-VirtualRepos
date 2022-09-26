@@ -2,8 +2,10 @@ import { TextEncoder } from "util";
 import { Uri, window, workspace } from "vscode";
 import { RepoFileSystemProvider, REPO_SCHEME } from "../FileSystem/fileSystem";
 import { ContentNode, RepoNode } from "../Tree/nodes";
-import { getGitHubRepoContent } from "./api";
+import { getGitHubRepoContent, newGitHubRepository, deleteGitHubRepository } from "./api";
 import { TContent } from "./types";
+import { credentials, extensionContext } from "../extension";
+import { addToGlobalStorage, removeFromGlobalStorage } from "../FileSystem/storage";
 
 /**
  * Returns the binary content of a file in the repository.
@@ -147,4 +149,57 @@ export async function uploadFiles(destination: ContentNode | RepoNode): Promise<
     });
 
     return Promise.reject();
+}
+
+/**
+ * Create a new repository
+ * @date 9/26/2022 - 10:06:19 AM
+ *
+ * @export
+ * @async
+ * @param {boolean} isPrivate Whether the repository should be private or not
+ * @returns {Promise<void>}
+ */
+export async function newRepository(isPrivate: boolean): Promise<void> {
+    const newRepo = await window.showInputBox({ ignoreFocusOut: true, placeHolder: "repo name", title: "Enter the repository name" });
+    if (!newRepo) {
+        return Promise.reject();
+    }
+
+    let [owner, repoName] = ["", ""];
+    if (newRepo.indexOf("/") === -1) {
+        owner = credentials.authenticatedUser.login;
+        repoName = newRepo;
+    } else {
+        [owner, repoName] = newRepo.split("/");
+    }
+
+    // create the repository
+    const githubRepo = await newGitHubRepository(owner, repoName, isPrivate);
+
+    if (githubRepo) {
+        //add the new repository to the tree view
+        await addToGlobalStorage(extensionContext, `${githubRepo.owner.login}/${githubRepo.name}`);
+    }
+}
+
+/**
+ * Delete a repository
+ * @date 9/26/2022 - 10:05:56 AM
+ *
+ * @export
+ * @async
+ * @param {RepoNode} repo The repository to delete
+ * @returns {Promise<void>}
+ */
+export async function deleteRepository(repo: RepoNode): Promise<void> {
+    const confirm = await window.showWarningMessage(`Are you sure you want to delete '${repo.name}'?`, { modal: true }, "Yes", "No");
+    if (confirm !== "Yes") {
+        return Promise.reject();
+    }
+
+    const deleted = await deleteGitHubRepository(repo.repo);
+    if (deleted) {
+        removeFromGlobalStorage(extensionContext, `${repo.repo.owner.login}/${repo.name}`);
+    }
 }

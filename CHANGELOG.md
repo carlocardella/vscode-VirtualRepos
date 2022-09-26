@@ -15,9 +15,6 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Open starred repository
   * Choose from a list
 * Unstar repository
-* Delete repository
-* Create repository
-  * Set proper visibility (private/public)
 * Change repository visibility (private/public)
 
 ### Repository content
@@ -29,6 +26,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Move file
   * Move multiple files
 * Move folder
+
+## [0.0.8] - 2022-09-26
+
+### Added
+
+* `New repository` to create a new repo from the extension; use the format `owner/reponame` or `organization/reponame` to create the repo for the specific owner or Organiation. If you only pass the repository name, the new repo will be created for the authenticated user (you)
+* `Delete repository`. VSCode authenticated identity must have `repo_delete` permission
 
 ## [0.0.7] - @todo
 

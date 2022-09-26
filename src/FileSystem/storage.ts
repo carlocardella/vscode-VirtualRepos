@@ -1,7 +1,7 @@
 import { RepoNode } from "../Tree/nodes";
 import { ExtensionContext } from "vscode";
 import { GLOBAL_STORAGE_KEY } from "../GitHub/constants";
-import { output, repoProvider } from "../extension";
+import { credentials, output, repoProvider } from "../extension";
 import { openRepository } from "../GitHub/api";
 
 export const store = {
@@ -17,7 +17,16 @@ export const store = {
  */
 export async function addToGlobalStorage(context: ExtensionContext, value: string): Promise<void> {
     let globalStorage = await getReposFromGlobalStorage(context);
-    globalStorage.push(value);
+    
+    let [owner, repoName] = ["", ""];
+    if (value.indexOf("/") === -1) {
+        owner = credentials.authenticatedUser.login;
+        repoName = value;
+    } else {
+        [owner, repoName] = value.split("/");
+    }
+
+    globalStorage.push(`${owner}/${repoName}`);
     context.globalState.update(GLOBAL_STORAGE_KEY, globalStorage);
 
     repoProvider.refresh();
