@@ -2,7 +2,7 @@ import { RepoNode } from "../Tree/nodes";
 import { ExtensionContext } from "vscode";
 import { GLOBAL_STORAGE_KEY } from "../GitHub/constants";
 import { output, repoProvider } from "../extension";
-import { openRepository } from "../GitHub/commands";
+import { openRepository } from "../GitHub/api";
 
 export const store = {
     repos: [] as (RepoNode | undefined)[],

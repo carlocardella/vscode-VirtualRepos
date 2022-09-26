@@ -127,7 +127,7 @@
         {
           "id": "VirtualRepositoriesContainer",
           "title": "Virtual Repositories",
-          "icon": "assets/git_repo_line.png"
+          "icon": "assets/git_repo_line.svg"
         }
       ]
     },
@@ -136,7 +136,7 @@
         {
           "id": "virtualReposView",
           "name": "Virtual Repositories",
-          "icon": "assets/git_repo_line.png",
+          "icon": "assets/git_repo_line.svg",
           "type": "tree",
           "visibility": "collapsed"
         }

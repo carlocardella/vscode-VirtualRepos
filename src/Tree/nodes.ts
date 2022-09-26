@@ -2,7 +2,8 @@ import { Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCol
 import { extensionContext, output } from "../extension";
 import { RepoFileSystemProvider } from "../FileSystem/fileSystem";
 import { store, getReposFromGlobalStorage } from "../FileSystem/storage";
-import { getGitHubRepoContent, getGitHubTree, getGitHubBranch, openRepository, getRepoDetails } from "../GitHub/commands";
+import { getGitHubBranch, getGitHubRepoContent, getGitHubTree, openRepository } from "../GitHub/api";
+import { getRepoDetails } from "../GitHub/commands";
 import { TRepo, ContentType, TContent, TTree } from "../GitHub/types";
 
 export class RepoNode extends TreeItem {

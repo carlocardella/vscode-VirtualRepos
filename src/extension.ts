@@ -4,10 +4,11 @@ import * as trace from "./tracing";
 import { commands, ExtensionContext, workspace, window, ProgressLocation } from "vscode";
 import { ContentNode, RepoProvider } from "./Tree/nodes";
 import { RepoFileSystemProvider, REPO_SCHEME } from "./FileSystem/fileSystem";
-import { addFile, deleteNode, getGitHubAuthenticatedUser, pickRepository, uploadFiles } from "./GitHub/commands";
+import { addFile, deleteNode, pickRepository, uploadFiles } from "./GitHub/commands";
 import { TGitHubUser } from "./GitHub/types";
 import { addToGlobalStorage, clearGlobalStorage, getReposFromGlobalStorage, purgeGlobalStorage, removeFromGlobalStorage, store } from "./FileSystem/storage";
 import { GLOBAL_STORAGE_KEY } from "./GitHub/constants";
+import { getGitHubAuthenticatedUser } from "./GitHub/api";
 
 export let output: trace.Output;
 export const credentials = new Credentials();
@@ -105,7 +106,7 @@ export async function activate(context: ExtensionContext) {
             const repoToRemove = await window.showQuickPick(reposFromGlobalStorage, {
                 placeHolder: "Select repository to remove from global storage",
                 ignoreFocusOut: true,
-                canPickMany: false
+                canPickMany: false,
             });
             if (repoToRemove) {
                 removeFromGlobalStorage(context, repoToRemove);

@@ -12,7 +12,8 @@ import {
     Uri,
 } from "vscode";
 import { repoProvider } from "../extension";
-import { createOrUpdateFile, deleteGitHubFile, getRepoFileContent, refreshGitHubTree } from "../GitHub/commands";
+import { deleteGitHubFile, refreshGitHubTree, createOrUpdateFile } from "../GitHub/api";
+import { getRepoFileContent } from "../GitHub/commands";
 import { TGitHubUpdateContent, TContent } from "../GitHub/types";
 import { RepoNode } from "../Tree/nodes";
 import { store } from "./storage";
