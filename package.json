@@ -12,7 +12,7 @@
     "vscode": "^1.63.0"
   },
   "preview": true,
-  "icon": "assets/git_repo_line.png",
+  "icon": "assets/branches.svg",
   "repository": {
     "type": "git",
     "url": "https://github.com/carlocardella/vscode-VirtualRepos.git"
