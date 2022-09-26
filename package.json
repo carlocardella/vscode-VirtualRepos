@@ -81,7 +81,7 @@
             {
                 "title": "Delete Repository",
                 "command": "VirtualRepos.deleteRepository",
-                "icon": "$(repo-delete)",
+                "icon": "$(trash)",
                 "category": "Virtual Repositories"
             },
             {
@@ -226,7 +226,12 @@
                 },
                 {
                     "command": "VirtualRepos.deleteRepository",
-                    "when": "viewItem == folder || viewItem == repo",
+                    "when": "viewItem == repo",
+                    "group": "inline"
+                },
+                {
+                    "command": "VirtualRepos.deleteNode",
+                    "when": "viewItem == folder || viewItem == file",
                     "group": "inline"
                 },
                 {
