@@ -4,7 +4,7 @@ import * as trace from "./tracing";
 import { commands, ExtensionContext, workspace, window, ProgressLocation } from "vscode";
 import { ContentNode, RepoProvider } from "./Tree/nodes";
 import { RepoFileSystemProvider, REPO_SCHEME } from "./FileSystem/fileSystem";
-import { addFile, deleteNode, deleteRepository, newRepository, pickRepository, uploadFiles } from "./GitHub/commands";
+import { addFile, deleteNode, deleteRepository,  newRepository, pickRepository, uploadFiles } from "./GitHub/commands";
 import { TGitHubUser } from "./GitHub/types";
 import { addToGlobalStorage, clearGlobalStorage, getReposFromGlobalStorage, purgeGlobalStorage, removeFromGlobalStorage, store } from "./FileSystem/storage";
 import { GLOBAL_STORAGE_KEY } from "./GitHub/constants";
@@ -57,7 +57,8 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.openRepository", async () => {
-            const pick = await pickRepository();
+            const pick = (await pickRepository()) as string;
+            output?.appendLine(`Picked repository: ${pick}`, output.messageType.info);
             if (pick) {
                 await addToGlobalStorage(context, pick);
             }
@@ -89,8 +90,14 @@ export async function activate(context: ExtensionContext) {
     );
 
     context.subscriptions.push(
-        commands.registerCommand("VirtualRepos.newRepository", async () => {
+        commands.registerCommand("VirtualRepos.newPrivateRepository", async () => {
             newRepository(true);
+        })
+    );
+
+    context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.newPublicRepository", async () => {
+            newRepository(false);
         })
     );
 

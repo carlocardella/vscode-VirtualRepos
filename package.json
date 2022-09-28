@@ -12,7 +12,7 @@
         "vscode": "^1.63.0"
     },
     "preview": true,
-    "icon": "assets/branches.png",
+    "icon": "assets/git_repo_line.png",
     "repository": {
         "type": "git",
         "url": "https://github.com/carlocardella/vscode-VirtualRepos.git"
@@ -41,7 +41,8 @@
             {
                 "title": "Close repository",
                 "command": "VirtualRepos.closeRepository",
-                "category": "Virtual Repositories"
+                "category": "Virtual Repositories",
+                "icon": "$(close)"
             },
             {
                 "title": "Remove from Global Storage",
@@ -49,10 +50,16 @@
                 "category": "Virtual Repositories"
             },
             {
-                "title": "New repository",
-                "command": "VirtualRepos.newRepository",
+                "title": "New public repository",
+                "command": "VirtualRepos.newPublicRepository",
                 "category": "Virtual Repositories",
                 "icon": "$(repo-create)"
+            },
+            {
+                "title": "New private repository",
+                "command": "VirtualRepos.newPrivateRepository",
+                "category": "Virtual Repositories",
+                "icon": "$(lock)"
             },
             {
                 "title": "Clone repository",
@@ -213,7 +220,12 @@
                     "group": "navigation"
                 },
                 {
-                    "command": "VirtualRepos.newRepository",
+                    "command": "VirtualRepos.newPublicRepository",
+                    "when": "view == virtualReposView",
+                    "group": "navigation"
+                },
+                {
+                    "command": "VirtualRepos.newPrivateRepository",
                     "when": "view == virtualReposView",
                     "group": "navigation"
                 }
@@ -225,7 +237,7 @@
                     "group": "inline"
                 },
                 {
-                    "command": "VirtualRepos.deleteRepository",
+                    "command": "VirtualRepos.closeRepository",
                     "when": "viewItem == repo",
                     "group": "inline"
                 },
@@ -245,29 +257,34 @@
                     "group": "1_add@2"
                 },
                 {
-                    "command": "VirtualRepos.newRepository",
+                    "command": "VirtualRepos.newPublicRepository",
                     "when": "viewItem == repo",
                     "group": "2_repoOperations@1"
                 },
                 {
-                    "command": "VirtualRepos.cloneRepository",
+                    "command": "VirtualRepos.newPrivateRepository",
                     "when": "viewItem == repo",
                     "group": "2_repoOperations@2"
                 },
                 {
-                    "command": "VirtualRepos.forkRepository",
+                    "command": "VirtualRepos.cloneRepository",
                     "when": "viewItem == repo",
                     "group": "2_repoOperations@3"
                 },
                 {
-                    "command": "VirtualRepos.downloadRepository",
+                    "command": "VirtualRepos.forkRepository",
                     "when": "viewItem == repo",
                     "group": "2_repoOperations@4"
                 },
                 {
-                    "command": "VirtualRepos.deleteRepository",
+                    "command": "VirtualRepos.downloadRepository",
                     "when": "viewItem == repo",
                     "group": "2_repoOperations@5"
+                },
+                {
+                    "command": "VirtualRepos.deleteRepository",
+                    "when": "viewItem == repo",
+                    "group": "2_repoOperations@6"
                 },
                 {
                     "command": "VirtualRepos.closeRepository",

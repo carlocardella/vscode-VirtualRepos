@@ -1,10 +1,10 @@
 import { TextEncoder } from "util";
-import { Uri, window, workspace } from "vscode";
+import { ProgressLocation, QuickPickItem, QuickPickItemKind, Uri, window, workspace } from "vscode";
 import { RepoFileSystemProvider, REPO_SCHEME } from "../FileSystem/fileSystem";
 import { ContentNode, RepoNode } from "../Tree/nodes";
-import { getGitHubRepoContent, newGitHubRepository, deleteGitHubRepository } from "./api";
-import { TContent } from "./types";
-import { credentials, extensionContext } from "../extension";
+import { getGitHubRepoContent, newGitHubRepository, deleteGitHubRepository, getGitHubReposForAuthenticatedUser, getStarredGitHubRepositories } from "./api";
+import { TContent, TRepo } from "./types";
+import { credentials, extensionContext, output } from "../extension";
 import { addToGlobalStorage, removeFromGlobalStorage } from "../FileSystem/storage";
 
 /**
@@ -52,16 +52,71 @@ export function getRepoDetails(repo: string): [string, string] {
 }
 
 /**
- * Ask the user to enter a repository to open: <owner>/<repo>
+ * QuickPick items for the user to select which repository to open
+ *
+ * @enum {number}
+ */
+enum QuickPickItems {
+    repoName = "$(rocket) Open repository",
+    myRepos = "$(account) Open your repositories",
+    starredRepos = "$(star) Open starred repository",
+}
+
+/**
+ * Ask the user to choose or enter a repository to open: <owner>/<repo>
  *
  * @export
  * @async
  * @returns {(Promise<string | undefined>)}
  */
-export async function pickRepository(): Promise<string | undefined> {
-    const pick = await window.showInputBox({ ignoreFocusOut: true, placeHolder: "owner/repo", title: "Enter the repository to open, e.g. 'owner/repo'" });
+export async function pickRepository() {
+    return await new Promise((resolve, reject) => {
+        let pick: string | undefined;
 
-    return pick;
+        let quickPick = window.createQuickPick();
+        quickPick.onDidHide(() => quickPick.dispose());
+        quickPick.title = "Select or type the repository you would like to open";
+        quickPick.canSelectMany = false;
+
+        quickPick.show();
+
+        quickPick.items = [{ label: QuickPickItems.repoName }, { label: QuickPickItems.myRepos }, { label: QuickPickItems.starredRepos }];
+
+        quickPick.onDidAccept(async () => {
+            if (pick === QuickPickItems.repoName) {
+                let accepted = await window.showInputBox({
+                    ignoreFocusOut: true,
+                    placeHolder: "owner/repo",
+                    title: "Enter the repository to open, e.g. 'owner/repo'",
+                });
+                quickPick.hide();
+                resolve(accepted);
+            } else if (pick === QuickPickItems.myRepos) {
+                quickPick.busy = true;
+                quickPick.placeholder = "Enter the repository to open, e.g. 'owner/repo'";
+                const repos = await getGitHubReposForAuthenticatedUser();
+                quickPick.busy = false;
+                quickPick.items = repos!.map((repo) => ({ label: `${repo.owner.login}/${repo.name}` }));
+                quickPick.show();
+            } else if (pick === QuickPickItems.starredRepos) {
+                quickPick.busy = true;
+                quickPick.placeholder = "Enter the repository to open, e.g. 'owner/repo'";
+                const starredRepos = await getStarredGitHubRepositories();
+                quickPick.busy = false;
+                quickPick.items = starredRepos.map((repo) => ({ label: `${repo.owner.login}/${repo.name}` }));
+                quickPick.show();
+            } else {
+                output?.appendLine(`onDidAccept: ${pick}`, output.messageType.debug);
+                quickPick.hide();
+                resolve(pick);
+            }
+        });
+
+        quickPick.onDidChangeSelection(async (selection) => {
+            pick = selection[0].label;
+            output?.appendLine(`onDidChangeSelection: ${pick}`, output.messageType.debug);
+        });
+    });
 }
 
 /**

@@ -12,8 +12,6 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Download repository (tar/zip)
 * Fork repository
 * Star repository
-* Open starred repository
-  * Choose from a list
 * Unstar repository
 * Change repository visibility (private/public)
 
@@ -26,6 +24,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Move file
   * Move multiple files
 * Move folder
+
+## [0.0.9] - 2022-09-27
+
+### Changed
+
+* The `Open Repository` command now allows to select a repository to open from the list of owned repos or starred repos. Of course it is still possible to enter manually enter the name of any repository as `owner/repoName`
+* Updated available commands when hovering on the TreeView items
 
 ## [0.0.8] - 2022-09-26
 
