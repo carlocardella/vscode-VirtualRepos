@@ -13,6 +13,7 @@
     },
     "preview": true,
     "icon": "assets/book.png",
+    "license": "MIT",
     "repository": {
         "type": "git",
         "url": "https://github.com/carlocardella/vscode-VirtualRepos.git"
