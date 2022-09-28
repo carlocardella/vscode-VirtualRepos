@@ -12,7 +12,7 @@
         "vscode": "^1.63.0"
     },
     "preview": true,
-    "icon": "assets/git_repo_line.png",
+    "icon": "assets/cloud-service-with-outline.png",
     "repository": {
         "type": "git",
         "url": "https://github.com/carlocardella/vscode-VirtualRepos.git"
@@ -146,7 +146,7 @@
                 {
                     "id": "VirtualRepositoriesContainer",
                     "title": "Virtual Repositories",
-                    "icon": "assets/git_repo_line.svg"
+                    "icon": "assets/cloud-service-outline.svg"
                 }
             ]
         },
@@ -155,7 +155,7 @@
                 {
                     "id": "virtualReposView",
                     "name": "Virtual Repositories",
-                    "icon": "assets/git_repo_line.svg",
+                    "icon": "assets/cloud-service-outline.svg",
                     "type": "tree",
                     "visibility": "collapsed"
                 }

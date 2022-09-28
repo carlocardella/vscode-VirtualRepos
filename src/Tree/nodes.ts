@@ -15,8 +15,7 @@ export class RepoNode extends TreeItem {
         super(repo.name, TreeItemCollapsibleState.Collapsed);
 
         this.tooltip = `${repo.name}`;
-        let iconName = "repo";
-        this.iconPath = new ThemeIcon(iconName);
+        this.iconPath = new ThemeIcon("repo");
         this.repo = repo;
         this.owner = repo.owner.login;
         this.tree = tree;
@@ -40,6 +39,7 @@ export class ContentNode extends TreeItem {
         this.contextValue = nodeContent?.type === ContentType.file ? "file" : "folder";
         this.path = nodeContent?.path ?? "";
         this.uri = RepoFileSystemProvider.getFileUri(repo.name, this.path);
+        this.resourceUri = this.uri;
         this.owner = repo.owner.login;
         this.nodeContent = nodeContent;
         this.repo = repo;
