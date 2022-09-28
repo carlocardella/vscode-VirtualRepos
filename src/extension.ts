@@ -58,9 +58,11 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.openRepository", async () => {
             const pick = (await pickRepository()) as string;
-            output?.appendLine(`Picked repository: ${pick}`, output.messageType.info);
             if (pick) {
+                output?.appendLine(`Picked repository: ${pick}`, output.messageType.info);
                 await addToGlobalStorage(context, pick);
+            } else {
+                output?.appendLine("Open repository cancelled by uer", output.messageType.info);
             }
         })
     );

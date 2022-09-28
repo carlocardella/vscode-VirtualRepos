@@ -25,6 +25,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
   * Move multiple files
 * Move folder
 
+## [0.0.10] - 2022-09-28
+
+### Changed
+
+* Fix TreeView file icons, use the user's theme
+* ❗ Make the repo public, first Marketplace release (in preview)
+
+### Changed
+
+* New extension icon
+
 ## [0.0.9] - 2022-09-27
 
 ### Changed
@@ -39,7 +50,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * `New repository` to create a new repo from the extension; use the format `owner/reponame` or `organization/reponame` to create the repo for the specific owner or Organiation. If you only pass the repository name, the new repo will be created for the authenticated user (you)
 * `Delete repository`. VSCode authenticated identity must have `repo_delete` permission
 
-## [0.0.7] - @todo
+## [0.0.7] - 2022-09-23
 
 ### Added
 

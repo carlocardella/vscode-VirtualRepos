@@ -12,7 +12,7 @@
         "vscode": "^1.63.0"
     },
     "preview": true,
-    "icon": "assets/cloud-service-with-outline.png",
+    "icon": "assets/book.png",
     "repository": {
         "type": "git",
         "url": "https://github.com/carlocardella/vscode-VirtualRepos.git"
@@ -146,7 +146,7 @@
                 {
                     "id": "VirtualRepositoriesContainer",
                     "title": "Virtual Repositories",
-                    "icon": "assets/cloud-service-outline.svg"
+                    "icon": "assets/book.svg"
                 }
             ]
         },
@@ -155,7 +155,7 @@
                 {
                     "id": "virtualReposView",
                     "name": "Virtual Repositories",
-                    "icon": "assets/cloud-service-outline.svg",
+                    "icon": "assets/book.svg",
                     "type": "tree",
                     "visibility": "collapsed"
                 }
@@ -265,21 +265,6 @@
                     "command": "VirtualRepos.newPrivateRepository",
                     "when": "viewItem == repo",
                     "group": "2_repoOperations@2"
-                },
-                {
-                    "command": "VirtualRepos.cloneRepository",
-                    "when": "viewItem == repo",
-                    "group": "2_repoOperations@3"
-                },
-                {
-                    "command": "VirtualRepos.forkRepository",
-                    "when": "viewItem == repo",
-                    "group": "2_repoOperations@4"
-                },
-                {
-                    "command": "VirtualRepos.downloadRepository",
-                    "when": "viewItem == repo",
-                    "group": "2_repoOperations@5"
                 },
                 {
                     "command": "VirtualRepos.deleteRepository",

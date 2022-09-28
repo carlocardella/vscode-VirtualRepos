@@ -16,7 +16,9 @@
 
 <!-- [Download for VS Codium](https://open-vsx.org/extension/carlocardella/vscode-texttoolbox) -->
 
-Virtual Repos is a Visual Studio Code extension that allows to open and edit a remote repository (e.g. on GitHub) as if they where local files, without the need of cloning, committing or pushing your changes.
+Virtual Repos is a Visual Studio Code extension that allows to open and edit a remote repository (e.g. on GitHub) without cloning, committing or pushing your changes. It all happens automatically.
+
+The extension is still missing lots of features I want to add (as time permits) and you can expect bugs (but hopefully nothing destructive), anyway this is a `preview` extension and you can expect bugs here and there. Please report bugs or issues and ask for features you would like to see. Check [Changelog](CHANGELOG.md) for the latest status, what's planned and what has already been released.
 
 ## Getting started
 
@@ -24,14 +26,33 @@ Install the extension from the VSCode Marketplace.
 
 ## Repository management
 
-Use the `Open repository` command to open an existing repo from GitHub (use the format `owner/repo`); you can sync your open repositories across multiple devices by enabling [Settings Sync](https://code.visualstudio.com/docs/editor/settings-sync) in Visual Studio Code.
+### Open a repo
 
-*Node: you may need to Refresh the Virtual Repos view to see the latest repos added or removed from another machine.*
+Use the `Open repository` command to open an existing repo from GitHub, you can choose from three options:
+
+1. `Open repository`: open any repository you have access to, enter the name as `owner/repoName`
+
+   *Note: If you just enter the repo name, the extension assumes you own it, this is the same as using `Open my repository`*
+
+2. `Open my repository`: open a repository from a list of repos you own
+3. `Open starred repository`: open one of your Starred repos
 
 The repository will load automatically (of course, make sure you are connected to the Internet), you can then browse it, open, edit, add, delete files as if they where on your local file system even without cloning the repo.
 
-Changes are committed automatically after the file is saved.
+#### Sync repositories across devices
 
+You can sync your open repositories across multiple devices by enabling [Settings Sync](https://code.visualstudio.com/docs/editor/settings-sync) in Visual Studio Code.
+
+*Node: you may need to Refresh the Virtual Repos view to see the latest repos added or removed from another machine.*
+
+### Create new repo
+
+You can create a new repository (public or private), other repo operations (delete, star, fork, clone, download) will come in future releases.
+
+## Automatic commits
+
+Changes are committed automatically after the file is saved.
+The commit message is `VirtualRepos: update file <filePath>`.
 
 ## Acknowledgements
 

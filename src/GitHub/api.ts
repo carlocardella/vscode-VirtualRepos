@@ -35,9 +35,9 @@ export async function getGitHubReposForAuthenticatedUser(): Promise<TRepo[] | un
     });
 
     try {
-        const { data } = await octokit.repos.listForAuthenticatedUser({
-            type: "owner",
-        });
+        const data = await octokit.paginate(octokit.repos.listForAuthenticatedUser, {type: "owner"}, (response) => {
+             return response.data;
+         });
 
         return Promise.resolve(data);
     } catch (e: any) {

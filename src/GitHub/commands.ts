@@ -58,7 +58,7 @@ export function getRepoDetails(repo: string): [string, string] {
  */
 enum QuickPickItems {
     repoName = "$(rocket) Open repository",
-    myRepos = "$(account) Open your repositories",
+    myRepos = "$(account) Open my repository",
     starredRepos = "$(star) Open starred repository",
 }
 
