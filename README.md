@@ -39,6 +39,14 @@ Use the `Open repository` command to open an existing repo from GitHub, you can 
 
 The repository will load automatically (of course, make sure you are connected to the Internet), you can then browse it, open, edit, add, delete files as if they where on your local file system even without cloning the repo.
 
+_open repository_
+
+![open repository](https://user-images.githubusercontent.com/5784415/192892207-46f5418e-5696-4373-ae80-71cb160e8e25.gif)
+
+_open my repository_
+
+![open my repository](https://user-images.githubusercontent.com/5784415/192892464-bee3d23f-5688-4dfd-a343-c844ae39e135.gif)
+
 #### Sync repositories across devices
 
 You can sync your open repositories across multiple devices by enabling [Settings Sync](https://code.visualstudio.com/docs/editor/settings-sync) in Visual Studio Code.
@@ -49,10 +57,17 @@ You can sync your open repositories across multiple devices by enabling [Setting
 
 You can create a new repository (public or private), other repo operations (delete, star, fork, clone, download) will come in future releases.
 
+![create private repo](https://user-images.githubusercontent.com/5784415/192894098-2cb95397-6696-467a-ab9c-6ca272f460b0.gif)
+
 ## Automatic commits
 
-Changes are committed automatically after the file is saved.
-The commit message is `VirtualRepos: update file <filePath>`.
+Changes are committed automatically after the file is saved. The commit message is `VirtualRepos: update file <filePath>`.
+
+## Tracing
+
+You can enable `VirtualRepos.EnableTracing` in your User or Workspace settings to enable tracing in a `Virtual Repositories` output channel; this is off by default but it can be useful for troubleshooting errors or if you are curious to see what the extension is doing under the hood.
+
+![image](https://user-images.githubusercontent.com/5784415/192893074-ffeb0ec1-1932-45ed-a961-1c15492c1a9e.png)
 
 ## Acknowledgements
 
