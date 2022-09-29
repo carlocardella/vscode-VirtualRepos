@@ -1,6 +1,6 @@
 # Virtual Repos
 
-<font style="color: orange">preview</font>
+![preview](https://img.shields.io/badge/-preview-orange)
 
 [![Publish Extension](https://github.com/carlocardella/vscode-VirtualRepos/actions/workflows/PublishExtension.yml/badge.svg)](https://github.com/carlocardella/vscode-VirtualRepos/actions/workflows/PublishExtension.yml)
 ![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/carlocardella.vscode-virtualRepos)

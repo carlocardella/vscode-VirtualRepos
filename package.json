@@ -24,6 +24,11 @@
     "categories": [
         "Other"
     ],
+    "capabilities": {
+        "untrustedWorkspaces": {
+            "supported": true
+        }
+    },
     "keywords": [
         "git",
         "github",
@@ -36,7 +41,8 @@
     "activationEvents": [
         "onView:virtualReposView"
     ],
-    "main": "./dist/extension.js",
+    "main": "./dist/extension-node.js",
+    "browser": "./dist/extension-web.js",
     "contributes": {
         "commands": [
             {
@@ -286,15 +292,14 @@
         }
     },
     "scripts": {
-        "vscode:prepublish": "npm run package",
-        "compile": "webpack",
-        "watch": "webpack --watch",
-        "package": "webpack --mode production --devtool hidden-source-map",
-        "compile-tests": "tsc -p . --outDir out",
-        "watch-tests": "tsc -p . -w --outDir out",
-        "pretest": "npm run compile-tests && npm run compile && npm run lint",
-        "lint": "eslint src --ext ts",
-        "test": "node ./out/test/runTest.js"
+        "webpack": "webpack --mode development",
+        "webpack-dev": "webpack --mode development --watch",
+        "test-compile": "tsc -p ./",
+        "unit-tests": "tsc -w -p ./",
+        "vscode:prepublish": "npm run package-web",
+        "compile-web": "webpack",
+        "watch-web": "webpack --watch",
+        "package-web": "webpack --mode production --devtool hidden-source-map"
     },
     "devDependencies": {
         "@types/glob": "^7.2.0",
@@ -322,6 +327,9 @@
         "@octokit/rest": "^19.0.4",
         "@octokit/types": "^7.5.0",
         "is-binary-path": "^2.1.0",
-        "lodash": "^4.17.21"
+        "lodash": "^4.17.21",
+        "os-browserify": "^0.3.0",
+        "path-browserify": "^1.0.1",
+        "process": "^0.11.10"
     }
 }

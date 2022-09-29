@@ -25,6 +25,14 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
   * Move multiple files
 * Move folder
 
+## [0.0.11] - 2022-09-29
+
+### Changed
+
+* Updated View Container icon
+* Enable [Web Extension](https://code.visualstudio.com/api/extension-guides/web-extensions)
+* Support [Workspace Trust](https://code.visualstudio.com/api/extension-guides/workspace-trust)
+
 ## [0.0.10] - 2022-09-28
 
 ### Changed
