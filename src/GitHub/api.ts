@@ -414,27 +414,27 @@ export async function getStarredGitHubRepositories(): Promise<TRepo[]> {
     return Promise.reject([]);
 }
 
-/**
- * Get the current user's GitHub repositories
- *
- * @export
- * @async
- * @returns {Promise<TRepo[]>}
- */
-export async function getAuthenticatedUserRepositories(): Promise<TRepo[]> {
-    const octokit = new rest.Octokit({
-        auth: await credentials.getAccessToken(),
-    });
+// /**
+//  * Get the current user's GitHub repositories
+//  *
+//  * @export
+//  * @async
+//  * @returns {Promise<TRepo[]>}
+//  */
+// export async function getAuthenticatedUserRepositories(): Promise<TRepo[]> {
+//     const octokit = new rest.Octokit({
+//         auth: await credentials.getAccessToken(),
+//     });
 
-    try {
-        const repos = await octokit.paginate(octokit.repos.listForAuthenticatedUser, (response) => {
-            return response.data;
-        });
+//     try {
+//         const repos = await octokit.paginate(octokit.repos.listForAuthenticatedUser, (response) => {
+//             return response.data;
+//         });
 
-        return Promise.resolve(repos as TRepo[]);
-    } catch (e: any) {
-        output?.appendLine(e.message, output.messageType.error);
-    }
+//         return Promise.resolve(repos as TRepo[]);
+//     } catch (e: any) {
+//         output?.appendLine(e.message, output.messageType.error);
+//     }
 
-    return Promise.reject([]);
-}
+//     return Promise.reject([]);
+// }

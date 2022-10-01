@@ -4,7 +4,7 @@ import * as trace from "./tracing";
 import { commands, ExtensionContext, workspace, window, ProgressLocation } from "vscode";
 import { ContentNode, RepoProvider } from "./Tree/nodes";
 import { RepoFileSystemProvider, REPO_SCHEME } from "./FileSystem/fileSystem";
-import { addFile, deleteNode, deleteRepository,  newRepository, pickRepository, uploadFiles } from "./GitHub/commands";
+import { addFile, deleteNode, deleteRepository, newRepository, pickRepository, uploadFiles } from "./GitHub/commands";
 import { TGitHubUser } from "./GitHub/types";
 import { addToGlobalStorage, clearGlobalStorage, getReposFromGlobalStorage, purgeGlobalStorage, removeFromGlobalStorage, store } from "./FileSystem/storage";
 import { GLOBAL_STORAGE_KEY } from "./GitHub/constants";
@@ -15,6 +15,7 @@ export const credentials = new Credentials();
 export let gitHubAuthenticatedUser: TGitHubUser;
 export let extensionContext: ExtensionContext;
 export const repoProvider = new RepoProvider();
+export const repoFileSystemProvider = new RepoFileSystemProvider();
 
 export async function activate(context: ExtensionContext) {
     extensionContext = context;
@@ -171,7 +172,7 @@ export async function activate(context: ExtensionContext) {
         })
     );
 
-    const repoFileSystemProvider = new RepoFileSystemProvider();
+    // const repoFileSystemProvider = new RepoFileSystemProvider();
     context.subscriptions.push(
         workspace.registerFileSystemProvider(REPO_SCHEME, repoFileSystemProvider, {
             isCaseSensitive: true,

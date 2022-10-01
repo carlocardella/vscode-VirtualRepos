@@ -87,7 +87,7 @@
                 "icon": "$(cloud-download)"
             },
             {
-                "title": "Open Repository",
+                "title": "Open Repository...",
                 "command": "VirtualRepos.openRepository",
                 "icon": "$(plug)",
                 "category": "Virtual Repositories"
