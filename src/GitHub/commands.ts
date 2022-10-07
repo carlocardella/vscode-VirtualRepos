@@ -4,7 +4,7 @@ import { RepoFileSystemProvider, REPO_SCHEME } from "../FileSystem/fileSystem";
 import { ContentNode, RepoNode } from "../Tree/nodes";
 import { getGitHubRepoContent, newGitHubRepository, deleteGitHubRepository, getGitHubReposForAuthenticatedUser, getStarredGitHubRepositories } from "./api";
 import { TContent, TRepo } from "./types";
-import { credentials, extensionContext, output } from "../extension";
+import { credentials, extensionContext, output, repoFileSystemProvider } from "../extension";
 import { addToGlobalStorage, removeFromGlobalStorage } from "../FileSystem/storage";
 
 /**
@@ -147,8 +147,8 @@ export async function addFile(e: ContentNode) {
     const [repoName, path] = RepoFileSystemProvider.getFileInfo(e.uri)!;
     const content = "";
 
-    const fileSystemProvider = new RepoFileSystemProvider();
-    fileSystemProvider.writeFile(Uri.parse(`${REPO_SCHEME}://${repoName}/${path}/${newFileName}`), stringToByteArray(content), {
+    // const fileSystemProvider = new RepoFileSystemProvider();
+    repoFileSystemProvider.writeFile(Uri.parse(`${REPO_SCHEME}://${repoName}/${path}/${newFileName}`), stringToByteArray(content), {
         create: true,
         overwrite: true,
     });
@@ -168,8 +168,8 @@ export async function deleteNode(node: ContentNode) {
         return;
     }
 
-    const fileSystemProvider = new RepoFileSystemProvider();
-    fileSystemProvider.delete(node.uri);
+    // const fileSystemProvider = new RepoFileSystemProvider();
+    repoFileSystemProvider.delete(node.uri);
 }
 
 /**
@@ -186,7 +186,7 @@ export async function uploadFiles(destination: ContentNode | RepoNode): Promise<
         return Promise.reject();
     }
 
-    const fileSystemProvider = new RepoFileSystemProvider();
+    // const fileSystemProvider = new RepoFileSystemProvider();
     files.forEach(async (file) => {
         const content = await workspace.fs.readFile(file);
         let uriPath = "path" in destination ? destination.path : "";
@@ -197,7 +197,7 @@ export async function uploadFiles(destination: ContentNode | RepoNode): Promise<
             path: `${uriPath}/${uriFile}`,
         });
 
-        await fileSystemProvider.writeFile(uri, content, {
+        await repoFileSystemProvider.writeFile(uri, content, {
             create: true,
             overwrite: false,
         });

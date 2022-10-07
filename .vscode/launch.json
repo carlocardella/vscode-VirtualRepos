@@ -15,6 +15,15 @@
             "preLaunchTask": "${defaultBuildTask}"
         },
         {
+            "name": "Run in temp profile",
+            "type": "extensionHost",
+            "request": "launch",
+            "runtimeExecutable": "${execPath}",
+            "args": ["--profile-temp", "--extensionDevelopmentPath=${workspaceFolder}"],
+            "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+            "preLaunchTask": "${defaultBuildTask}"
+        },
+        {
             "name": "Run All Extensions",
             "type": "extensionHost",
             "request": "launch",

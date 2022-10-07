@@ -1,6 +1,6 @@
 import { Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
 import { extensionContext, output } from "../extension";
-import { RepoFileSystemProvider } from "../FileSystem/fileSystem";
+import { RepoFileSystemProvider, REPO_SCHEME } from "../FileSystem/fileSystem";
 import { store, getReposFromGlobalStorage } from "../FileSystem/storage";
 import { getGitHubBranch, getGitHubRepoContent, getGitHubTree, openRepository } from "../GitHub/api";
 import { getRepoDetails } from "../GitHub/commands";
@@ -10,6 +10,7 @@ export class RepoNode extends TreeItem {
     owner: string;
     tree?: TTree;
     name: string;
+    uri: Uri;
 
     constructor(public repo: TRepo, tree?: any) {
         super(repo.name, TreeItemCollapsibleState.Collapsed);
@@ -21,6 +22,7 @@ export class RepoNode extends TreeItem {
         this.tree = tree;
         this.name = repo.name;
         this.contextValue = "repo";
+        this.uri = Uri.parse(`${REPO_SCHEME}://${repo.owner.login}/${repo.name}`);
     }
 }
 
@@ -113,6 +115,7 @@ export class RepoProvider implements TreeDataProvider<ContentNode> {
     readonly onDidChangeTreeData: Event<ContentNode | undefined | null | void> = this._onDidChangeTreeData.event;
 
     refresh(): void {
+        output?.appendLine("Refreshing repos", output.messageType.info);
         this._onDidChangeTreeData.fire();
     }
 }

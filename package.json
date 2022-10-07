@@ -87,7 +87,7 @@
                 "icon": "$(cloud-download)"
             },
             {
-                "title": "Open Repository",
+                "title": "Open Repository...",
                 "command": "VirtualRepos.openRepository",
                 "icon": "$(plug)",
                 "category": "Virtual Repositories"
@@ -145,6 +145,11 @@
                     "type": "boolean",
                     "description": "Enable tracing of the extension",
                     "default": false
+                },
+                "VirtualRepos.PullInterval": {
+                    "type": "number",
+                    "description": "Interval in seconds to pull changes from the remote repository; set to 0 (zero) to disable",
+                    "default": 60
                 }
             }
         },
