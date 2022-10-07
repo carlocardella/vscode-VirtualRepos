@@ -16,6 +16,7 @@ export let gitHubAuthenticatedUser: TGitHubUser;
 export let extensionContext: ExtensionContext;
 export const repoProvider = new RepoProvider();
 export const repoFileSystemProvider = new RepoFileSystemProvider();
+let refreshInterval = config.get("PullInterval") * 1000;
 
 export async function activate(context: ExtensionContext) {
     extensionContext = context;
@@ -191,6 +192,16 @@ export async function activate(context: ExtensionContext) {
                 } else {
                     output?.dispose();
                 }
+            }
+
+            if (e.affectsConfiguration("VirtualRepos.PullInterval")) {
+                if (config.get("PullInterval")) {
+                    refreshInterval = config.get("PullInterval") * 1000;
+                }
+
+                setInterval(() => {
+                    repoProvider.refresh();
+                }, refreshInterval);
             }
         })
     );
