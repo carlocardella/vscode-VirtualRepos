@@ -1,79 +1,11 @@
-import * as rest from "@octokit/rest";
-import { TextDecoder } from "util";
-import { window } from "vscode";
-import { store } from "../FileSystem/storage";
-import { RepoNode } from "../Tree/nodes";
-import { credentials, gitHubAuthenticatedUser, output } from "./../extension";
-import { COMMIT_MESSAGE } from "./constants";
-import { TRepo, TGitHubTree, TGitHubUser, TGitHubBranch, TGitHubBranchList, TRepoContent, TGitHubUpdateContent } from "./types";
-
-/**
- * Get the authenticated GitHub user
- *
- * @export
- * @async
- * @returns {Promise<TGitHubUser>}
- */
-export async function getGitHubAuthenticatedUser(): Promise<TGitHubUser> {
-    const octokit = new rest.Octokit({
-        auth: await credentials.getAccessToken(),
-    });
-
-    const { data } = await octokit.users.getAuthenticated();
-
-    return Promise.resolve(data);
-}
-
-/**
- * Get the list of repositories for the authenticated user.
- *
- * @export
- * @async
- * @returns {Promise<TRepo[]>}
- */
-export async function getGitHubReposForAuthenticatedUser(): Promise<TRepo[] | undefined> {
-    const octokit = new rest.Octokit({
-        auth: await credentials.getAccessToken(),
-    });
-
-    try {
-        const { data } = await octokit.repos.listForAuthenticatedUser({
-            type: "owner",
-        });
-
-        return Promise.resolve(data);
-    } catch (e: any) {
-        output.appendLine(`Could not get repositories for the authenticated user. ${e.message}`, output.messageType.error);
-    }
-
-    return Promise.reject(undefined);
-}
-
-/**
- * Lists the contents of a directory (or file) in a repository.
- *
- * @export
- * @async
- * @param {string} owner Owner of the repository
- * @param {string} repoName Name of the repository
- * @param {?string} [path] Path to the directory (or file)
- * @returns {Promise<any>}
- */
-export async function getGitHubRepoContent(owner: string, repoName: string, path?: string): Promise<any> {
-    // @update: any
-    const octokit = new rest.Octokit({
-        auth: await credentials.getAccessToken(),
-    });
-
-    path = path ?? "";
-    const { data } = await octokit.repos.getContent({
-        owner,
-        repo: repoName,
-        path: path,
-    });
-
-    return Promise.resolve(data);
-}
+import { TextEncoder } from "util";
+import { ProgressLocation, QuickPickItem, QuickPickItemKind, Uri, window, workspace } from "vscode";
+import { RepoFileSystemProvider, REPO_SCHEME } from "../FileSystem/fileSystem";
+import { ContentNode, RepoNode } from "../Tree/nodes";
+import { getGitHubRepoContent, newGitHubRepository, deleteGitHubRepository, getGitHubReposForAuthenticatedUser, getStarredGitHubRepositories } from "./api";
+import { TContent, TRepo } from "./types";
+import { credentials, extensionContext, output, repoFileSystemProvider } from "../extension";
+import { addToGlobalStorage, removeFromGlobalStorage } from "../FileSystem/storage";
 
 /**
  * Returns the binary content of a file in the repository.
@@ -85,43 +17,16 @@ export async function getGitHubRepoContent(owner: string, repoName: string, path
  * @param {string} filePath The path to the file in the repository.
  * @returns {Promise<Uint8Array>}
  */
-export async function getRepoFileContent(repo: RepoNode, file: TRepoContent): Promise<Uint8Array> {
+export async function getRepoFileContent(repo: RepoNode, file: TContent): Promise<Uint8Array> {
     let data: any;
-    if (!file.content) {
-        data = await getGitHubRepoContent(repo.owner, repo.name, file.path);
-        file.content = data;
+    if (!file!.content) {
+        data = await getGitHubRepoContent(repo.owner, repo.name, file!.path);
+        file!.content = data;
     } else {
-        data = file.content;
+        data = file!.content;
     }
 
     return new Uint8Array(Buffer.from(data.content, "base64").toString("latin1").split("").map(charCodeAt));
-}
-
-export async function setRepoFileContent(repo: RepoNode, file: TRepoContent, content: Uint8Array): Promise<TGitHubUpdateContent> {
-    const fileContentString = (file.content = new TextDecoder().decode(content));
-    file.content = fileContentString;
-
-    const octokit = new rest.Octokit({
-        auth: await credentials.getAccessToken(),
-    });
-
-    try {
-        const { data } = await octokit.repos.createOrUpdateFileContents({
-            owner: repo.owner,
-            repo: repo.name,
-            path: file.path,
-            message: `${COMMIT_MESSAGE} ${file.path}`,
-            // message: `Repos: update file ${file.path}`,
-            content: Buffer.from(fileContentString).toString("base64"),
-            sha: file.sha,
-        });
-
-        return Promise.resolve(data);
-    } catch (e: any) {
-        output.logError(repo.repo, e);
-    }
-
-    return Promise.reject();
 }
 
 /**
@@ -132,189 +37,6 @@ export async function setRepoFileContent(repo: RepoNode, file: TRepoContent, con
  */
 function charCodeAt(c: string) {
     return c.charCodeAt(0);
-}
-
-/**
- * Returns a  GitHub tree
- *
- * @export
- * @async
- * @param {string} repoOwner The repo to get the tree of
- * @param {string} repoName
- * @param {string} treeSHA
- * @returns {Promise<TGitHubTree>}
- */
-export async function getGitHubTree(repo: TRepo, treeSHA: string): Promise<TGitHubTree | undefined> {
-    const octokit = new rest.Octokit({
-        auth: await credentials.getAccessToken(),
-    });
-
-    try {
-        const { data } = await octokit.git.getTree({
-            owner: repo.owner.login,
-            repo: repo.name,
-            tree_sha: treeSHA,
-            recursive: "true",
-        });
-
-        return Promise.resolve(data);
-    } catch (e: any) {
-        output.logError(repo, e);
-    }
-
-    return Promise.reject(undefined);
-}
-
-/**
- * Returns a GitHub repo
- *
- * @export
- * @async
- * @param {string} repoOwner The owner of the repo
- * @param {string} repoName The name of the repo
- * @returns {Promise<TRepo>}
- */
-export async function getGitHubRepo(repo: TRepo, repoName: string): Promise<TRepo | undefined> {
-    const octokit = new rest.Octokit({
-        auth: await credentials.getAccessToken(),
-    });
-
-    try {
-        const { data } = await octokit.repos.get({
-            owner: repo.owner.login,
-            repo: repoName,
-        });
-
-        return Promise.resolve(data);
-    } catch (e: any) {
-        output.logError(repo, e);
-    }
-
-    return Promise.reject(undefined);
-}
-
-/**
- * Returns a GitHub branch
- *
- * @export
- * @async
- * @param {TRepo} repo The repository to get the branch from
- * @param {string} branchName The name of the branch
- * @returns {(Promise<TGitHubBranch | undefined>)}
- */
-export async function getGitHubBranch(repo: TRepo, branchName: string): Promise<TGitHubBranch | undefined> {
-    const octokit = new rest.Octokit({
-        auth: await credentials.getAccessToken(),
-    });
-
-    try {
-        const { data } = await octokit.repos.getBranch({
-            owner: repo.owner.login,
-            repo: repo.name,
-            branch: branchName,
-        });
-
-        return Promise.resolve(data);
-    } catch (e: any) {
-        output.logError(repo, e);
-    }
-
-    return undefined;
-}
-
-/**
- * Lists the branches of a repository.
- *
- * @export
- * @async
- * @param {TRepo} repo The repository to get the branches from
- * @returns {(Promise<TGitHubBranchList[] | undefined>)}
- */
-export async function listGitHubBranches(repo: TRepo): Promise<TGitHubBranchList[] | undefined> {
-    const octokit = new rest.Octokit({
-        auth: await credentials.getAccessToken(),
-    });
-
-    try {
-        const { data } = await octokit.repos.listBranches({
-            owner: repo.owner.login,
-            repo: repo.name,
-        });
-
-        return Promise.resolve(data);
-    } catch (e: any) {
-        output.logError(repo, e);
-    }
-
-    return Promise.reject(undefined);
-}
-
-export async function createFolder(): Promise<void> {
-    throw new Error("Not implemented");
-}
-
-/**
- * Create a new file or update an existing file in a repository.
- *
- * @export
- * @async
- * @param {TRepo} repo The repository to create the file in
- * @param {string} path The path to the file
- * @param {string} content The content of the file (base64 encoded)
- * @param {?string} [sha] The SHA of the file to update; if not provided, a new file will be created
- * @returns {Promise<void>}
- */
-export async function createOrUpdateFile(repo: TRepo, path: string, content: string, sha?: string): Promise<void> {
-    const octokit = new rest.Octokit({
-        auth: await credentials.getAccessToken(),
-    });
-
-    try {
-        const { data } = await octokit.repos.createOrUpdateFileContents({
-            owner: repo.owner.login,
-            repo: repo.name,
-            path,
-            message: "Created file",
-            content,
-            sha: sha,
-        });
-
-        // todo: update the virtual file system
-
-        return Promise.resolve();
-    } catch (e: any) {
-        output.logError(repo, e);
-    }
-
-    return Promise.reject();
-}
-
-/**
- * Open a new GitHub repository
- *
- * @export
- * @async
- * @param {string} owner The owner of the repository
- * @param {string} repoName The name of the repository
- * @returns {(Promise<TRepo | undefined>)}
- */
-export async function openRepository(owner: string, repoName: string): Promise<TRepo | undefined> {
-    const octokit = new rest.Octokit({
-        auth: await credentials.getAccessToken(),
-    });
-
-    try {
-        const { data } = await octokit.repos.get({
-            owner,
-            repo: repoName,
-        });
-
-        return Promise.resolve(data);
-    } catch (e: any) {
-        output.appendLine(e.Message, output.messageType.error);
-    }
-
-    return Promise.reject();
 }
 
 /**
@@ -330,35 +52,209 @@ export function getRepoDetails(repo: string): [string, string] {
 }
 
 /**
- * Ask the user to enter a repository to open: <owner>/<repo>
+ * QuickPick items for the user to select which repository to open
+ *
+ * @enum {number}
+ */
+enum QuickPickItems {
+    repoName = "$(rocket) Open repository",
+    myRepos = "$(account) Open my repository",
+    starredRepos = "$(star) Open starred repository",
+}
+
+/**
+ * Ask the user to choose or enter a repository to open: <owner>/<repo>
  *
  * @export
  * @async
  * @returns {(Promise<string | undefined>)}
  */
-export async function pickRepository(): Promise<string | undefined> {
-    const pick = await window.showInputBox({ ignoreFocusOut: true, placeHolder: "owner/repo", title: "Enter the repository to open, e.g. 'owner/repo'" });
-    if (!pick) {
-        return undefined;
-    }
+export async function pickRepository() {
+    return await new Promise((resolve, reject) => {
+        let pick: string | undefined;
 
-    return pick;
+        let quickPick = window.createQuickPick();
+        quickPick.onDidHide(() => quickPick.dispose());
+        quickPick.title = "Select or type the repository you would like to open";
+        quickPick.canSelectMany = false;
+
+        quickPick.show();
+
+        quickPick.items = [{ label: QuickPickItems.repoName }, { label: QuickPickItems.myRepos }, { label: QuickPickItems.starredRepos }];
+
+        quickPick.onDidAccept(async () => {
+            if (pick === QuickPickItems.repoName) {
+                let accepted = await window.showInputBox({
+                    ignoreFocusOut: true,
+                    placeHolder: "owner/repo",
+                    title: "Enter the repository to open, e.g. 'owner/repo'",
+                });
+                quickPick.hide();
+                resolve(accepted);
+            } else if (pick === QuickPickItems.myRepos) {
+                quickPick.busy = true;
+                quickPick.placeholder = "Enter the repository to open, e.g. 'owner/repo'";
+                const repos = await getGitHubReposForAuthenticatedUser();
+                quickPick.busy = false;
+                quickPick.items = repos!.map((repo) => ({ label: `${repo.owner.login}/${repo.name}` }));
+                quickPick.show();
+            } else if (pick === QuickPickItems.starredRepos) {
+                quickPick.busy = true;
+                quickPick.placeholder = "Enter the repository to open, e.g. 'owner/repo'";
+                const starredRepos = await getStarredGitHubRepositories();
+                quickPick.busy = false;
+                quickPick.items = starredRepos.map((repo) => ({ label: `${repo.owner.login}/${repo.name}` }));
+                quickPick.show();
+            } else {
+                output?.appendLine(`onDidAccept: ${pick}`, output.messageType.debug);
+                quickPick.hide();
+                resolve(pick);
+            }
+        });
+
+        quickPick.onDidChangeSelection(async (selection) => {
+            pick = selection[0].label;
+            output?.appendLine(`onDidChangeSelection: ${pick}`, output.messageType.debug);
+        });
+    });
 }
 
+/**
+ * Converts a string to a byte array
+ *
+ * @export
+ * @param {string} value The string to convert
+ * @returns {*}
+ */
+export function stringToByteArray(value: string) {
+    return new TextEncoder().encode(value);
+}
 
+/**
+ * Create a new file in a GitHub repository
+ *
+ * @export
+ * @async
+ * @param {ContentNode} e The TreeItem containing the file to create
+ * @returns {*}
+ */
+export async function addFile(e: ContentNode) {
+    const newFileName = await window.showInputBox({ ignoreFocusOut: true, placeHolder: "path/filename", title: "Enter the filename (optional path)" });
+    if (!newFileName) {
+        return;
+    }
 
-// export async function getGitHubUserOrganizations(): Promise<TGitHubOrganization[] | undefined> {
-//     const octokit = new rest.Octokit({
-//         auth: await credentials.getAccessToken(),
-//     });
+    const [repoName, path] = RepoFileSystemProvider.getFileInfo(e.uri)!;
+    const content = "";
 
-//     try {
-//         const { data } = await octokit.orgs.listForAuthenticatedUser();
+    // const fileSystemProvider = new RepoFileSystemProvider();
+    repoFileSystemProvider.writeFile(Uri.parse(`${REPO_SCHEME}://${repoName}/${path}/${newFileName}`), stringToByteArray(content), {
+        create: true,
+        overwrite: true,
+    });
+}
 
-//         return Promise.resolve(data);
-//     } catch (e: any) {
-//         output.logError(undefined, e);
-//     }
+/**
+ * Delete the file or folder from the repository
+ *
+ * @export
+ * @async
+ * @param {ContentNode} node TreeView node to delete
+ * @returns {*}
+ */
+export async function deleteNode(node: ContentNode) {
+    const confirm = await window.showWarningMessage(`Are you sure you want to delete '${node.path}'?`, "Yes", "No", "Cancel");
+    if (confirm !== "Yes") {
+        return;
+    }
 
-//     return Promise.reject(undefined);
-// }
+    // const fileSystemProvider = new RepoFileSystemProvider();
+    repoFileSystemProvider.delete(node.uri);
+}
+
+/**
+ * Upload files from the local disk to GitHub
+ *
+ * @export
+ * @async
+ * @param {(ContentNode | RepoNode)} destination The destination to upload the files to
+ * @returns {Promise<void>}
+ */
+export async function uploadFiles(destination: ContentNode | RepoNode): Promise<void> {
+    const files = await window.showOpenDialog({ canSelectFiles: true, canSelectFolders: false, canSelectMany: true, title: "Select files to upload" });
+    if (!files) {
+        return Promise.reject();
+    }
+
+    // const fileSystemProvider = new RepoFileSystemProvider();
+    files.forEach(async (file) => {
+        const content = await workspace.fs.readFile(file);
+        let uriPath = "path" in destination ? destination.path : "";
+        let uriFile = file.path.split("/").pop();
+        let uri = Uri.from({
+            scheme: REPO_SCHEME,
+            authority: destination.repo.name,
+            path: `${uriPath}/${uriFile}`,
+        });
+
+        await repoFileSystemProvider.writeFile(uri, content, {
+            create: true,
+            overwrite: false,
+        });
+    });
+
+    return Promise.reject();
+}
+
+/**
+ * Create a new repository
+ * @date 9/26/2022 - 10:06:19 AM
+ *
+ * @export
+ * @async
+ * @param {boolean} isPrivate Whether the repository should be private or not
+ * @returns {Promise<void>}
+ */
+export async function newRepository(isPrivate: boolean): Promise<void> {
+    const newRepo = await window.showInputBox({ ignoreFocusOut: true, placeHolder: "repo name", title: "Enter the repository name" });
+    if (!newRepo) {
+        return Promise.reject();
+    }
+
+    let [owner, repoName] = ["", ""];
+    if (newRepo.indexOf("/") === -1) {
+        owner = credentials.authenticatedUser.login;
+        repoName = newRepo;
+    } else {
+        [owner, repoName] = newRepo.split("/");
+    }
+
+    // create the repository
+    const githubRepo = await newGitHubRepository(owner, repoName, isPrivate);
+
+    if (githubRepo) {
+        //add the new repository to the tree view
+        await addToGlobalStorage(extensionContext, `${githubRepo.owner.login}/${githubRepo.name}`);
+    }
+}
+
+/**
+ * Delete a repository
+ * @date 9/26/2022 - 10:05:56 AM
+ *
+ * @export
+ * @async
+ * @param {RepoNode} repo The repository to delete
+ * @returns {Promise<void>}
+ */
+export async function deleteRepository(repo: RepoNode): Promise<void> {
+    const confirm = await window.showWarningMessage(`Are you sure you want to delete '${repo.name}'?`, { modal: true }, "Yes", "No");
+    if (confirm !== "Yes") {
+        return Promise.reject();
+    }
+
+    const deleted = await deleteGitHubRepository(repo.repo);
+    if (deleted) {
+        removeFromGlobalStorage(extensionContext, `${repo.repo.owner.login}/${repo.name}`);
+    }
+}

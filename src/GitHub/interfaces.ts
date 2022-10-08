@@ -1,3 +1,5 @@
+import { QuickPickItem } from "vscode";
+
 // import { TContentFile } from "./types";
 export interface Repo {
     archived: boolean;
@@ -100,4 +102,13 @@ export interface License {
     nodeId: string;
     spdxId: string;
     url: string;
+}
+
+export interface State {
+    title: string;
+    step: number;
+    totalSteps: number;
+    resourceGroup: QuickPickItem | string;
+    name: string;
+    runtime: QuickPickItem;
 }

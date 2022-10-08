@@ -5,8 +5,7 @@
     "tasks": [
         {
             "type": "npm",
-            "script": "watch",
-            "problemMatcher": "$ts-webpack-watch",
+            "script": "webpack-dev",
             "runOptions": {
                 "runOn": "folderOpen"
             },
@@ -26,19 +25,16 @@
         },
         {
             "type": "npm",
-            "script": "watch-tests",
+            "script": "unit-tests",
             "problemMatcher": "$tsc-watch",
-            "isBackground": true,
-            "presentation": {
-                "reveal": "never",
-                "group": "watchers"
-            },
-            "group": "build"
+            "isBackground": true
         },
         {
-            "label": "tasks: watch-tests",
-            "dependsOn": ["npm: watch", "npm: watch-tests"],
-            "problemMatcher": []
+            "type": "npm",
+            "script": "watch-web",
+            "group": "build",
+            "isBackground": true,
+            "problemMatcher": ["$ts-webpack-watch"]
         }
     ]
 }

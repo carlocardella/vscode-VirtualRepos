@@ -1,192 +1,340 @@
 {
-    "name": "vscode-Repos",
-    "displayName": "Remote Repositories for Visual Studio Code",
-    "description": "Easily open and update remote repositories without cloning",
+    "name": "vscode-VirtualRepos",
+    "displayName": "Virtual Repositories for Visual Studio Code",
+    "description": "Easily open and update virtual repositories without cloning",
     "publisher": "carlocardella",
     "author": {
         "name": "Carlo Cardella",
         "url": "https://cloudnotes.io"
     },
-    "version": "0.0.1",
+    "version": "0.0.13",
     "engines": {
         "vscode": "^1.63.0"
     },
     "preview": true,
-    "icon": "assets/git_repo_line.png",
+    "icon": "assets/book.png",
+    "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/carlocardella/vscode-Repos.git"
+        "url": "https://github.com/carlocardella/vscode-VirtualRepos.git"
     },
     "bugs": {
-        "url": "https://github.com/carlocardella/vscode-Repos/issues"
+        "url": "https://github.com/carlocardella/vscode-VirtualRepos/issues"
     },
     "categories": [
         "Other"
     ],
+    "capabilities": {
+        "untrustedWorkspaces": {
+            "supported": true
+        }
+    },
     "keywords": [
         "git",
         "github",
-        "gitlab",
         "remote",
         "repository",
-        "repo"
+        "repo",
+        "virtual file system",
+        "virtual repo"
     ],
     "activationEvents": [
-        "onView:Repositories"
+        "onView:virtualReposView"
     ],
-    "main": "./dist/extension.js",
+    "main": "./dist/extension-node.js",
+    "browser": "./dist/extension-web.js",
     "contributes": {
         "commands": [
             {
                 "title": "Close repository",
-                "command": "Repos.closeRepository",
-                "category": "Repos"
+                "command": "VirtualRepos.closeRepository",
+                "category": "Virtual Repositories",
+                "icon": "$(close)"
             },
             {
-                "title": "Open Repository",
-                "command": "Repos.openRepository",
+                "title": "Remove from Global Storage",
+                "command": "VirtualRepos.removeFromGlobalStorage",
+                "category": "Virtual Repositories"
+            },
+            {
+                "title": "New public repository",
+                "command": "VirtualRepos.newPublicRepository",
+                "category": "Virtual Repositories",
                 "icon": "$(repo-create)"
             },
             {
-                "title": "New Folder",
-                "command": "Repos.addFolder",
-                "icon": "$(new-folder)"
+                "title": "New private repository",
+                "command": "VirtualRepos.newPrivateRepository",
+                "category": "Virtual Repositories",
+                "icon": "$(lock)"
+            },
+            {
+                "title": "Clone repository",
+                "command": "VirtualRepos.cloneRepository",
+                "category": "Virtual Repositories",
+                "icon": "$(repo-clone)"
+            },
+            {
+                "title": "Fork repository",
+                "command": "VirtualRepos.forkRepository",
+                "category": "Virtual Repositories",
+                "icon": "$(repo-forked)"
+            },
+            {
+                "title": "Download repository",
+                "command": "VirtualRepos.downloadRepository",
+                "category": "Virtual Repositories",
+                "icon": "$(cloud-download)"
+            },
+            {
+                "title": "Open Repository...",
+                "command": "VirtualRepos.openRepository",
+                "icon": "$(plug)",
+                "category": "Virtual Repositories"
+            },
+            {
+                "title": "Delete Repository",
+                "command": "VirtualRepos.deleteRepository",
+                "icon": "$(trash)",
+                "category": "Virtual Repositories"
             },
             {
                 "title": "New file",
-                "command": "Repos.addFile",
-                "icon": "$(new-file)"
+                "command": "VirtualRepos.addFile",
+                "icon": "$(new-file)",
+                "category": "Virtual Repositories"
+            },
+            {
+                "title": "Upload file(s)...",
+                "command": "VirtualRepos.uploadFile",
+                "icon": "$(cloud-upload)",
+                "category": "Virtual Repositories"
+            },
+            {
+                "title": "Delete",
+                "command": "VirtualRepos.deleteNode",
+                "icon": "$(trash)",
+                "category": "Virtual Repositories"
             },
             {
                 "title": "Refresh",
-                "command": "Repos.refreshTree",
-                "icon": "$(refresh)"
+                "command": "VirtualRepos.refreshTree",
+                "icon": "$(refresh)",
+                "category": "Virtual Repositories"
             },
             {
                 "title": "Clear global storage",
-                "command": "Repos.clearGlobalStorage",
-                "category": "Repos"
+                "command": "VirtualRepos.clearGlobalStorage",
+                "category": "Virtual Repositories"
+            },
+            {
+                "title": "Get Global Storage",
+                "command": "VirtualRepos.getGlobalStorage",
+                "category": "Virtual Repositories"
+            },
+            {
+                "title": "Purge Global Storage",
+                "command": "VirtualRepos.purgeGlobalStorage",
+                "category": "Virtual Repositories"
             }
         ],
         "configuration": {
-            "title": "Remote Repositories",
+            "title": "VirtualRepos",
             "properties": {
-                "Repos.EnableTracing": {
+                "VirtualRepos.EnableTracing": {
                     "type": "boolean",
                     "description": "Enable tracing of the extension",
                     "default": false
+                },
+                "VirtualRepos.PullInterval": {
+                    "type": "number",
+                    "description": "Interval in seconds to pull changes from the remote repository, set to 0 (zero) to disable",
+                    "default": 0
                 }
             }
         },
         "viewsContainers": {
             "activitybar": [
                 {
-                    "id": "Repositories",
-                    "title": "Repositories",
-                    "icon": "assets/git_repo_line.png"
+                    "id": "VirtualRepositoriesContainer",
+                    "title": "Virtual Repositories",
+                    "icon": "assets/repo.svg"
                 }
             ]
         },
         "views": {
-            "Repositories": [
+            "VirtualRepositoriesContainer": [
                 {
-                    "id": "Repositories",
-                    "name": "Repositories",
-                    "icon": "assets/git_repo_line.png",
-                    "contextualTitle": "Repositories",
+                    "id": "virtualReposView",
+                    "name": "Virtual Repositories",
+                    "icon": "assets/repo.svg",
                     "type": "tree",
                     "visibility": "collapsed"
                 }
             ]
         },
         "menus": {
+            "commandPalette": [
+                {
+                    "command": "VirtualRepos.closeRepository",
+                    "when": "false"
+                },
+                {
+                    "command": "VirtualRepos.openRepository"
+                },
+                {
+                    "command": "VirtualRepos.addFile",
+                    "when": "false"
+                },
+                {
+                    "command": "VirtualRepos.uploadFile",
+                    "when": "false"
+                },
+                {
+                    "command": "VirtualRepos.deleteNode",
+                    "when": "false"
+                },
+                {
+                    "command": "VirtualRepos.downloadRepository",
+                    "when": "false"
+                },
+                {
+                    "command": "VirtualRepos.forkRepository",
+                    "when": "false"
+                },
+                {
+                    "command": "VirtualRepos.cloneRepository",
+                    "when": "false"
+                },
+                {
+                    "command": "VirtualRepos.deleteRepository",
+                    "when": "false"
+                },
+                {
+                    "command": "VirtualRepos.refreshTree"
+                },
+                {
+                    "command": "VirtualRepos.clearGlobalStorage"
+                },
+                {
+                    "command": "VirtualRepos.purgeGlobalStorage"
+                }
+            ],
             "view/title": [
                 {
-                    "command": "Repos.refreshTree",
-                    "when": "view == Repositories",
+                    "command": "VirtualRepos.refreshTree",
+                    "when": "view == virtualReposView",
                     "group": "navigation"
                 },
                 {
-                    "command": "Repos.addFolder",
-                    "when": "view == Repositories",
+                    "command": "VirtualRepos.openRepository",
+                    "when": "view == virtualReposView",
                     "group": "navigation"
                 },
                 {
-                    "command": "Repos.addFile",
-                    "when": "view == Repositories",
+                    "command": "VirtualRepos.newPublicRepository",
+                    "when": "view == virtualReposView",
                     "group": "navigation"
                 },
                 {
-                    "command": "Repos.openRepository",
-                    "when": "view == Repositories",
+                    "command": "VirtualRepos.newPrivateRepository",
+                    "when": "view == virtualReposView",
                     "group": "navigation"
                 }
             ],
             "view/item/context": [
                 {
-                    "command": "Repos.addFolder",
-                    "when": "view == Repositories",
+                    "command": "VirtualRepos.addFile",
+                    "when": "viewItem == folder || viewItem == repo",
                     "group": "inline"
                 },
                 {
-                    "command": "Repos.addFile",
-                    "when": "view == Repositories",
+                    "command": "VirtualRepos.closeRepository",
+                    "when": "viewItem == repo",
                     "group": "inline"
                 },
                 {
-                    "command": "Repos.addFolder",
-                    "when": "view == Repositories",
+                    "command": "VirtualRepos.deleteNode",
+                    "when": "viewItem == folder || viewItem == file",
+                    "group": "inline"
+                },
+                {
+                    "command": "VirtualRepos.addFile",
+                    "when": "viewItem == folder || viewItem == repo",
                     "group": "1_add@1"
                 },
                 {
-                    "command": "Repos.addFile",
-                    "when": "view == Repositories",
+                    "command": "VirtualRepos.uploadFile",
+                    "when": "viewItem == folder || viewItem == repo",
                     "group": "1_add@2"
                 },
                 {
-                    "command": "Repos.closeRepository",
-                    "when": "view == Repositories",
+                    "command": "VirtualRepos.newPublicRepository",
+                    "when": "viewItem == repo",
+                    "group": "2_repoOperations@1"
+                },
+                {
+                    "command": "VirtualRepos.newPrivateRepository",
+                    "when": "viewItem == repo",
+                    "group": "2_repoOperations@2"
+                },
+                {
+                    "command": "VirtualRepos.deleteRepository",
+                    "when": "viewItem == repo",
+                    "group": "2_repoOperations@6"
+                },
+                {
+                    "command": "VirtualRepos.closeRepository",
+                    "when": "viewItem == repo",
                     "group": "2_close@1"
+                },
+                {
+                    "command": "VirtualRepos.deleteNode",
+                    "when": "viewItem == folder || viewItem == file",
+                    "group": "3_delete@1"
                 }
             ]
         }
     },
     "scripts": {
-        "vscode:prepublish": "npm run package",
-        "compile": "webpack",
-        "watch": "webpack --watch",
-        "package": "webpack --mode production --devtool hidden-source-map",
-        "compile-tests": "tsc -p . --outDir out",
-        "watch-tests": "tsc -p . -w --outDir out",
-        "pretest": "npm run compile-tests && npm run compile && npm run lint",
-        "lint": "eslint src --ext ts",
-        "test": "node ./out/test/runTest.js"
+        "webpack": "webpack --mode development",
+        "webpack-dev": "webpack --mode development --watch",
+        "test-compile": "tsc -p ./",
+        "unit-tests": "tsc -w -p ./",
+        "vscode:prepublish": "npm run package-web",
+        "compile-web": "webpack",
+        "watch-web": "webpack --watch",
+        "package-web": "webpack --mode production --devtool hidden-source-map"
     },
     "devDependencies": {
         "@types/glob": "^7.2.0",
-        "@types/lodash": "^4.14.184",
+        "@types/lodash": "^4.14.185",
         "@types/mocha": "^9.1.1",
         "@types/node": "16.x",
         "@types/vscode": "^1.63.0",
-        "@typescript-eslint/eslint-plugin": "^5.30.0",
-        "@typescript-eslint/parser": "^5.30.0",
+        "@typescript-eslint/eslint-plugin": "^5.38.0",
+        "@typescript-eslint/parser": "^5.38.0",
         "@vscode/test-electron": "^2.1.5",
-        "eslint": "^8.18.0",
+        "eslint": "^8.24.0",
         "glob": "^8.0.3",
         "mocha": "^10.0.0",
         "octokit": "^2.0.7",
-        "ts-loader": "^9.3.1",
-        "typescript": "^4.7.4",
-        "webpack": "^5.73.0",
+        "ts-loader": "^9.4.1",
+        "typescript": "^4.8.3",
+        "webpack": "^5.74.0",
         "webpack-cli": "^4.10.0"
     },
     "dependencies": {
         "@octokit/core": "^4.0.5",
-        "@octokit/openapi-types": "^13.3.0",
-        "@octokit/plugin-rest-endpoint-methods": "^6.3.0",
+        "@octokit/openapi-types": "^13.12.0",
+        "@octokit/plugin-rest-endpoint-methods": "^6.6.2",
         "@octokit/request": "^6.2.1",
         "@octokit/rest": "^19.0.4",
-        "@octokit/types": "^7.1.0",
-        "lodash": "^4.17.21"
+        "@octokit/types": "^7.5.0",
+        "is-binary-path": "^2.1.0",
+        "lodash": "^4.17.21",
+        "os-browserify": "^0.3.0",
+        "path-browserify": "^1.0.1",
+        "process": "^0.11.10"
     }
 }

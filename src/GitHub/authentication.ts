@@ -1,19 +1,23 @@
 import * as vscode from "vscode";
 import * as Octokit from "@octokit/rest";
 import { authentication } from "vscode";
+import { getGitHubAuthenticatedUser } from "./api";
+import { TGitHubUser } from "./types";
 
 const GITHUB_AUTH_PROVIDER_ID = "github";
 // The GitHub Authentication Provider accepts the scopes described here:
 // https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/
-const SCOPES = ["user:email, repo"];
+const SCOPES = ["user:email, repo, delete_repo"];
 
 export class Credentials {
     private octokit: Octokit.Octokit | undefined;
     isAuthenticated = false;
+    authenticatedUser = {} as TGitHubUser;
 
     async initialize(context: vscode.ExtensionContext): Promise<void> {
         this.registerListeners(context);
         this.setOctokit();
+        this.authenticatedUser = await getGitHubAuthenticatedUser();
     }
 
     private async setOctokit() {
@@ -22,11 +26,7 @@ export class Credentials {
          * An entry for the sample extension will be added under the menu to sign in. This allows quietly
          * prompting the user to sign in.
          * */
-        const session = await vscode.authentication.getSession(
-            GITHUB_AUTH_PROVIDER_ID,
-            SCOPES,
-            { createIfNone: true }
-        );
+        const session = await vscode.authentication.getSession(GITHUB_AUTH_PROVIDER_ID, SCOPES, { createIfNone: true });
 
         if (session) {
             this.octokit = new Octokit.Octokit({
@@ -61,11 +61,7 @@ export class Credentials {
          * When the `createIfNone` flag is passed, a modal dialog will be shown asking the user to sign in.
          * Note that this can throw if the user clicks cancel.
          */
-        const session = await vscode.authentication.getSession(
-            GITHUB_AUTH_PROVIDER_ID,
-            SCOPES,
-            { createIfNone: true }
-        );
+        const session = await vscode.authentication.getSession(GITHUB_AUTH_PROVIDER_ID, SCOPES, { createIfNone: true });
         this.octokit = new Octokit.Octokit({
             auth: session.accessToken,
         });
@@ -74,14 +70,9 @@ export class Credentials {
     }
 
     async getAccessToken(): Promise<string | undefined> {
-        const session = await authentication.getSession(
-            GITHUB_AUTH_PROVIDER_ID,
-            SCOPES
-        );
+        const session = await authentication.getSession(GITHUB_AUTH_PROVIDER_ID, SCOPES);
 
-        session
-            ? (this.isAuthenticated = true)
-            : (this.isAuthenticated = false);
+        session ? (this.isAuthenticated = true) : (this.isAuthenticated = false);
 
         return Promise.resolve(session?.accessToken);
     }

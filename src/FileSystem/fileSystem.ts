@@ -1,6 +1,20 @@
-import { Disposable, Event, EventEmitter, FileChangeEvent, FileStat, FileSystemError, FileSystemProvider, FileType, TextDocument, Uri } from "vscode";
-import { getRepoFileContent, setRepoFileContent } from "../GitHub/commands";
-import { TGitHubUpdateContent, TRepoContent } from "../GitHub/types";
+import {
+    Disposable,
+    Event,
+    EventEmitter,
+    FileChangeEvent,
+    FileChangeType,
+    FileStat,
+    FileSystemError,
+    FileSystemProvider,
+    FileType,
+    TextDocument,
+    Uri,
+} from "vscode";
+import { repoProvider } from "../extension";
+import { deleteGitHubFile, refreshGitHubTree, createOrUpdateFile } from "../GitHub/api";
+import { getRepoFileContent } from "../GitHub/commands";
+import { TGitHubUpdateContent, TContent } from "../GitHub/types";
 import { RepoNode } from "../Tree/nodes";
 import { store } from "./storage";
 
@@ -47,12 +61,16 @@ export class RepoFileSystemProvider implements FileSystemProvider {
     private _onDidChangeFile = new EventEmitter<FileChangeEvent[]>();
     readonly onDidChangeFile: Event<FileChangeEvent[]> = this._onDidChangeFile.event;
 
+    constructor() {
+        this._onDidChangeFile = new EventEmitter<FileChangeEvent[]>();
+    }
+
     async readFile(uri: Uri): Promise<Uint8Array> {
         const [repository, file] = RepoFileSystemProvider.getRepoInfo(uri)!;
         return await getRepoFileContent(repository, file);
     }
 
-    static getRepoInfo(uri: Uri): [RepoNode, TRepoContent] | undefined {
+    static getRepoInfo(uri: Uri): [RepoNode, TContent] | undefined {
         const match = RepoFileSystemProvider.getFileInfo(uri);
 
         if (!match) {
@@ -61,7 +79,7 @@ export class RepoFileSystemProvider implements FileSystemProvider {
         }
 
         const repository = store.repos.find((repo) => repo!.name === match[0])!;
-        const file = repository!.tree?.tree.find((file: TRepoContent) => file.path === match[1]);
+        const file: TContent = repository!.tree?.tree.find((file: TContent) => file?.path === match[1]);
 
         return [repository, file];
     }
@@ -76,10 +94,10 @@ export class RepoFileSystemProvider implements FileSystemProvider {
     }
 
     static getFileInfo(uri: Uri): [string, string] | undefined {
-        const repo = uri.authority;
+        const repoName = uri.authority;
         const path = uri.path.startsWith("/") ? uri.path.substring(1) : uri.path;
 
-        return [repo, path];
+        return [repoName, path];
     }
 
     static isRepoDocument(document: TextDocument, repo?: string) {
@@ -113,7 +131,13 @@ export class RepoFileSystemProvider implements FileSystemProvider {
     }
 
     async delete(uri: Uri): Promise<void> {
-        throw new Error("Method not implemented.");
+        const repository = store.repos.find((repo) => repo!.name === uri.authority);
+        const file = repository!.tree?.tree.find((file: TContent) => file!.path === uri.path.substring(1));
+
+        await deleteGitHubFile(repository!.repo!, file);
+
+        this._onDidChangeFile.fire([{ type: FileChangeType.Deleted, uri }]); // investigate: needed?
+        repoProvider.refresh();
     }
 
     async rename(uri: Uri): Promise<void> {
@@ -121,7 +145,7 @@ export class RepoFileSystemProvider implements FileSystemProvider {
     }
 
     async deleteDirectory(uri: Uri): Promise<void> {
-        throw new Error("Method not implemented.");
+        // Folders do not really exist in Git, no action needed
     }
 
     readDirectory(uri: Uri): [string, FileType][] {
@@ -132,15 +156,42 @@ export class RepoFileSystemProvider implements FileSystemProvider {
         // Folders do not really exist in Git, no action needed
     }
 
-    writeFile(uri: Uri, content: Uint8Array, options: { create: boolean; overwrite: boolean }): void | Thenable<void> {
+    writeFile(uri: Uri, content: Uint8Array, options: { create: boolean; overwrite: boolean }): Promise<void> {
         let repository = store.repos.find((repo) => repo!.name === uri.authority)!;
-        let file = repository!.tree?.tree.find((file: TRepoContent) => file.path === uri.fsPath.substring(1));
+        let file: TContent = repository!.tree?.tree.find((file: TContent) => file?.path === uri.path.substring(1));
 
-        setRepoFileContent(repository, file, content).then((response: TGitHubUpdateContent) => {
-            file.sha = response.content?.sha;
-            file.size = response.content?.size;
-            file.url = response.content?.git_url;
-        });
+        if (!file) {
+            file = {};
+            file.path = uri.path.substring(1);
+            createOrUpdateFile(repository, file, content)
+                .then((response: TGitHubUpdateContent) => {
+                    file!.sha = response.content?.sha;
+                    file!.size = response.content?.size;
+                    file!.url = response.content?.git_url;
+                })
+                .then(() => {
+                    refreshGitHubTree(repository.repo, repository.repo.default_branch).then((tree) => {
+                        repository.repo.tree = tree;
+                    });
+                });
+
+            this._onDidChangeFile.fire([{ type: FileChangeType.Created, uri }]); // investigate: needed?
+            repoProvider.refresh();
+        } else {
+            file.path = uri.path.substring(1);
+            createOrUpdateFile(repository, file, content).then((response: TGitHubUpdateContent) => {
+                file!.sha = response.content?.sha;
+                file!.size = response.content?.size;
+                file!.url = response.content?.git_url;
+            });
+
+            refreshGitHubTree(repository.repo, repository.repo.default_branch).then((tree) => {
+                repository.repo.tree = tree;
+            });
+
+            this._onDidChangeFile.fire([{ type: FileChangeType.Changed, uri }]); // investigate: needed?
+            // repoProvider.refresh();
+        }
 
         return Promise.resolve();
     }
