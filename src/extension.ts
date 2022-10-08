@@ -16,7 +16,8 @@ export let gitHubAuthenticatedUser: TGitHubUser;
 export let extensionContext: ExtensionContext;
 export const repoProvider = new RepoProvider();
 export const repoFileSystemProvider = new RepoFileSystemProvider();
-let refreshInterval = config.get("PullInterval") * 1000;
+let pullInterval = config.get("PullInterval") * 1000;
+let pullIntervalTimer: NodeJS.Timer | undefined = undefined;
 
 export async function activate(context: ExtensionContext) {
     extensionContext = context;
@@ -173,12 +174,15 @@ export async function activate(context: ExtensionContext) {
         })
     );
 
-    // const repoFileSystemProvider = new RepoFileSystemProvider();
     context.subscriptions.push(
+        // extension activation point
         workspace.registerFileSystemProvider(REPO_SCHEME, repoFileSystemProvider, {
             isCaseSensitive: true,
         })
     );
+    pullIntervalTimer = setInterval(() => {
+        repoProvider.refresh();
+    }, pullInterval);
 
     // register global storage
     const keysForSync = [GLOBAL_STORAGE_KEY];
@@ -195,13 +199,16 @@ export async function activate(context: ExtensionContext) {
             }
 
             if (e.affectsConfiguration("VirtualRepos.PullInterval")) {
-                if (config.get("PullInterval")) {
-                    refreshInterval = config.get("PullInterval") * 1000;
-                }
+                if (config.get("PullInterval") > 0) {
+                    pullInterval = config.get("PullInterval") * 1000;
 
-                setInterval(() => {
-                    repoProvider.refresh();
-                }, refreshInterval);
+                    clearInterval(pullIntervalTimer);
+                    pullIntervalTimer = setInterval(() => {
+                        repoProvider.refresh();
+                    }, pullInterval);
+                } else {
+                    clearInterval(pullIntervalTimer);
+                }
             }
         })
     );

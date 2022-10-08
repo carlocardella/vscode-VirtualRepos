@@ -148,8 +148,8 @@
                 },
                 "VirtualRepos.PullInterval": {
                     "type": "number",
-                    "description": "Interval in seconds to pull changes from the remote repository; set to 0 (zero) to disable",
-                    "default": 60
+                    "description": "Interval in seconds to pull changes from the remote repository, set to 0 (zero) to disable",
+                    "default": 0
                 }
             }
         },
