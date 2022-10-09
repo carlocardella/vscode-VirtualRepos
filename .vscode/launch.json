@@ -38,8 +38,8 @@
             "debugWebWorkerHost": true,
             "request": "launch",
             "args": ["--extensionDevelopmentPath=${workspaceFolder}", "--extensionDevelopmentKind=web", "--disable-extensions"],
-            "outFiles": ["${workspaceFolder}/dist/web/**/*.js"],
-            "preLaunchTask": "npm: watch-web"
+            "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+            "preLaunchTask": "npm: webpack-web-production"
         },
         {
             "name": "Extension Tests",

@@ -26,6 +26,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Move folder
 * File comments
 
+### Branches
+
+* Switch branch
+* Delete branch
+* Create branch
+
 ### Other
 
 * Pull at configurable intervals (set a default around 1 minute) to ensure the repo view is current
