@@ -31,7 +31,14 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Pull at configurable intervals (set a default around 1 minute) to ensure the repo view is current
 * Push changes at configurable intervals (only if there are changes to push) rather than other on save; users may have auto-save enabled, that would generate lots of small push changes and potentially exceed the GitHub [API rate limit](https://docs.github.com/en/rest/rate-limit#about-the-rate-limit-api)
 
-## ## [0.0.13] - 2022-10-08
+## [0.0.14] - 2022-10-09
+
+### Fixed
+
+* Fix [Create new file does not work in repo root](https://github.com/carlocardella/vscode-VirtualRepos/issues/3)
+* Fix `Delete File` command
+
+## [0.0.13] - 2022-10-08
 
 ### Fixed
 

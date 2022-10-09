@@ -11,6 +11,7 @@ export class RepoNode extends TreeItem {
     tree?: TTree;
     name: string;
     uri: Uri;
+    path: string;
 
     constructor(public repo: TRepo, tree?: any) {
         super(repo.name, TreeItemCollapsibleState.Collapsed);
@@ -23,6 +24,7 @@ export class RepoNode extends TreeItem {
         this.name = repo.name;
         this.contextValue = "repo";
         this.uri = Uri.parse(`${REPO_SCHEME}://${repo.owner.login}/${repo.name}`);
+        this.path = "/";
     }
 }
 
@@ -39,8 +41,8 @@ export class ContentNode extends TreeItem {
         this.tooltip = nodeContent?.path;
         this.iconPath = nodeContent?.type === ContentType.file ? ThemeIcon.File : ThemeIcon.Folder;
         this.contextValue = nodeContent?.type === ContentType.file ? "file" : "folder";
-        this.path = nodeContent?.path ?? "";
-        this.uri = RepoFileSystemProvider.getFileUri(repo.name, this.path);
+        this.path = nodeContent?.path ?? "/";
+        this.uri = RepoFileSystemProvider.getFileUri(repo, this.path);
         this.resourceUri = this.uri;
         this.owner = repo.owner.login;
         this.nodeContent = nodeContent;

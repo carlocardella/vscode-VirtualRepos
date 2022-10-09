@@ -14,7 +14,7 @@ import {
 import { repoProvider } from "../extension";
 import { deleteGitHubFile, refreshGitHubTree, createOrUpdateFile } from "../GitHub/api";
 import { getRepoFileContent } from "../GitHub/commands";
-import { TGitHubUpdateContent, TContent } from "../GitHub/types";
+import { TGitHubUpdateContent, TContent, TRepo } from "../GitHub/types";
 import { RepoNode } from "../Tree/nodes";
 import { store } from "./storage";
 
@@ -89,13 +89,13 @@ export class RepoFileSystemProvider implements FileSystemProvider {
         return new Disposable(() => {});
     }
 
-    static getFileUri(repoName: string, filePath: string = "") {
-        return Uri.parse(`${REPO_SCHEME}://${repoName}/${filePath}`);
+    static getFileUri(repo: TRepo, filePath: string = "") {
+        return Uri.parse(`${REPO_SCHEME}://${repo.owner.login}/${repo.name}/${filePath}`);
     }
 
     static getFileInfo(uri: Uri): [string, string] | undefined {
-        const repoName = uri.authority;
-        const path = uri.path.startsWith("/") ? uri.path.substring(1) : uri.path;
+        const repoName = uri.path.split("/")[1];
+        const path = uri.path.split("/").slice(2).join("/");
 
         return [repoName, path];
     }
@@ -131,8 +131,10 @@ export class RepoFileSystemProvider implements FileSystemProvider {
     }
 
     async delete(uri: Uri): Promise<void> {
-        const repository = store.repos.find((repo) => repo!.name === uri.authority);
-        const file = repository!.tree?.tree.find((file: TContent) => file!.path === uri.path.substring(1));
+        const repoName = uri.path.split("/")[1];
+        const repository = store.repos.find((repo) => repo!.name === repoName);
+        const path = uri.path.split("/").slice(2).join("/");
+        const file = repository!.tree?.tree.find((file: TContent) => file!.path === path);
 
         await deleteGitHubFile(repository!.repo!, file);
 
@@ -162,7 +164,7 @@ export class RepoFileSystemProvider implements FileSystemProvider {
 
         if (!file) {
             file = {};
-            file.path = uri.path.substring(1);
+            file.path = uri.path.match(/[^\/]+.*/)![0];
             createOrUpdateFile(repository, file, content)
                 .then((response: TGitHubUpdateContent) => {
                     file!.sha = response.content?.sha;
@@ -195,4 +197,8 @@ export class RepoFileSystemProvider implements FileSystemProvider {
 
         return Promise.resolve();
     }
+
+    // static async findRepoFile(uri: Uri): Promise<TContent | undefined> { 
+    //     return Promise.reject();
+    // }
 }

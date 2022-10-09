@@ -138,12 +138,13 @@ export function stringToByteArray(value: string) {
  * @param {ContentNode} e The TreeItem containing the file to create
  * @returns {*}
  */
-export async function addFile(e: ContentNode) {
+export async function addFile(e: ContentNode | RepoNode) {
     const newFileName = await window.showInputBox({ ignoreFocusOut: true, placeHolder: "path/filename", title: "Enter the filename (optional path)" });
     if (!newFileName) {
         return;
     }
 
+    
     const [repoName, path] = RepoFileSystemProvider.getFileInfo(e.uri)!;
     const content = "";
 
