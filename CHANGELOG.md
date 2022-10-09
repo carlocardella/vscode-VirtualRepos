@@ -26,6 +26,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Move folder
 * File comments
 
+### Wiki
+
+* Manage doc repo as wiki
+
 ### Other
 
 * Pull at configurable intervals (set a default around 1 minute) to ensure the repo view is current
