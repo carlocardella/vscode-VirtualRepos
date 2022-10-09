@@ -14,6 +14,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Star repository
 * Unstar repository
 * Change repository visibility (private/public)
+* Open origin in browser
 
 ### Repository content
 
@@ -26,11 +27,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Move folder
 * File comments
 
-### Branches
+### Wiki
 
-* Switch branch
-* Delete branch
-* Create branch
+* Manage doc repo as wiki
 
 ### Other
 
