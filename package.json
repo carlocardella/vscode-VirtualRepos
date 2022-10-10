@@ -7,7 +7,7 @@
         "name": "Carlo Cardella",
         "url": "https://cloudnotes.io"
     },
-    "version": "0.0.14",
+    "version": "0.0.15",
     "engines": {
         "vscode": "^1.63.0"
     },
@@ -150,6 +150,11 @@
                     "type": "number",
                     "description": "Interval in seconds to pull changes from the remote repository, set to 0 (zero) to disable",
                     "default": 0
+                },
+                "VirtualRepos.UseRepoOwnerAvatar": {
+                    "type": "boolean",
+                    "description": "Use the owner avatar for the repository",
+                    "default": false
                 }
             }
         },

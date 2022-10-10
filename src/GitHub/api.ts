@@ -118,7 +118,7 @@ export async function createOrUpdateFile(repo: RepoNode, file: TContent, content
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output?.logError(repo.repo, e);
+        output?.appendLine(`Error writing file ${repo.owner}/${repo.name}/${file!.path}. ${e.message.trim()}`, output.messageType.error);
     }
 
     return Promise.reject();
