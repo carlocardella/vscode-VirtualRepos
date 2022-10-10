@@ -67,13 +67,14 @@ Changes are committed automatically after the file is saved. The commit message 
 
 Imagine you fork a repo and then open both your fork and its upstream, you would see something like this in your TreeView:
 
-![repo form and upstram](images/repo_fork_and_upstream.png)
+![multiple repos with the same name](https://user-images.githubusercontent.com/5784415/194788228-d99b47ea-177d-448b-8001-8843955cc553.png)
 
 Which one is your fork and which one is upstream?
 
 Well, you can hover with your mouse on the repo name to show the tooltip and get `owner/reponame`, or switch `VirtualRepos.UseRepoOwnerAvatar` to `true` (default is `false`) to replace the standard repo icon with the repo owner's GitHub avatar:
 
-![UseRepoOwnerAvatar](images/UserRepoOwnerAvatar.gif)
+![UserRepoOwnerAvatar](https://user-images.githubusercontent.com/5784415/194788262-4eb6ad81-f924-4a42-a642-eec4c10a60b0.gif)
+
 
 ## Tracing
 
