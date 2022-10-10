@@ -7,7 +7,7 @@
         "name": "Carlo Cardella",
         "url": "https://cloudnotes.io"
     },
-    "version": "0.0.14",
+    "version": "0.0.15",
     "engines": {
         "vscode": "^1.63.0"
     },
