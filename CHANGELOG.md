@@ -27,9 +27,14 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Move folder
 * File comments
 
-### Wiki
+### Branches
 
-* Manage doc repo as wiki
+* Switch branch
+* Create branch
+* Delete branch
+* Merge branch
+* Optionally, on reopen, remember the previously selected branch
+  * Open the default branch otherwise
 
 ### Wiki
 
