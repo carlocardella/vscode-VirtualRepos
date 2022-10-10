@@ -63,6 +63,19 @@ You can create a new repository (public or private), other repo operations (dele
 
 Changes are committed automatically after the file is saved. The commit message is `VirtualRepos: update file <filePath>`.
 
+## Repo owner's avatar
+
+Imagine you fork a repo and then open both your fork and its upstream, you would see something like this in your TreeView:
+
+![multiple repos with the same name](https://user-images.githubusercontent.com/5784415/194788228-d99b47ea-177d-448b-8001-8843955cc553.png)
+
+Which one is your fork and which one is upstream?
+
+Well, you can hover with your mouse on the repo name to show the tooltip and get `owner/reponame`, or switch `VirtualRepos.UseRepoOwnerAvatar` to `true` (default is `false`) to replace the standard repo icon with the repo owner's GitHub avatar:
+
+![UserRepoOwnerAvatar](https://user-images.githubusercontent.com/5784415/194788262-4eb6ad81-f924-4a42-a642-eec4c10a60b0.gif)
+
+
 ## Tracing
 
 You can enable `VirtualRepos.EnableTracing` in your User or Workspace settings to enable tracing in a `Virtual Repositories` output channel; this is off by default but it can be useful for troubleshooting errors or if you are curious to see what the extension is doing under the hood.

@@ -150,6 +150,11 @@
                     "type": "number",
                     "description": "Interval in seconds to pull changes from the remote repository, set to 0 (zero) to disable",
                     "default": 0
+                },
+                "VirtualRepos.UseRepoOwnerAvatar": {
+                    "type": "boolean",
+                    "description": "Use the owner avatar for the repository",
+                    "default": false
                 }
             }
         },
@@ -304,7 +309,8 @@
         "vscode:prepublish": "npm run package-web",
         "compile-web": "webpack",
         "watch-web": "webpack --watch",
-        "package-web": "webpack --mode production --devtool hidden-source-map"
+        "package-web": "webpack --mode production --devtool hidden-source-map",
+        "webpack-web-production": "webpack --mode production"
     },
     "devDependencies": {
         "@types/glob": "^7.2.0",

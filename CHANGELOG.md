@@ -26,14 +26,30 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Move folder
 * File comments
 
+### Branches
+
+* Switch branch
+* Delete branch
+* Create branch
+
 ### Wiki
 
 * Manage doc repo as wiki
 
 ### Other
 
-* Pull at configurable intervals (set a default around 1 minute) to ensure the repo view is current
 * Push changes at configurable intervals (only if there are changes to push) rather than other on save; users may have auto-save enabled, that would generate lots of small push changes and potentially exceed the GitHub [API rate limit](https://docs.github.com/en/rest/rate-limit#about-the-rate-limit-api)
+
+## [0.0.15] - 2022-10-09
+
+### Fixed
+
+* Address [Handle multiple repos with the same name](https://github.com/carlocardella/vscode-VirtualRepos/issues/5)
+
+### Added
+
+* New setting `VirtualRepos.UseRepoOwnerAvatar` (default: `false`)
+  * Useful if you open multiple repos with the same name, for example a fork in your GitHub account and its upstream. Or simply if you prefer to use the repo owner's avatar instead of the generic repo icon
 
 ## [0.0.14] - 2022-10-09
 

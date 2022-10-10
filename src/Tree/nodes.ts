@@ -5,6 +5,7 @@ import { store, getReposFromGlobalStorage } from "../FileSystem/storage";
 import { getGitHubBranch, getGitHubRepoContent, getGitHubTree, openRepository } from "../GitHub/api";
 import { getRepoDetails } from "../GitHub/commands";
 import { TRepo, ContentType, TContent, TTree } from "../GitHub/types";
+import * as config from "./../config";
 
 export class RepoNode extends TreeItem {
     owner: string;
@@ -16,8 +17,9 @@ export class RepoNode extends TreeItem {
     constructor(public repo: TRepo, tree?: any) {
         super(repo.name, TreeItemCollapsibleState.Collapsed);
 
-        this.tooltip = `${repo.name}`;
-        this.iconPath = new ThemeIcon("repo");
+        const icon = config.get("UseRepoOwnerAvatar") ? Uri.parse(repo.owner.avatar_url) : new ThemeIcon("repo");
+        this.iconPath = icon;
+        this.tooltip = `${repo.owner.login}/${repo.name}`;
         this.repo = repo;
         this.owner = repo.owner.login;
         this.tree = tree;
@@ -25,6 +27,11 @@ export class RepoNode extends TreeItem {
         this.contextValue = "repo";
         this.uri = Uri.parse(`${REPO_SCHEME}://${repo.owner.login}/${repo.name}`);
         this.path = "/";
+        this.description = repo.default_branch;
+    }
+
+    get full_name() {
+        return `${this.owner}/${this.name}`;
     }
 }
 
