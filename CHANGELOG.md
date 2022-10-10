@@ -43,6 +43,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Other
 
 * Push changes at configurable intervals (only if there are changes to push) rather than other on save; users may have auto-save enabled, that would generate lots of small push changes and potentially exceed the GitHub [API rate limit](https://docs.github.com/en/rest/rate-limit#about-the-rate-limit-api)
+* Sort repository list in TreeView
 
 ## [0.0.15] - 2022-10-09
 
