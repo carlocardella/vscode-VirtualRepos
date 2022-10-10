@@ -39,7 +39,7 @@
             "request": "launch",
             "args": ["--extensionDevelopmentPath=${workspaceFolder}", "--extensionDevelopmentKind=web", "--disable-extensions"],
             "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-            "preLaunchTask": "npm: webpack-web-production"
+            "preLaunchTask": "npm: compile-web"
         },
         {
             "name": "Extension Tests",

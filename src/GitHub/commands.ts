@@ -1,9 +1,9 @@
 import { TextEncoder } from "util";
-import { ProgressLocation, QuickPickItem, QuickPickItemKind, Uri, window, workspace } from "vscode";
+import { Uri, window, workspace } from "vscode";
 import { RepoFileSystemProvider, REPO_SCHEME } from "../FileSystem/fileSystem";
 import { ContentNode, RepoNode } from "../Tree/nodes";
 import { getGitHubRepoContent, newGitHubRepository, deleteGitHubRepository, getGitHubReposForAuthenticatedUser, getStarredGitHubRepositories } from "./api";
-import { TContent, TRepo } from "./types";
+import { TContent } from "./types";
 import { credentials, extensionContext, output, repoFileSystemProvider } from "../extension";
 import { addToGlobalStorage, removeFromGlobalStorage } from "../FileSystem/storage";
 
