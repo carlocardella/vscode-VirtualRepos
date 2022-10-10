@@ -188,6 +188,12 @@ export async function activate(context: ExtensionContext) {
     const keysForSync = [GLOBAL_STORAGE_KEY];
     context.globalState.setKeysForSync(keysForSync);
 
+    const treeView = window.createTreeView("virtualReposView", {
+        treeDataProvider: repoProvider,
+        showCollapseAll: true,
+        canSelectMany: true,
+    });
+
     context.subscriptions.push(
         workspace.onDidChangeConfiguration((e) => {
             if (e.affectsConfiguration("VirtualRepos.EnableTracing")) {
@@ -210,14 +216,14 @@ export async function activate(context: ExtensionContext) {
                     clearInterval(pullIntervalTimer);
                 }
             }
+
+            if (e.affectsConfiguration("VirtualRepos.UseRepoOwnerAvatar")) {
+                repoProvider.refresh();
+                output?.appendLine("UseRepoOwnerAvatar changed", output.messageType.info);
+            }
         })
     );
 
-    window.createTreeView("virtualReposView", {
-        treeDataProvider: repoProvider,
-        showCollapseAll: true,
-        canSelectMany: true,
-    });
     // tv.reveal(store.repos);
 
     // window.registerTreeDataProvider("Repositories", repoProvider);

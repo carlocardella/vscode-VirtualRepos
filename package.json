@@ -150,6 +150,11 @@
                     "type": "number",
                     "description": "Interval in seconds to pull changes from the remote repository, set to 0 (zero) to disable",
                     "default": 0
+                },
+                "VirtualRepos.UseRepoOwnerAvatar": {
+                    "type": "boolean",
+                    "description": "Use the owner avatar for the repository",
+                    "default": false
                 }
             }
         },

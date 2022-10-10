@@ -7,6 +7,7 @@ export function get(key: "PullInterval"): number;
 export function get(key: "PushInterval"): number;
 export function get(key: "PushOn"): string;
 export function get(key: "MergeConflicts"): string;
+export function get(key: "UseRepoOwnerAvatar"): boolean;
 
 export function get(key: any) {
     const extensionConfig = vscode.workspace.getConfiguration(CONFIG_SECTION);
