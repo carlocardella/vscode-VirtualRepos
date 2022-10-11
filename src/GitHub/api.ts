@@ -1,7 +1,6 @@
 import * as rest from "@octokit/rest";
 import { credentials, output } from "../extension";
 import { RepoNode } from "../Tree/nodes";
-import { COMMIT_MESSAGE } from "./constants";
 import { TBranch, TContent, TGitHubUpdateContent, TGitHubUser, TRepo, TTree } from "./types";
 
 /**
