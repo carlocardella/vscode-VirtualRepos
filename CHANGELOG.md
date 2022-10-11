@@ -46,6 +46,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Sort repository list in TreeView
 * Adopt new [Log Output Channel](https://code.visualstudio.com/updates/v1_72#_log-output-channel) when the API will be finalized
 
+## [0.0.16] - 2022-10-10
+
+### Fixed
+
+* Fix for [Files do not open on github.dev](https://github.com/carlocardella/vscode-VirtualRepos/issues/7)
+* Fix for [Add file apparently does not do anything in github.dev](https://github.com/carlocardella/vscode-VirtualRepos/issues/8)
+
 ## [0.0.15] - 2022-10-09
 
 ### Fixed
