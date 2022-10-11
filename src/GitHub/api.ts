@@ -98,7 +98,7 @@ export async function createOrUpdateFile(repo: RepoNode, file: TContent, content
                 owner: repo.owner,
                 repo: repo.name,
                 path: file!.path!,
-                message: `${COMMIT_MESSAGE} ${file!.path}`,
+                message: `VirtualRepos: create ${file!.path}`,
                 content: Buffer.from(fileContentString).toString("base64"),
             }));
         } else {
@@ -107,7 +107,7 @@ export async function createOrUpdateFile(repo: RepoNode, file: TContent, content
                 owner: repo.owner,
                 repo: repo.name,
                 path: file!.path!,
-                message: `${COMMIT_MESSAGE} ${file!.path}`,
+                message: `VirtualRepos: update ${file!.path}`,
                 content: Buffer.from(fileContentString).toString("base64"),
                 sha: file!.sha,
             }));

@@ -26,6 +26,7 @@ export class RepoNode extends TreeItem {
         this.name = repo.name;
         this.contextValue = "repo";
         this.uri = Uri.parse(`${REPO_SCHEME}://${repo.owner.login}/${repo.name}`);
+        //         Uri.parse(`${REPO_SCHEME}://${repo.owner.login}/${repo.name}/${filePath}`);
         this.path = "/";
         this.description = repo.default_branch;
     }

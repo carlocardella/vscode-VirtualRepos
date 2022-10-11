@@ -144,11 +144,11 @@ export async function addFile(e: ContentNode | RepoNode) {
     }
 
     
-    const [repoName, path] = RepoFileSystemProvider.getFileInfo(e.uri)!;
+    const [repoOwner, repoName, path] = RepoFileSystemProvider.getFileInfo(e.uri)!;
     const content = "";
 
     // const fileSystemProvider = new RepoFileSystemProvider();
-    repoFileSystemProvider.writeFile(Uri.parse(`${REPO_SCHEME}://${repoName}/${path}/${newFileName}`), stringToByteArray(content), {
+    repoFileSystemProvider.writeFile(Uri.parse(`${REPO_SCHEME}://${repoOwner}/${repoName}/${path}/${newFileName}`), stringToByteArray(content), {
         create: true,
         overwrite: true,
     });
