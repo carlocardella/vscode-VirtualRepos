@@ -19,6 +19,14 @@ export const repoFileSystemProvider = new RepoFileSystemProvider();
 let pullInterval = config.get("PullInterval") * 1000;
 let pullIntervalTimer: NodeJS.Timer | undefined = undefined;
 
+// hack: https://angularfixing.com/how-to-access-textencoder-as-a-global-instead-of-importing-it-from-the-util-package/
+import { TextEncoder as _TextEncoder } from "node:util";
+import { TextDecoder as _TextDecoder } from "node:util";
+declare global {
+    var TextEncoder: typeof _TextEncoder;
+    var TextDecoder: typeof _TextDecoder;
+}
+
 export async function activate(context: ExtensionContext) {
     extensionContext = context;
     if (config.get("EnableTracing")) {

@@ -19,6 +19,7 @@ const webConfig = /** @type WebpackConfig */ {
         extensions: [".ts", ".js"], // support ts-files and js-files
         alias: {
             // provides alternate implementation for node module and source files
+            // util: "util"
         },
         fallback: {
             // Webpack 5 no longer polyfills Node.js core modules automatically.
@@ -33,8 +34,8 @@ const webConfig = /** @type WebpackConfig */ {
             // events: require.resolve("events"),
             // http: require.resolve("stream-http"),
             // https: require.resolve("https-browserify"),
-            os: require.resolve("os-browserify/browser"),
-            path: require.resolve("path-browserify"),
+            // os: require.resolve("os-browserify/browser"),
+            // path: require.resolve("path-browserify"),
             // punycode: require.resolve("punycode"),
             process: require.resolve("process/browser"),
             // querystring: require.resolve("querystring-es3"),
@@ -44,7 +45,7 @@ const webConfig = /** @type WebpackConfig */ {
             // timers: require.resolve("timers-browserify"),
             // tty: require.resolve("tty-browserify"),
             // url: require.resolve("url"),
-            // util: require.resolve("util"),
+            // util: require.resolve("util/"),
             // vm: require.resolve("vm-browserify"),
             // zlib: require.resolve("browserify-zlib")
         },
@@ -66,6 +67,8 @@ const webConfig = /** @type WebpackConfig */ {
         new webpack.ProvidePlugin({
             process: "process/browser", // provide a shim for the global `process` variable
             Buffer: ["buffer", "Buffer"],
+            // util: "util",
+            // sys: "util",
         }),
     ],
     externals: {
@@ -76,6 +79,7 @@ const webConfig = /** @type WebpackConfig */ {
     },
     devtool: "nosources-source-map", // create a source map that points to the original source file
 };
+
 const nodeConfig = /** @type WebpackConfig */ {
     context: __dirname,
     mode: "none", // this leaves the source code as close as possible to the original (when packaging we set this to 'production')

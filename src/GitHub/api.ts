@@ -1,5 +1,4 @@
 import * as rest from "@octokit/rest";
-import { TextDecoder } from "util";
 import { credentials, output } from "../extension";
 import { RepoNode } from "../Tree/nodes";
 import { COMMIT_MESSAGE } from "./constants";
