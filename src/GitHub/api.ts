@@ -33,9 +33,9 @@ export async function getGitHubReposForAuthenticatedUser(): Promise<TRepo[] | un
     });
 
     try {
-        const data = await octokit.paginate(octokit.repos.listForAuthenticatedUser, {type: "owner"}, (response) => {
-             return response.data;
-         });
+        const data = await octokit.paginate(octokit.repos.listForAuthenticatedUser, { type: "owner" }, (response) => {
+            return response.data;
+        });
 
         return Promise.resolve(data);
     } catch (e: any) {
@@ -110,8 +110,6 @@ export async function createOrUpdateFile(repo: RepoNode, file: TContent, content
                 content: Buffer.from(fileContentString).toString("base64"),
                 sha: file!.sha,
             }));
-
-            // file = data.commit;
         }
 
         return Promise.resolve(data);

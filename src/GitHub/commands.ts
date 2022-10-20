@@ -123,9 +123,9 @@ export async function pickRepository() {
  *
  * @export
  * @param {string} value The string to convert
- * @returns {*}
+ * @returns {Uint8Array}
  */
-export function stringToByteArray(value: string) {
+export function stringToByteArray(value: string): Uint8Array {
     return new TextEncoder().encode(value);
 }
 
@@ -143,11 +143,9 @@ export async function addFile(e: ContentNode | RepoNode) {
         return;
     }
 
-    
     const [repoOwner, repoName, path] = RepoFileSystemProvider.getFileInfo(e.uri)!;
     const content = "";
 
-    // const fileSystemProvider = new RepoFileSystemProvider();
     repoFileSystemProvider.writeFile(Uri.parse(`${REPO_SCHEME}://${repoOwner}/${repoName}/${path}/${newFileName}`), stringToByteArray(content), {
         create: true,
         overwrite: true,
@@ -168,7 +166,6 @@ export async function deleteNode(node: ContentNode) {
         return;
     }
 
-    // const fileSystemProvider = new RepoFileSystemProvider();
     repoFileSystemProvider.delete(node.uri);
 }
 
@@ -186,7 +183,6 @@ export async function uploadFiles(destination: ContentNode | RepoNode): Promise<
         return Promise.reject();
     }
 
-    // const fileSystemProvider = new RepoFileSystemProvider();
     files.forEach(async (file) => {
         const content = await workspace.fs.readFile(file);
         let uriPath = "path" in destination ? destination.path : "";

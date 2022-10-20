@@ -26,6 +26,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
   * Move multiple files
 * Move folder
 * File comments
+* Open markdown preview from context manu
 
 ### Branches
 

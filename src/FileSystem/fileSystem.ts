@@ -40,24 +40,6 @@ export class RepoFile implements FileStat {
     }
 }
 
-export class RepoDirectory implements FileStat {
-    type: FileType;
-    ctime: number;
-    mtime: number;
-    size: number;
-
-    name: string;
-    data?: Uint8Array;
-
-    constructor(name: string) {
-        this.name = name;
-        this.type = FileType.Directory;
-        this.ctime = Date.now();
-        this.mtime = Date.now();
-        this.size = 0;
-    }
-}
-
 export class RepoFileSystemProvider implements FileSystemProvider {
     private _onDidChangeFile = new EventEmitter<FileChangeEvent[]>();
     readonly onDidChangeFile: Event<FileChangeEvent[]> = this._onDidChangeFile.event;

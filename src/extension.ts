@@ -35,14 +35,14 @@ export async function activate(context: ExtensionContext) {
 
     gitHubAuthenticatedUser = await getGitHubAuthenticatedUser();
 
-    output?.appendLine("Virtual Repositories: extension is now active!", output.messageType.info);
+    output?.appendLine("Virtual Repositories extension is now active!", output.messageType.info);
 
     await credentials.initialize(context);
     if (!credentials.isAuthenticated) {
         credentials.initialize(context);
     }
 
-    const disposable = commands.registerCommand("extension.getGitHubUser", async () => {
+    const disposable = commands.registerCommand("VirtualRepos.getGitHubUser", async () => {
         const octokit = await credentials.getOctokit();
         const userInfo = await octokit.users.getAuthenticated();
 
@@ -148,16 +148,7 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.addFile", async (node) => {
-            window.withProgress(
-                {
-                    location: ProgressLocation.Notification,
-                    title: `New file`,
-                    cancellable: true,
-                },
-                () => {
-                    return addFile(<ContentNode>node);
-                }
-            );
+            return addFile(<ContentNode>node);
         })
     );
 
@@ -169,16 +160,7 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.deleteNode", async (node) => {
-            window.withProgress(
-                {
-                    location: ProgressLocation.Notification,
-                    title: `Deleting "${node.owner}/${node.path}"`,
-                    cancellable: true,
-                },
-                () => {
-                    return deleteNode(<ContentNode>node);
-                }
-            );
+            return deleteNode(<ContentNode>node);
         })
     );
 
