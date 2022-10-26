@@ -274,19 +274,9 @@
                     "group": "1_add@2"
                 },
                 {
-                    "command": "VirtualRepos.newPublicRepository",
-                    "when": "viewItem == repo",
-                    "group": "2_repoOperations@1"
-                },
-                {
-                    "command": "VirtualRepos.newPrivateRepository",
-                    "when": "viewItem == repo",
-                    "group": "2_repoOperations@2"
-                },
-                {
                     "command": "VirtualRepos.deleteRepository",
                     "when": "viewItem == repo",
-                    "group": "2_repoOperations@6"
+                    "group": "2_repoOperations@1"
                 },
                 {
                     "command": "VirtualRepos.closeRepository",
