@@ -4,7 +4,7 @@ import * as trace from "./tracing";
 import { commands, ExtensionContext, workspace, window, ProgressLocation } from "vscode";
 import { ContentNode, RepoProvider } from "./Tree/nodes";
 import { RepoFileSystemProvider, REPO_SCHEME } from "./FileSystem/fileSystem";
-import { addFile, deleteNode, deleteRepository, newRepository, pickRepository, uploadFiles } from "./GitHub/commands";
+import { addFile, cloneRepository, deleteNode, deleteRepository, newRepository, pickRepository, uploadFiles } from "./GitHub/commands";
 import { TGitHubUser } from "./GitHub/types";
 import { addToGlobalStorage, clearGlobalStorage, getReposFromGlobalStorage, purgeGlobalStorage, removeFromGlobalStorage } from "./FileSystem/storage";
 import { GLOBAL_STORAGE_KEY } from "./GitHub/constants";
@@ -128,7 +128,7 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.cloneRepository", async (node) => {
-            throw new Error("Not implemented");
+            cloneRepository(node);
         })
     );
 

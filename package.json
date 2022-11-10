@@ -136,6 +136,11 @@
                 "title": "Purge Global Storage",
                 "command": "VirtualRepos.purgeGlobalStorage",
                 "category": "Virtual Repositories"
+            },
+            {
+                "title": "Clone Repository",
+                "command": "VirtualRepos.cloneRepository",
+                "category": "Virtual Repositories"
             }
         ],
         "configuration": {
@@ -223,6 +228,10 @@
                 },
                 {
                     "command": "VirtualRepos.purgeGlobalStorage"
+                },
+                {
+                    "command": "VirtualRepos.cloneRepository",
+                    "when": "false"
                 }
             ],
             "view/title": [
@@ -282,6 +291,11 @@
                     "command": "VirtualRepos.closeRepository",
                     "when": "viewItem == repo",
                     "group": "2_close@1"
+                },
+                {
+                    "command": "VirtualRepos.cloneRepository",
+                    "when": "viewItem == repo",
+                    "group": "2_close@2"
                 },
                 {
                     "command": "VirtualRepos.deleteNode",

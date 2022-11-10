@@ -146,39 +146,25 @@ export class RepoFileSystemProvider implements FileSystemProvider {
         if (!file) {
             file = {};
             file.path = getFilePathWithoutRepoNameFromUri(uri);
-            createOrUpdateFile(repository, file, content)
-                .then((response: TGitHubUpdateContent) => {
-                    file!.sha = response.content?.sha;
-                    file!.size = response.content?.size;
-                    file!.url = response.content?.git_url;
-                })
-                .then(() => {
-                    refreshGitHubTree(repository.repo, repository.repo.default_branch).then((tree) => {
-                        repository.repo.tree = tree;
-                    });
-                })
-                .then(() => {
-                    this._onDidChangeFile.fire([{ type: FileChangeType.Created, uri }]);
-                    repoProvider.refresh();
-                });
         } else {
             file.path = removeLeadingSlash(file.path!);
-            createOrUpdateFile(repository, file, content)
-                .then((response: TGitHubUpdateContent) => {
-                    file!.sha = response.content?.sha;
-                    file!.size = response.content?.size;
-                    file!.url = response.content?.git_url;
-                })
-                .then(() => {
-                    refreshGitHubTree(repository.repo, repository.repo.default_branch).then((tree) => {
-                        repository.repo.tree = tree;
-                    });
-                })
-                .then(() => {
-                    this._onDidChangeFile.fire([{ type: FileChangeType.Changed, uri }]);
-                    repoProvider.refresh();
-                });
         }
+
+        createOrUpdateFile(repository, file, content)
+            .then((response: TGitHubUpdateContent) => {
+                file!.sha = response.content?.sha;
+                file!.size = response.content?.size;
+                file!.url = response.content?.git_url;
+            })
+            .then(() => {
+                refreshGitHubTree(repository.repo, repository.repo.default_branch).then((tree) => {
+                    repository.repo.tree = tree;
+                });
+            })
+            .then(() => {
+                this._onDidChangeFile.fire([{ type: FileChangeType.Changed, uri }]);
+                repoProvider.refresh();
+            });
 
         return Promise.resolve();
     }

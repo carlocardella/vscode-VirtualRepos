@@ -184,6 +184,7 @@ export type TRepo = {
     has_wiki: boolean;
     has_issues: boolean;
     has_pages: boolean;
+    clone_url: string;
 };
 
 export type TUser = {

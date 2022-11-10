@@ -1,4 +1,4 @@
-import { Uri, window, workspace } from "vscode";
+import { commands, Uri, window, workspace } from "vscode";
 import { RepoFileSystemProvider, REPO_SCHEME } from "../FileSystem/fileSystem";
 import { ContentNode, RepoNode } from "../Tree/nodes";
 import { getGitHubRepoContent, newGitHubRepository, deleteGitHubRepository, getGitHubReposForAuthenticatedUser, getStarredGitHubRepositories } from "./api";
@@ -253,4 +253,17 @@ export async function deleteRepository(repo: RepoNode): Promise<void> {
     if (deleted) {
         removeFromGlobalStorage(extensionContext, `${repo.repo.owner.login}/${repo.name}`);
     }
+}
+
+/**
+ * Clone the selected repository
+ *
+ * @export
+ * @async
+ * @param {RepoNode} repo The repository to clone
+ * @returns {*}
+ */
+export async function cloneRepository(repo: RepoNode) {
+    output?.appendLine(`Cloning ${repo.repo.clone_url}`, output.messageType.info);
+    commands.executeCommand("git.clone", repo.repo.clone_url);
 }

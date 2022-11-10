@@ -13,6 +13,7 @@ export class RepoNode extends TreeItem {
     name: string;
     uri: Uri;
     path: string;
+    clone_url: string;
 
     constructor(public repo: TRepo, tree?: any) {
         super(repo.name, TreeItemCollapsibleState.Collapsed);
@@ -29,6 +30,7 @@ export class RepoNode extends TreeItem {
         //         Uri.parse(`${REPO_SCHEME}://${repo.owner.login}/${repo.name}/${filePath}`);
         this.path = "/";
         this.description = repo.default_branch;
+        this.clone_url = repo.clone_url;
     }
 
     get full_name() {
