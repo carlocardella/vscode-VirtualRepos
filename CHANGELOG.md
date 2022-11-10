@@ -8,7 +8,6 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Repository management
 
-* Clone repository
 * Download repository (tar/zip)
 * Fork repository
 * Star repository
@@ -46,6 +45,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Push changes at configurable intervals (only if there are changes to push) rather than other on save; users may have auto-save enabled, that would generate lots of small push changes and potentially exceed the GitHub [API rate limit](https://docs.github.com/en/rest/rate-limit#about-the-rate-limit-api)
 * Sort repository list in TreeView
 * Adopt new [Log Output Channel](https://code.visualstudio.com/updates/v1_72#_log-output-channel) when the API will be finalized
+
+## [0.0.17] - 2022-11-09
+
+### Added
+
+* Clone repository
+
+### Changed
+
+* Updated context menu commands
+* Code refactoring and various bug fixes and improvements
 
 ## [0.0.16] - 2022-10-11
 
