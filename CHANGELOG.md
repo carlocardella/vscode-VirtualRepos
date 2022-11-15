@@ -46,6 +46,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 * Sort repository list in TreeView
 * Adopt new [Log Output Channel](https://code.visualstudio.com/updates/v1_72#_log-output-channel) when the API will be finalized
 
+## [0.0.18] - 2022-11-15
+
+### Fixed
+
+* Fixed [#13](https://github.com/carlocardella/vscode-VirtualRepos/issues/13): Wrong refresh rage with VirtualRepos.PullInterval
+
 ## [0.0.17] - 2022-11-09
 
 ### Added

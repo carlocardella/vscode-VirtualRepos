@@ -170,9 +170,15 @@ export async function activate(context: ExtensionContext) {
             isCaseSensitive: true,
         })
     );
-    pullIntervalTimer = setInterval(() => {
-        repoProvider.refresh();
-    }, pullInterval);
+
+    if (pullInterval > 0) {
+        pullIntervalTimer = setInterval(() => {
+            repoProvider.refresh();
+        }, pullInterval);
+    }
+    if (pullInterval > 0) {
+        output?.appendLine(`Set refresh interval to ${pullInterval / 1000} seconds`, trace.MessageType.info);
+    }
 
     // register global storage
     const keysForSync = [GLOBAL_STORAGE_KEY];
@@ -202,8 +208,10 @@ export async function activate(context: ExtensionContext) {
                     pullIntervalTimer = setInterval(() => {
                         repoProvider.refresh();
                     }, pullInterval);
+                    output?.appendLine(`Updated refresh interval to ${pullInterval / 1000} seconds`, trace.MessageType.info);
                 } else {
                     clearInterval(pullIntervalTimer);
+                    output?.appendLine(`Disabled refresh interval`, trace.MessageType.info);
                 }
             }
 
