@@ -6,35 +6,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-### Repository management
-
-* Download repository (tar/zip)
-* Fork repository
-* Star repository
-* Unstar repository
-* Change repository visibility (private/public)
-* Open origin in browser
-
-### Repository content
-
-* Rename file
-* Rename folder
-* Delete multiple files
-  * Delete folder (delete all files in folder)
-* Move file
-  * Move multiple files
-* Move folder
-* File comments
-* Open markdown preview from context manu
-
-### Branches
-
-* Switch branch
-* Create branch
-* Delete branch
-* Merge branch
-* Optionally, on reopen, remember the previously selected branch
-  * Open the default branch otherwise
+See the [list of open enhancements on GitHub](https://github.com/carlocardella/vscode-VirtualRepos/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3Aenhancement)
 
 ### Wiki
 
