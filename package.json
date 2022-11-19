@@ -141,6 +141,11 @@
                 "title": "Clone Repository",
                 "command": "VirtualRepos.cloneRepository",
                 "category": "Virtual Repositories"
+            },
+            {
+                "title": "Copy repote url",
+                "command": "VirtualRepos.copyRemoteUrl",
+                "category": "Virtual Repositories"
             }
         ],
         "configuration": {
@@ -232,6 +237,10 @@
                 {
                     "command": "VirtualRepos.cloneRepository",
                     "when": "false"
+                },
+                {
+                    "command": "VirtualRepos.copyRemoteUrl",
+                    "when": "false"
                 }
             ],
             "view/title": [
@@ -288,19 +297,29 @@
                     "group": "2_repoOperations@1"
                 },
                 {
-                    "command": "VirtualRepos.closeRepository",
+                    "command": "VirtualRepos.copyRemoteUrl",
                     "when": "viewItem == repo",
                     "group": "2_close@1"
                 },
                 {
-                    "command": "VirtualRepos.cloneRepository",
+                    "command": "VirtualRepos.closeRepository",
                     "when": "viewItem == repo",
                     "group": "2_close@2"
                 },
                 {
+                    "command": "VirtualRepos.cloneRepository",
+                    "when": "viewItem == repo",
+                    "group": "2_close@3"
+                },
+                {
+                    "command": "VirtualRepos.copyRemoteUrl",
+                    "when": "viewItem == folder || viewItem == file",
+                    "group": "1_remote@1"
+                },
+                {
                     "command": "VirtualRepos.deleteNode",
                     "when": "viewItem == folder || viewItem == file",
-                    "group": "3_delete@1"
+                    "group": "2_delete@1"
                 }
             ]
         }
@@ -318,30 +337,30 @@
     },
     "devDependencies": {
         "@types/glob": "^7.2.0",
-        "@types/lodash": "^4.14.185",
+        "@types/lodash": "^4.14.189",
         "@types/mocha": "^9.1.1",
         "@types/node": "16.x",
         "@types/vscode": "^1.63.0",
-        "@typescript-eslint/eslint-plugin": "^5.38.0",
-        "@typescript-eslint/parser": "^5.38.0",
-        "@vscode/test-electron": "^2.1.5",
-        "@webpack-cli/generators": "^2.5.0",
+        "@typescript-eslint/eslint-plugin": "^5.43.0",
+        "@typescript-eslint/parser": "^5.43.0",
+        "@vscode/test-electron": "^2.2.0",
+        "@webpack-cli/generators": "^3.0.0",
         "buffer": "^6.0.3",
-        "eslint": "^8.24.0",
+        "eslint": "^8.27.0",
         "glob": "^8.0.3",
-        "mocha": "^10.0.0",
-        "octokit": "^2.0.7",
+        "mocha": "^10.1.0",
+        "octokit": "^2.0.10",
         "ts-loader": "^9.4.1",
-        "typescript": "^4.8.4",
-        "webpack": "^5.74.0",
+        "typescript": "^4.9.3",
+        "webpack": "^5.75.0",
         "webpack-cli": "^4.10.0"
     },
     "dependencies": {
-        "@octokit/core": "^4.0.5",
+        "@octokit/core": "^4.1.0",
         "@octokit/openapi-types": "^13.13.1",
-        "@octokit/plugin-rest-endpoint-methods": "^6.6.2",
-        "@octokit/request": "^6.2.1",
-        "@octokit/rest": "^19.0.4",
+        "@octokit/plugin-rest-endpoint-methods": "^6.7.0",
+        "@octokit/request": "^6.2.2",
+        "@octokit/rest": "^19.0.5",
         "@octokit/types": "^7.5.1",
         "https-browserify": "^1.0.0",
         "is-binary-path": "^2.1.0",

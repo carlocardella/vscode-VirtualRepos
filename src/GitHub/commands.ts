@@ -1,4 +1,4 @@
-import { commands, Uri, window, workspace } from "vscode";
+import { commands, env, Uri, window, workspace } from "vscode";
 import { RepoFileSystemProvider, REPO_SCHEME } from "../FileSystem/fileSystem";
 import { ContentNode, RepoNode } from "../Tree/nodes";
 import { getGitHubRepoContent, newGitHubRepository, deleteGitHubRepository, getGitHubReposForAuthenticatedUser, getStarredGitHubRepositories } from "./api";
@@ -266,4 +266,26 @@ export async function deleteRepository(repo: RepoNode): Promise<void> {
 export async function cloneRepository(repo: RepoNode) {
     output?.appendLine(`Cloning ${repo.repo.clone_url}`, output.messageType.info);
     commands.executeCommand("git.clone", repo.repo.clone_url);
+}
+
+/**
+ * Copy the repository or file URL to the clipboard
+ *
+ * @export
+ * @param {(RepoNode | ContentNode)} node The node to copy the URL for
+ */
+export function copyRemoteUrl(node: RepoNode | ContentNode) {
+    let url: string | undefined;
+
+    if (node instanceof RepoNode) {
+        url = node.repo.html_url;
+    }
+    if (node instanceof ContentNode) {
+        url = node.nodeContent?.html_url;
+    }
+
+    if (url) {
+        env.clipboard.writeText(url);
+        output?.appendLine(`Copied ${url} to the clipboard`, output.messageType.info);
+    }
 }
