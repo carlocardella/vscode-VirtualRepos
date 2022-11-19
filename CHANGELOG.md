@@ -18,6 +18,17 @@ See the [list of open enhancements on GitHub](https://github.com/carlocardella/v
 * Sort repository list in TreeView
 * Adopt new [Log Output Channel](https://code.visualstudio.com/updates/v1_72#_log-output-channel) when the API will be finalized
 
+## [0.0.20] - 2022-11-18
+
+### Added
+
+* Added `Copy remote url` in context menu
+* Added `Show on remote` in context menu
+
+### Changed
+
+* Updated node modules
+
 ## [0.0.18] - 2022-11-15
 
 ### Fixed
