@@ -4,7 +4,7 @@ import * as trace from "./tracing";
 import { commands, ExtensionContext, workspace, window, ProgressLocation } from "vscode";
 import { ContentNode, RepoProvider } from "./Tree/nodes";
 import { RepoFileSystemProvider, REPO_SCHEME } from "./FileSystem/fileSystem";
-import { addFile, cloneRepository, copyRemoteUrl, deleteNode, deleteRepository, newRepository, pickRepository, uploadFiles } from "./GitHub/commands";
+import { addFile, cloneRepository, copyRemoteUrl, deleteNode, deleteRepository, newRepository, pickRepository, showOnRemote, uploadFiles } from "./GitHub/commands";
 import { TGitHubUser } from "./GitHub/types";
 import { addToGlobalStorage, clearGlobalStorage, getReposFromGlobalStorage, purgeGlobalStorage, removeFromGlobalStorage } from "./FileSystem/storage";
 import { GLOBAL_STORAGE_KEY } from "./GitHub/constants";
@@ -139,6 +139,12 @@ export async function activate(context: ExtensionContext) {
     );
 
     context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.showOnRemote", async (node) => {
+            showOnRemote(node);
+        })
+    );
+
+    context.subscriptions.push(
         commands.registerCommand("VirtualRepos.removeFromGlobalStorage", async () => {
             const reposFromGlobalStorage = await getReposFromGlobalStorage(context);
             const repoToRemove = await window.showQuickPick(reposFromGlobalStorage, {
@@ -237,3 +243,4 @@ export async function activate(context: ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate() {}
+

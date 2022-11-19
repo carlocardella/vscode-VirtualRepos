@@ -143,8 +143,13 @@
                 "category": "Virtual Repositories"
             },
             {
-                "title": "Copy repote url",
+                "title": "Copy remote url",
                 "command": "VirtualRepos.copyRemoteUrl",
+                "category": "Virtual Repositories"
+            },
+            {
+                "title": "Show on remote",
+                "command": "VirtualRepos.showOnRemote",
                 "category": "Virtual Repositories"
             }
         ],
@@ -241,6 +246,10 @@
                 {
                     "command": "VirtualRepos.copyRemoteUrl",
                     "when": "false"
+                },
+                {
+                    "command": "VirtualRepos.showOnRemote",
+                    "when": "false"
                 }
             ],
             "view/title": [
@@ -302,6 +311,11 @@
                     "group": "2_close@1"
                 },
                 {
+                    "command": "VirtualRepos.showOnRemote",
+                    "when": "viewItem == repo",
+                    "group": "2_close@2"
+                },
+                {
                     "command": "VirtualRepos.closeRepository",
                     "when": "viewItem == repo",
                     "group": "2_close@2"
@@ -315,6 +329,11 @@
                     "command": "VirtualRepos.copyRemoteUrl",
                     "when": "viewItem == folder || viewItem == file",
                     "group": "1_remote@1"
+                },
+                {
+                    "command": "VirtualRepos.showOnRemote",
+                    "when": "viewItem == folder || viewItem == file",
+                    "group": "1_remote@2"
                 },
                 {
                     "command": "VirtualRepos.deleteNode",

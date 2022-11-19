@@ -289,3 +289,25 @@ export function copyRemoteUrl(node: RepoNode | ContentNode) {
         output?.appendLine(`Copied ${url} to the clipboard`, output.messageType.info);
     }
 }
+
+/**
+ * Shows the selected repository or file on remote
+ *
+ * @export
+ * @param {(RepoNode | ContentNode)} node The node to show on remote
+ */
+export function showOnRemote(node: RepoNode | ContentNode) {
+    let url: string | undefined;
+
+    if (node instanceof RepoNode) {
+        url = node.repo.html_url;
+    }
+    if (node instanceof ContentNode) {
+        url = node.nodeContent?.html_url;
+    }
+
+    if (url) {
+        env.openExternal(Uri.parse(url));
+        output?.appendLine(`Show ${url} on remote`, output.messageType.info);
+    }
+}
