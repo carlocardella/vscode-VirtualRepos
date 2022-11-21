@@ -2,7 +2,7 @@
 
 ![preview](https://img.shields.io/badge/-preview-orange)
 
-[![Publish Extension](https://github.com/carlocardella/vscode-VirtualRepos/actions/workflows/PublishExtension.yml/badge.svg)](https://github.com/carlocardella/vscode-VirtualRepos/actions/workflows/PublishExtension.yml)
+<!--[![Publish Extension](https://github.com/carlocardella/vscode-VirtualRepos/actions/workflows/PublishExtension.yml/badge.svg)](https://github.com/carlocardella/vscode-VirtualRepos/actions/workflows/PublishExtension.yml)-->
 ![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/carlocardella.vscode-virtualRepos)
 ![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/carlocardella.vscode-virtualRepos)
 ![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/carlocardella.vscode-virtualRepos)
