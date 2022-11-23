@@ -2,9 +2,20 @@ import { Credentials } from "./GitHub/authentication";
 import * as config from "./config";
 import * as trace from "./tracing";
 import { commands, ExtensionContext, workspace, window, ProgressLocation } from "vscode";
-import { ContentNode, RepoProvider } from "./Tree/nodes";
+import { ContentNode, RepoNode, RepoProvider } from "./Tree/nodes";
 import { RepoFileSystemProvider, REPO_SCHEME } from "./FileSystem/fileSystem";
-import { addFile, cloneRepository, copyRemoteUrl, deleteNode, deleteRepository, newRepository, pickRepository, showOnRemote, uploadFiles } from "./GitHub/commands";
+import {
+    addFile,
+    cloneRepository,
+    copyRemoteUrl,
+    deleteNode,
+    deleteRepository,
+    newRepository,
+    pickRepository,
+    showOnRemote,
+    uploadFiles,
+    viewRepoOwnerProfileOnGitHub,
+} from "./GitHub/commands";
 import { TGitHubUser } from "./GitHub/types";
 import { addToGlobalStorage, clearGlobalStorage, getReposFromGlobalStorage, purgeGlobalStorage, removeFromGlobalStorage } from "./FileSystem/storage";
 import { GLOBAL_STORAGE_KEY } from "./GitHub/constants";
@@ -177,6 +188,12 @@ export async function activate(context: ExtensionContext) {
     );
 
     context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.viewRepoOwnerProfileOnGitHub", async (repo: RepoNode) => {
+            await viewRepoOwnerProfileOnGitHub(repo.owner);
+        })
+    );
+
+    context.subscriptions.push(
         // extension activation point
         workspace.registerFileSystemProvider(REPO_SCHEME, repoFileSystemProvider, {
             isCaseSensitive: true,
@@ -243,4 +260,3 @@ export async function activate(context: ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate() {}
-

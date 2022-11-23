@@ -1,7 +1,7 @@
 import * as rest from "@octokit/rest";
 import { credentials, output } from "../extension";
 import { RepoNode } from "../Tree/nodes";
-import { TBranch, TContent, TGitHubUpdateContent, TGitHubUser, TRepo, TTree } from "./types";
+import { TBranch, TContent, TGitHubUpdateContent, TGitHubUser, TRepo, TTree, TUser } from "./types";
 
 /**
  * Get the authenticated GitHub user
@@ -410,27 +410,28 @@ export async function getStarredGitHubRepositories(): Promise<TRepo[]> {
     return Promise.reject([]);
 }
 
-// /**
-//  * Get the current user's GitHub repositories
-//  *
-//  * @export
-//  * @async
-//  * @returns {Promise<TRepo[]>}
-//  */
-// export async function getAuthenticatedUserRepositories(): Promise<TRepo[]> {
-//     const octokit = new rest.Octokit({
-//         auth: await credentials.getAccessToken(),
-//     });
+/**
+ * Get details about a GitHub user
+ *
+ * @export
+ * @async
+ * @param {string} username The username of the user to get details for
+ * @returns {(Promise<TUser | undefined>)}
+ */
+export async function getGitHubUser(username: string): Promise<TUser | undefined> {
+    const octokit = new rest.Octokit({
+        auth: await credentials.getAccessToken(),
+    });
 
-//     try {
-//         const repos = await octokit.paginate(octokit.repos.listForAuthenticatedUser, (response) => {
-//             return response.data;
-//         });
+    try {
+        const { data } = await octokit.users.getByUsername({
+            username,
+        });
 
-//         return Promise.resolve(repos as TRepo[]);
-//     } catch (e: any) {
-//         output?.appendLine(e.message, output.messageType.error);
-//     }
+        return Promise.resolve(data);
+    } catch (e: any) {
+        output?.appendLine(`Cannot find user ${username}: ${e.message}`, output.messageType.error);
+    }
 
-//     return Promise.reject([]);
-// }
+    return Promise.reject(undefined);
+}

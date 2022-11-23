@@ -151,6 +151,11 @@
                 "title": "Show on remote",
                 "command": "VirtualRepos.showOnRemote",
                 "category": "Virtual Repositories"
+            },
+            {
+                "title": "View user profile on GitHub",
+                "command": "VirtualRepos.viewRepoOwnerProfileOnGitHub",
+                "category": "Virtual Repositories"
             }
         ],
         "configuration": {
@@ -204,6 +209,10 @@
                 },
                 {
                     "command": "VirtualRepos.addFile",
+                    "when": "false"
+                },
+                {
+                    "command": "VirtualRepos.viewRepoOwnerProfileOnGitHub",
                     "when": "false"
                 },
                 {
@@ -316,14 +325,19 @@
                     "group": "2_close@2"
                 },
                 {
+                    "command": "VirtualRepos.viewRepoOwnerProfileOnGitHub",
+                    "when": "viewItem == repo",
+                    "group": "2_close03"
+                },
+                {
                     "command": "VirtualRepos.closeRepository",
                     "when": "viewItem == repo",
-                    "group": "2_close@2"
+                    "group": "2_close@4"
                 },
                 {
                     "command": "VirtualRepos.cloneRepository",
                     "when": "viewItem == repo",
-                    "group": "2_close@3"
+                    "group": "2_close@5"
                 },
                 {
                     "command": "VirtualRepos.copyRemoteUrl",
