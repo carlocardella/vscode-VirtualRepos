@@ -173,7 +173,7 @@
                 },
                 "VirtualRepos.UseRepoOwnerAvatar": {
                     "type": "boolean",
-                    "description": "Use the owner avatar for the repository",
+                    "description": "Use the owner's avatar for the repository",
                     "default": false
                 }
             }
