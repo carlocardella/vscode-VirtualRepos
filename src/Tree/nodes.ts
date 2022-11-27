@@ -1,5 +1,5 @@
 import { Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
-import { extensionContext, output } from "../extension";
+import { credentials, extensionContext, output } from "../extension";
 import { RepoFileSystemProvider, REPO_SCHEME } from "../FileSystem/fileSystem";
 import { store, getReposFromGlobalStorage } from "../FileSystem/storage";
 import { getGitHubBranch, getGitHubRepoContent, getGitHubTree, openRepository } from "../GitHub/api";
@@ -25,12 +25,16 @@ export class RepoNode extends TreeItem {
         this.owner = repo.owner.login;
         this.tree = tree;
         this.name = repo.name;
-        this.contextValue = "repo";
         this.uri = Uri.parse(`${REPO_SCHEME}://${repo.owner.login}/${repo.name}`);
         //         Uri.parse(`${REPO_SCHEME}://${repo.owner.login}/${repo.name}/${filePath}`);
         this.path = "/";
         this.description = repo.default_branch;
         this.clone_url = repo.clone_url;
+        this.contextValue = this.isOwned ? "isOwnedRepo" : "repo";
+    }
+
+    get isOwned() {
+        return this.owner === credentials.authenticatedUser.login;
     }
 
     get full_name() {
@@ -51,6 +55,13 @@ export class ContentNode extends TreeItem {
         this.tooltip = nodeContent?.path;
         this.iconPath = nodeContent?.type === ContentType.file ? ThemeIcon.File : ThemeIcon.Folder;
         this.contextValue = nodeContent?.type === ContentType.file ? "file" : "folder";
+        if (repo.owner.login === credentials.authenticatedUser.login) {
+            if (nodeContent?.type === ContentType.file) {
+                this.contextValue = "isOwnedFile";
+            } else {
+                this.contextValue = "isOwnedFolder";
+            }
+        }
         this.path = nodeContent?.path ?? "/";
         this.uri = RepoFileSystemProvider.getFileUri(repo, this.path);
         this.resourceUri = this.uri;

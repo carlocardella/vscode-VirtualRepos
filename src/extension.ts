@@ -10,6 +10,7 @@ import {
     copyRemoteUrl,
     deleteNode,
     deleteRepository,
+    forkRepository,
     newRepository,
     pickRepository,
     showOnRemote,
@@ -132,12 +133,6 @@ export async function activate(context: ExtensionContext) {
     );
 
     context.subscriptions.push(
-        commands.registerCommand("VirtualRepos.forkRepository", async (node) => {
-            throw new Error("Not implemented");
-        })
-    );
-
-    context.subscriptions.push(
         commands.registerCommand("VirtualRepos.cloneRepository", async (node) => {
             cloneRepository(node);
         })
@@ -190,6 +185,12 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.viewRepoOwnerProfileOnGitHub", async (repo: RepoNode) => {
             await viewRepoOwnerProfileOnGitHub(repo.owner);
+        })
+    );
+
+    context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.forkRepository", async (repo: RepoNode) => {
+            await forkRepository(repo);
         })
     );
 

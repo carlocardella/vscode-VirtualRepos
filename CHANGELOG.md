@@ -18,6 +18,16 @@ See the [list of open enhancements on GitHub](https://github.com/carlocardella/v
 * Sort repository list in TreeView
 * Adopt new [Log Output Channel](https://code.visualstudio.com/updates/v1_72#_log-output-channel) when the API will be finalized
 
+## [0.0.20] - 2022-11-26
+
+### Added
+
+* `Fork repository`: if you opened a repository you do not own, you can now fork it from the context menu. Once forked, the repository is automatically added to the Virtual Repositories list
+
+### Fixed
+
+* Fixed write/delete actions in context menu, show then only when the user has write permission on the repository
+
 ## [0.0.19] - 2022-11-18
 
 ### Added

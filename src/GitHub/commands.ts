@@ -8,6 +8,7 @@ import {
     getGitHubReposForAuthenticatedUser,
     getStarredGitHubRepositories,
     getGitHubUser,
+    forkGitHubRepository,
 } from "./api";
 import { TContent, TUser } from "./types";
 import { credentials, extensionContext, output, repoFileSystemProvider } from "../extension";
@@ -332,4 +333,23 @@ export async function viewRepoOwnerProfileOnGitHub(username: string) {
     if (user) {
         env.openExternal(Uri.parse(user.html_url));
     }
+}
+
+/**
+ * Fork a repository into the authenticated user's account
+ *
+ * @export
+ * @async
+ * @param {RepoNode} repo The repository to fork
+ * @returns {unknown}
+ */
+export async function forkRepository(repo: RepoNode) {
+    const forkedRepo = await forkGitHubRepository(repo.repo);
+    if (forkedRepo) {
+        await addToGlobalStorage(extensionContext, `${forkedRepo.owner.login}/${forkedRepo.name}`);
+        output?.appendLine(`Forked ${repo.name} to ${forkedRepo.owner.login}/${forkedRepo.name}`, output.messageType.info);
+        return Promise.resolve();
+    }
+
+    return Promise.reject();
 }
