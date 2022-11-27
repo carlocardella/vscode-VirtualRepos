@@ -10,9 +10,10 @@ import {
     getGitHubUser,
     forkGitHubRepository,
 } from "./api";
-import { TContent, TUser } from "./types";
+import { TContent } from "./types";
 import { credentials, extensionContext, output, repoFileSystemProvider } from "../extension";
 import { addToGlobalStorage, removeFromGlobalStorage } from "../FileSystem/storage";
+import { charCodeAt, stringToByteArray } from "../utils";
 
 /**
  * Returns the binary content of a file in the repository.
@@ -34,16 +35,6 @@ export async function getRepoFileContent(repo: RepoNode, file: TContent): Promis
     }
 
     return new Uint8Array(Buffer.from(data.content, "base64").toString("latin1").split("").map(charCodeAt));
-}
-
-/**
- * Helper function, returns the character an position zero of a string.
- *
- * @param {string} c The string to filter
- * @returns {*}
- */
-function charCodeAt(c: string) {
-    return c.charCodeAt(0);
 }
 
 /**
@@ -124,17 +115,6 @@ export async function pickRepository() {
             output?.appendLine(`onDidChangeSelection: ${pick}`, output.messageType.debug);
         });
     });
-}
-
-/**
- * Converts a string to a byte array
- *
- * @export
- * @param {string} value The string to convert
- * @returns {Uint8Array}
- */
-export function stringToByteArray(value: string): Uint8Array {
-    return new TextEncoder().encode(value);
 }
 
 /**
@@ -352,4 +332,24 @@ export async function forkRepository(repo: RepoNode) {
     }
 
     return Promise.reject();
+}
+
+/**
+ * Rename a repo file
+ *
+ * @export
+ * @async
+ * @param {ContentNode} file The file to rename
+ * @returns {*}
+ */
+export async function renameFile(file: ContentNode) {
+    const newFileName = await window.showInputBox({ ignoreFocusOut: true, placeHolder: "new file name", title: "Enter the new file name" });
+    if (!newFileName) {
+        return;
+    }
+
+    const newUri = RepoFileSystemProvider.getFileUri(file.repo, newFileName);
+    const oldUri = file.uri;
+    output?.appendLine(`Rename "${file.path}" to "${newFileName}"`, output.messageType.info);
+    await repoFileSystemProvider.rename(oldUri, newUri, { overwrite: false });
 }

@@ -1,7 +1,8 @@
 import * as rest from "@octokit/rest";
 import { credentials, output } from "../extension";
 import { RepoNode } from "../Tree/nodes";
-import { TBranch, TContent, TGitHubUpdateContent, TGitHubUser, TRepo, TTree, TUser } from "./types";
+import { decodeText } from "../utils";
+import { TBranch, TCommit, TContent, TGitHubUpdateContent, TGitHubUser, TRef, TRepo, TTree, TTreeRename, TUser } from "./types";
 
 /**
  * Get the authenticated GitHub user
@@ -98,7 +99,7 @@ export async function createOrUpdateFile(repo: RepoNode, file: TContent, content
                 repo: repo.name,
                 path: file!.path!,
                 message: `VirtualRepos: create ${file!.path}`,
-                content: Buffer.from(fileContentString).toString("base64"),
+                content: decodeText(fileContentString),
             }));
         } else {
             // the file already exists, update it
@@ -107,7 +108,7 @@ export async function createOrUpdateFile(repo: RepoNode, file: TContent, content
                 repo: repo.name,
                 path: file!.path!,
                 message: `VirtualRepos: update ${file!.path}`,
-                content: Buffer.from(fileContentString).toString("base64"),
+                content: decodeText(fileContentString),
                 sha: file!.sha,
             }));
         }
@@ -458,6 +459,128 @@ export async function forkGitHubRepository(repo: TRepo): Promise<TRepo | undefin
         return Promise.resolve(data);
     } catch (e: any) {
         output?.logError(repo, e);
+    }
+
+    return Promise.reject(undefined);
+}
+
+/**
+ * Create a new Tree on GitHub
+ *
+ * @export
+ * @async
+ * @param {RepoNode} repo The repository to create the tree in
+ * @param {TTreeRename[]} newTree Contents of the new tree
+ * @returns {(Promise<TTree | undefined>)}
+ */
+export async function createGitHubTree(repo: RepoNode, newTree: TTreeRename[]): Promise<TTree | undefined> {
+    const octokit = new rest.Octokit({
+        auth: await credentials.getAccessToken(),
+    });
+
+    try {
+        const base_tree = repo!.tree!.sha;
+        const { data } = await octokit.git.createTree({
+            owner: repo.owner,
+            repo: repo.name,
+            base_tree,
+            tree: newTree,
+        });
+
+        return Promise.resolve(data);
+    } catch (e: any) {
+        output?.appendLine(`Error creating new Tree: ${e.message.trim()}`, output.messageType.error);
+    }
+
+    return Promise.reject(undefined);
+}
+
+// The file mode; one of 100644 for file (blob), 100755 for executable (blob), 040000 for subdirectory (tree), 160000 for submodule (commit), or 120000 for a blob that specifies the path of a symlink
+/**
+ * File Mode for a GitHub tree
+ *
+ * @export
+ * @enum {number}
+ */
+export enum FileMode {
+    file = "100644",
+    executable = "100755",
+    subdirectory = "040000",
+    submodule = "160000",
+    symlink = "120000",
+}
+
+/**
+ * Type Mode 
+ *
+ * @export
+ * @enum {number}
+ */
+export enum TypeMode {
+    blob = "blob",
+    tree = "tree",
+    commit = "commit",
+}
+
+/**
+ * Create a new commit on GitHub
+ *
+ * @export
+ * @async
+ * @param {RepoNode} repo The repository to create the commit on
+ * @param {string} message The commit message
+ * @param {string} tree The tree SHA
+ * @param {string[]} parents The parent SHAs
+ * @returns {(Promise<TCommit | undefined>)}
+ */
+export async function createGitHubCommit(repo: RepoNode, message: string, tree: string, parents: string[]): Promise<TCommit | undefined> {
+    const octokit = new rest.Octokit({
+        auth: await credentials.getAccessToken(),
+    });
+
+    try {
+        const { data } = await octokit.git.createCommit({
+            owner: repo.owner,
+            repo: repo.name,
+            message,
+            tree,
+            parents,
+        });
+
+        return Promise.resolve(data);
+    } catch (e: any) {
+        output?.appendLine(`Error creating new commit: ${e.message.trim()}`, output.messageType.error);
+    }
+
+    return Promise.reject(undefined);
+}
+
+/**
+ * Update a reference in the git database on GitHub
+ *
+ * @export
+ * @async
+ * @param {RepoNode} repo The repository to update the reference in
+ * @param {string} ref The reference to update
+ * @param {string} sha The SHA to update the reference to
+ * @returns {(Promise<TRef | undefined>)}
+ */
+export async function updateGitHubRef(repo: RepoNode, ref: string, sha: string): Promise<TRef | undefined> {
+    const octokit = new rest.Octokit({
+        auth: await credentials.getAccessToken(),
+    });
+
+    try {
+        const { data } = await octokit.git.updateRef({
+            owner: repo.owner,
+            repo: repo.name,
+            ref,
+            sha,
+        });
+
+        return Promise.resolve(data);
+    } catch (e: any) {
+        output?.appendLine(`Error updating ref: ${e.message.trim()}`, output.messageType.error);
     }
 
     return Promise.reject(undefined);

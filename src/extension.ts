@@ -13,6 +13,7 @@ import {
     forkRepository,
     newRepository,
     pickRepository,
+    renameFile,
     showOnRemote,
     uploadFiles,
     viewRepoOwnerProfileOnGitHub,
@@ -191,6 +192,12 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.forkRepository", async (repo: RepoNode) => {
             await forkRepository(repo);
+        })
+    );
+
+    context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.renameFile", async (file: ContentNode) => {
+            renameFile(file);
         })
     );
 

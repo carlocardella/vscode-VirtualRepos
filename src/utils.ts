@@ -1,5 +1,7 @@
 import { Uri } from "vscode";
 import { REPO_SCHEME } from "./FileSystem/fileSystem";
+import { RepoNode } from "./Tree/nodes";
+import { TRepo } from "./GitHub/types";
 
 /**
  * Given a URI, returns the repository full_name (owner/name).
@@ -55,4 +57,37 @@ export function getFilePathWithoutRepoNameFromUri(uri: Uri): string | undefined 
  */
 export function removeLeadingSlash(path: string): string {
     return path.match(/[^\/]+.*/)![0];
+}
+
+export function encodeText(text: string): Uint8Array {
+    return new Uint8Array(Buffer.from(text, "base64").toString("latin1").split("").map(charCodeAt));
+}
+
+export function decodeText(text: string): string {
+    return Buffer.from(text).toString("base64");
+}
+
+/**
+ * Helper function, returns the character an position zero of a string.
+ *
+ * @param {string} c The string to filter
+ * @returns {*}
+ */
+export function charCodeAt(c: string) {
+    return c.charCodeAt(0);
+}
+
+export function getFileNameFromUri(uri: Uri): string {
+    return uri.path.split("/").pop()!;
+}
+
+/**
+ * Converts a string to a byte array
+ *
+ * @export
+ * @param {string} value The string to convert
+ * @returns {Uint8Array}
+ */
+export function stringToByteArray(value: string): Uint8Array {
+    return new TextEncoder().encode(value);
 }

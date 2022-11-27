@@ -12,11 +12,22 @@ import {
     Uri,
 } from "vscode";
 import { repoProvider } from "../extension";
-import { deleteGitHubFile, refreshGitHubTree, createOrUpdateFile } from "../GitHub/api";
+import {
+    deleteGitHubFile,
+    refreshGitHubTree,
+    createOrUpdateFile,
+    getGitHubRef,
+    createGitHubTree,
+    createGitHubCommit,
+    updateGitHubRef,
+    getGitHubBranch,
+    FileMode,
+    TypeMode,
+} from "../GitHub/api";
 import { getRepoFileContent } from "../GitHub/commands";
 import { TGitHubUpdateContent, TContent, TRepo } from "../GitHub/types";
 import { RepoNode } from "../Tree/nodes";
-import { getFilePathWithoutRepoNameFromUri, getRepoFullNameFromUri, removeLeadingSlash } from "../utils";
+import { encodeText, getFileNameFromUri, getFilePathWithoutRepoNameFromUri, getRepoFullNameFromUri, removeLeadingSlash } from "../utils";
 import { store } from "./storage";
 
 export const REPO_SCHEME = "github-repo";
@@ -121,8 +132,35 @@ export class RepoFileSystemProvider implements FileSystemProvider {
         repoProvider.refresh();
     }
 
-    async rename(uri: Uri): Promise<void> {
-        throw new Error("Method not implemented.");
+    async rename(oldUri: Uri, newUri: Uri, options: { readonly overwrite: boolean }): Promise<void> {
+        const [repo, oldFile] = RepoFileSystemProvider.getRepoInfo(oldUri)!;
+        const newFile = {
+            name: getFileNameFromUri(newUri),
+            path: getFilePathWithoutRepoNameFromUri(newUri),
+            content: oldFile?.content!,
+        } as TContent;
+
+        let tree = [
+            {
+                path: newFile!.name,
+                mode: FileMode.file,
+                type: TypeMode.blob,
+                sha: oldFile!.sha,
+            },
+            {
+                path: oldFile!.path,
+                mode: FileMode.file,
+                type: TypeMode.blob,
+                sha: null,
+            },
+        ];
+        let newTree = await createGitHubTree(repo, tree);
+        let newCommit = await createGitHubCommit(repo, `Rename ${oldFile?.name} to ${newFile?.name}`, newTree!.sha, [repo.tree?.sha!]);
+        let updatedRef = await updateGitHubRef(repo, `heads/${repo.repo.default_branch}`, newCommit!.sha);
+
+        if (updatedRef) {
+            repoProvider.refresh();
+        }
     }
 
     async deleteDirectory(uri: Uri): Promise<void> {
