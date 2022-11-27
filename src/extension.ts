@@ -2,9 +2,21 @@ import { Credentials } from "./GitHub/authentication";
 import * as config from "./config";
 import * as trace from "./tracing";
 import { commands, ExtensionContext, workspace, window, ProgressLocation } from "vscode";
-import { ContentNode, RepoProvider } from "./Tree/nodes";
+import { ContentNode, RepoNode, RepoProvider } from "./Tree/nodes";
 import { RepoFileSystemProvider, REPO_SCHEME } from "./FileSystem/fileSystem";
-import { addFile, cloneRepository, copyRemoteUrl, deleteNode, deleteRepository, newRepository, pickRepository, showOnRemote, uploadFiles } from "./GitHub/commands";
+import {
+    addFile,
+    cloneRepository,
+    copyRemoteUrl,
+    deleteNode,
+    deleteRepository,
+    forkRepository,
+    newRepository,
+    pickRepository,
+    showOnRemote,
+    uploadFiles,
+    viewRepoOwnerProfileOnGitHub,
+} from "./GitHub/commands";
 import { TGitHubUser } from "./GitHub/types";
 import { addToGlobalStorage, clearGlobalStorage, getReposFromGlobalStorage, purgeGlobalStorage, removeFromGlobalStorage } from "./FileSystem/storage";
 import { GLOBAL_STORAGE_KEY } from "./GitHub/constants";
@@ -19,7 +31,7 @@ export const repoFileSystemProvider = new RepoFileSystemProvider();
 let pullInterval = config.get("PullInterval") * 1000;
 let pullIntervalTimer: NodeJS.Timer | undefined = undefined;
 
-// hack: https://angularfixing.com/how-to-access-textencoder-as-a-global-instead-of-importing-it-from-the-util-package/
+// @hack: https://angularfixing.com/how-to-access-textencoder-as-a-global-instead-of-importing-it-from-the-util-package/
 import { TextEncoder as _TextEncoder } from "node:util";
 import { TextDecoder as _TextDecoder } from "node:util";
 declare global {
@@ -121,12 +133,6 @@ export async function activate(context: ExtensionContext) {
     );
 
     context.subscriptions.push(
-        commands.registerCommand("VirtualRepos.forkRepository", async (node) => {
-            throw new Error("Not implemented");
-        })
-    );
-
-    context.subscriptions.push(
         commands.registerCommand("VirtualRepos.cloneRepository", async (node) => {
             cloneRepository(node);
         })
@@ -173,6 +179,18 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.deleteNode", async (node) => {
             return deleteNode(<ContentNode>node);
+        })
+    );
+
+    context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.viewRepoOwnerProfileOnGitHub", async (repo: RepoNode) => {
+            await viewRepoOwnerProfileOnGitHub(repo.owner);
+        })
+    );
+
+    context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.forkRepository", async (repo: RepoNode) => {
+            await forkRepository(repo);
         })
     );
 
@@ -243,4 +261,3 @@ export async function activate(context: ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate() {}
-
