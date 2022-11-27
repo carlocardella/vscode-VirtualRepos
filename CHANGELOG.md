@@ -23,6 +23,7 @@ See the [list of open enhancements on GitHub](https://github.com/carlocardella/v
 ### Added
 
 * `Fork repository`: if you opened a repository you do not own, you can now fork it from the context menu. Once forked, the repository is automatically added to the Virtual Repositories list
+* View repository owner profile on GitHub
 
 ### Fixed
 
