@@ -185,7 +185,7 @@ export async function deleteNode(node: ContentNode) {
  * @returns {Promise<void>}
  */
 export async function uploadFiles(destination: ContentNode | RepoNode): Promise<void> {
-    const files = await window.showOpenDialog({ canSelectFiles: true, canSelectFolders: false, canSelectMany: true, title: "Select files to upload" });
+    const files = await window.showOpenDialog({ canSelectFiles: true, canSelectFolders: false, canSelectMany: true, title: "Select the files to upload" });
     if (!files) {
         return Promise.reject();
     }
