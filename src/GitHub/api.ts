@@ -435,3 +435,30 @@ export async function getGitHubUser(username: string): Promise<TUser | undefined
 
     return Promise.reject(undefined);
 }
+
+/**
+ * Fork a GitHub repository into the authenticate user's account
+ *
+ * @export
+ * @async
+ * @param {TRepo} repo The repository to fork
+ * @returns {(Promise<TRepo | undefined>)}
+ */
+export async function forkGitHubRepository(repo: TRepo): Promise<TRepo | undefined> {
+    const octokit = new rest.Octokit({
+        auth: await credentials.getAccessToken(),
+    });
+
+    try {
+        const { data } = await octokit.repos.createFork({
+            owner: repo.owner.login,
+            repo: repo.name,
+        });
+
+        return Promise.resolve(data);
+    } catch (e: any) {
+        output?.logError(repo, e);
+    }
+
+    return Promise.reject(undefined);
+}

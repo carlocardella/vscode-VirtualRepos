@@ -7,7 +7,7 @@
         "name": "Carlo Cardella",
         "url": "https://cloudnotes.io"
     },
-    "version": "0.0.19",
+    "version": "0.0.20",
     "engines": {
         "vscode": "^1.63.0"
     },
@@ -173,7 +173,7 @@
                 },
                 "VirtualRepos.UseRepoOwnerAvatar": {
                     "type": "boolean",
-                    "description": "Use the owner avatar for the repository",
+                    "description": "Use the owner's avatar for the repository",
                     "default": false
                 }
             }
@@ -286,52 +286,57 @@
             "view/item/context": [
                 {
                     "command": "VirtualRepos.addFile",
-                    "when": "viewItem == folder || viewItem == repo",
+                    "when": "viewItem == isOwnedFolder || viewItem == isOwnedRepo",
                     "group": "inline"
                 },
                 {
                     "command": "VirtualRepos.closeRepository",
-                    "when": "viewItem == repo",
+                    "when": "viewItem =~ /.*[Rr]epo.*/",
                     "group": "inline"
                 },
                 {
                     "command": "VirtualRepos.deleteNode",
-                    "when": "viewItem == folder || viewItem == file",
+                    "when": "viewItem == isOwnedFolder || viewItem == isOwnedFile",
+                    "group": "inline"
+                },
+                {
+                    "command": "VirtualRepos.forkRepository",
+                    "when": "viewItem == repo",
                     "group": "inline"
                 },
                 {
                     "command": "VirtualRepos.addFile",
-                    "when": "viewItem == folder || viewItem == repo",
+                    "when": "viewItem == isOwnedFolder || viewItem == isOwnedRepo",
                     "group": "1_add@1"
                 },
                 {
                     "command": "VirtualRepos.uploadFile",
-                    "when": "viewItem == folder || viewItem == repo",
+                    "when": "viewItem == isOwnedFolder || viewItem == isOwnedRepo",
                     "group": "1_add@2"
                 },
                 {
                     "command": "VirtualRepos.deleteRepository",
-                    "when": "viewItem == repo",
+                    "when": "viewItem == isOwnedRepo",
                     "group": "2_repoOperations@1"
                 },
                 {
                     "command": "VirtualRepos.copyRemoteUrl",
-                    "when": "viewItem == repo",
+                    "when": "viewItem =~ /.*[Rr]epo.*/",
                     "group": "2_close@1"
                 },
                 {
                     "command": "VirtualRepos.showOnRemote",
-                    "when": "viewItem == repo",
+                    "when": "viewItem =~ /.*[Rr]epo.*/",
                     "group": "2_close@2"
                 },
                 {
                     "command": "VirtualRepos.viewRepoOwnerProfileOnGitHub",
-                    "when": "viewItem == repo",
+                    "when": "viewItem =~ /.*[Rr]epo.*/",
                     "group": "2_close03"
                 },
                 {
                     "command": "VirtualRepos.closeRepository",
-                    "when": "viewItem == repo",
+                    "when": "viewItem =~ /.*[Rr]epo.*/",
                     "group": "2_close@4"
                 },
                 {
@@ -340,18 +345,23 @@
                     "group": "2_close@5"
                 },
                 {
+                    "command": "VirtualRepos.forkRepository",
+                    "when": "viewItem == repo",
+                    "group": "2_close@6"
+                },
+                {
                     "command": "VirtualRepos.copyRemoteUrl",
-                    "when": "viewItem == folder || viewItem == file",
+                    "when": "viewItem =~ /.*[Ff]older.*|.*[Ff]ile.*/",
                     "group": "1_remote@1"
                 },
                 {
                     "command": "VirtualRepos.showOnRemote",
-                    "when": "viewItem == folder || viewItem == file",
+                    "when": "viewItem =~ /.*[Ff]older.*|.*[Ff]ile.*/",
                     "group": "1_remote@2"
                 },
                 {
                     "command": "VirtualRepos.deleteNode",
-                    "when": "viewItem == folder || viewItem == file",
+                    "when": "viewItem =~ /.*[Ff]older.*|.*[Ff]ile.*/",
                     "group": "2_delete@1"
                 }
             ]

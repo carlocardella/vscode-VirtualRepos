@@ -2,7 +2,7 @@
 
 ![preview](https://img.shields.io/badge/-preview-orange)
 
-[![Publish Extension](https://github.com/carlocardella/vscode-VirtualRepos/actions/workflows/PublishExtension.yml/badge.svg)](https://github.com/carlocardella/vscode-VirtualRepos/actions/workflows/PublishExtension.yml)
+<!--[![Publish Extension](https://github.com/carlocardella/vscode-VirtualRepos/actions/workflows/PublishExtension.yml/badge.svg)](https://github.com/carlocardella/vscode-VirtualRepos/actions/workflows/PublishExtension.yml)-->
 ![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/carlocardella.vscode-virtualRepos)
 ![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/carlocardella.vscode-virtualRepos)
 ![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/carlocardella.vscode-virtualRepos)
@@ -75,11 +75,25 @@ Well, you can hover with your mouse on the repo name to show the tooltip and get
 
 ![UserRepoOwnerAvatar](https://user-images.githubusercontent.com/5784415/194788262-4eb6ad81-f924-4a42-a642-eec4c10a60b0.gif)
 
+## Fork repository
+
+If you opened a repository you do not own, you can now fork it from the context menu. Once forked, the repository is automatically added to the Virtual Repositories list.
+
 ## Tracing
 
 You can enable `VirtualRepos.EnableTracing` in your User or Workspace settings to enable tracing in a `Virtual Repositories` output channel; this is off by default but it can be useful for troubleshooting errors or if you are curious to see what the extension is doing under the hood.
 
 ![image](https://user-images.githubusercontent.com/5784415/192893074-ffeb0ec1-1932-45ed-a961-1c15492c1a9e.png)
+
+## My other extensions
+
+<!-- * [Virtual Repos](https://github.com/carlocardella/vscode-VirtualRepos): Virtual Repos is a Visual Studio Code extension that allows to open and edit a remote repository (e.g. on GitHub) without cloning, committing or pushing your changes. It all happens automatically -->
+* [Virtual Gists](https://github.com/carlocardella/vscode-VirtualGists): Virtual Gists is a Visual Studio Code extension that allows to open and edit a remote gist (e.g. on GitHub) without cloning, committing or pushing your changes. It all happens automatically
+* [Virtual Git](https://github.com/carlocardella/vscode-VirtualGit): VSCode extension path with my extensions to work with virtual repositories and gists based on a virtual file system
+* [Text Toolbox](https://github.com/carlocardella/vscode-TextToolbox): Collection of tools for text manipulation, filtering, sorting etc...
+* [File System Toolbox](https://github.com/carlocardella/vscode-FileSystemToolbox): VSCode extension to work with the file system, path auto-complete on any file type
+* [Changelog Manager](https://github.com/carlocardella/vscode-ChangelogManager): VSCode extension, helps to build a changelog for your project, either in markdown or plain text files. The changelog format follows Keep a changelog
+* [Hogwarts colors for Visual Studio Code](https://github.com/carlocardella/hogwarts-colors-for-vscode): Visual Studio theme colors inspired by Harry Potter, Hogwarts and Hogwarts Houses colors and banners
 
 ## Acknowledgements
 
