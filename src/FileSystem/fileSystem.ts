@@ -16,11 +16,9 @@ import {
     deleteGitHubFile,
     refreshGitHubTree,
     createOrUpdateFile,
-    getGitHubRef,
     createGitHubTree,
     createGitHubCommit,
     updateGitHubRef,
-    getGitHubBranch,
     FileMode,
     TypeMode,
 } from "../GitHub/api";
@@ -142,7 +140,7 @@ export class RepoFileSystemProvider implements FileSystemProvider {
 
         let tree = [
             {
-                path: newFile!.name,
+                path: newFile!.path,
                 mode: FileMode.file,
                 type: TypeMode.blob,
                 sha: oldFile!.sha,
