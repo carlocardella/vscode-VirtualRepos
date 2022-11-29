@@ -20,7 +20,10 @@ export class RepoNode extends TreeItem {
 
         const icon = config.get("UseRepoOwnerAvatar") ? Uri.parse(repo.owner.avatar_url) : new ThemeIcon("repo");
         this.iconPath = icon;
-        this.tooltip = `${repo.owner.login}/${repo.name}`;
+
+        const tooltip = repo.description ? `${repo.html_url}${"\n"}${"\n"}${repo.description}` : repo.html_url;
+        this.tooltip = tooltip;
+        
         this.repo = repo;
         this.owner = repo.owner.login;
         this.tree = tree;
