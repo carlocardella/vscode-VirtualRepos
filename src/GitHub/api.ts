@@ -2,7 +2,7 @@ import * as rest from "@octokit/rest";
 import { credentials, output } from "../extension";
 import { RepoNode } from "../Tree/nodes";
 import { decodeText } from "../utils";
-import { TBranch, TCommit, TContent, TGitHubUpdateContent, TGitHubUser, TRef, TRepo, TTree, TTreeRename, TUser } from "./types";
+import { TBranch, TCommit, TContent, TGitHubUpdateContent, TGitHubUser, TRef, TRepo, TTree, TTreeRename, TUser, TTreeDeleteFolder } from './types';
 
 /**
  * Get the authenticated GitHub user
@@ -483,7 +483,7 @@ export async function createGitHubTree(repo: RepoNode, newTree: TTreeRename[]): 
         const { data } = await octokit.git.createTree({
             owner: repo.owner,
             repo: repo.name,
-            base_tree,
+            // base_tree,
             tree: newTree,
         });
 
@@ -494,6 +494,27 @@ export async function createGitHubTree(repo: RepoNode, newTree: TTreeRename[]): 
 
     return Promise.reject(undefined);
 }
+
+// export async function createGitHubTreeForDeleteFolder(repo: RepoNode, newTree: TTreeDeleteFolder[]): Promise<TTree | undefined> {
+//     const octokit = new rest.Octokit({
+//         auth: await credentials.getAccessToken(),
+//     });
+
+//     try {
+//         const base_tree = repo!.tree!.sha;
+//         const { data } = await octokit.git.createTree({
+//             owner: repo.owner,
+//             repo: repo.name,
+//             tree: newTree,
+//         });
+
+//         return Promise.resolve(data);
+//     } catch (e: any) {
+//         output?.appendLine(`Error creating new Tree: ${e.message.trim()}`, output.messageType.error);
+//     }
+
+//     return Promise.reject(undefined);
+// }
 
 // The file mode; one of 100644 for file (blob), 100755 for executable (blob), 040000 for subdirectory (tree), 160000 for submodule (commit), or 120000 for a blob that specifies the path of a symlink
 /**

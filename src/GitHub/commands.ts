@@ -11,7 +11,7 @@ import {
     forkGitHubRepository,
 } from "./api";
 import { TContent } from "./types";
-import { credentials, extensionContext, output, repoFileSystemProvider } from "../extension";
+import { credentials, extensionContext, output, repoFileSystemProvider, repoProvider } from "../extension";
 import { addToGlobalStorage, removeFromGlobalStorage } from "../FileSystem/storage";
 import { charCodeAt, stringToByteArray } from "../utils";
 
@@ -352,4 +352,14 @@ export async function renameFile(file: ContentNode) {
     const oldUri = file.uri;
     output?.appendLine(`Rename "${file.path}" to "${newFileName}"`, output.messageType.info);
     await repoFileSystemProvider.rename(oldUri, newUri, { overwrite: false });
+}
+
+export async function deleteFolder(folder: ContentNode) {
+    const confirm = await window.showWarningMessage(`Are you sure you want to delete "${folder.path}"?`, { modal: true }, "Yes", "No");
+    if (confirm !== "Yes") {
+        return;
+    }
+
+    output?.appendLine(`Delete "${folder.path}"`, output.messageType.info);
+    await repoFileSystemProvider.deleteDirectory(folder.uri);
 }

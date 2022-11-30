@@ -21,9 +21,10 @@ import {
     updateGitHubRef,
     FileMode,
     TypeMode,
+    getGitHubTree,
 } from "../GitHub/api";
 import { getRepoFileContent } from "../GitHub/commands";
-import { TGitHubUpdateContent, TContent, TRepo } from "../GitHub/types";
+import { TGitHubUpdateContent, TContent, TRepo, TTreeRename } from "../GitHub/types";
 import { RepoNode } from "../Tree/nodes";
 import { encodeText, getFileNameFromUri, getFilePathWithoutRepoNameFromUri, getRepoFullNameFromUri, removeLeadingSlash } from "../utils";
 import { store } from "./storage";
@@ -162,7 +163,23 @@ export class RepoFileSystemProvider implements FileSystemProvider {
     }
 
     async deleteDirectory(uri: Uri): Promise<void> {
-        // Folders do not really exist in Git, no action needed
+        const folderName = uri.path.split("/").slice(-1)[0];
+        const repoName = uri.path.split("/")[1];
+        let repository = store.repos.find((repo) => repo!.name === repoName);
+
+        let cleanRepositoryTree = repository!.tree!.tree.filter((path) => {
+            if (!path.path?.startsWith(folderName)) {
+                return path;
+            }
+        });
+
+        let newTree = await createGitHubTree(repository!, cleanRepositoryTree);
+        let newCommit = await createGitHubCommit(repository!, `Delete ${folderName}`, newTree!.sha, [repository!.tree?.sha!]);
+        let updatedRef = await updateGitHubRef(repository!, `heads/${repository!.repo.default_branch}`, newCommit!.sha);
+
+        if (updatedRef) {
+            repoProvider.refresh();
+        }
     }
 
     readDirectory(uri: Uri): [string, FileType][] {

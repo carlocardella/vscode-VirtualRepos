@@ -161,6 +161,11 @@
                 "title": "Rename...",
                 "command": "VirtualRepos.renameFile",
                 "category": "Virtual Repositories"
+            },
+            {
+                "title": "Delete Folder...",
+                "command": "VirtualRepos.deleteFolder",
+                "category": "Virtual Repositories"
             }
         ],
         "configuration": {
@@ -218,6 +223,10 @@
                 },
                 {
                     "command": "VirtualRepos.renameFile",
+                    "when": "false"
+                },
+                {
+                    "command": "VirtualRepos.deleteFolder",
                     "when": "false"
                 },
                 {
@@ -377,6 +386,10 @@
                     "command": "VirtualRepos.deleteNode",
                     "when": "viewItem == isOwnedFile",
                     "group": "2_delete@2"
+                },
+                {
+                    "command": "VirtualRepos.deleteFolder",
+                    "group": "9_delete@6"
                 }
             ]
         }

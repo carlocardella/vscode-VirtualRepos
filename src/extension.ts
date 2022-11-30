@@ -8,6 +8,7 @@ import {
     addFile,
     cloneRepository,
     copyRemoteUrl,
+    deleteFolder,
     deleteNode,
     deleteRepository,
     forkRepository,
@@ -167,7 +168,7 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.addFile", async (node) => {
-            return addFile(<ContentNode>node);
+            await addFile(<ContentNode>node);
         })
     );
 
@@ -179,7 +180,7 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.deleteNode", async (node) => {
-            return deleteNode(<ContentNode>node);
+            await  deleteNode(<ContentNode>node);
         })
     );
 
@@ -197,7 +198,13 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.renameFile", async (file: ContentNode) => {
-            renameFile(file);
+            await renameFile(file);
+        })
+    );
+
+    context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.deleteFolder", async (folder: ContentNode) => {
+            await deleteFolder(folder);
         })
     );
 
