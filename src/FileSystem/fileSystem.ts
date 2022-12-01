@@ -24,7 +24,7 @@ import {
     getGitHubTree,
 } from "../GitHub/api";
 import { getRepoFileContent } from "../GitHub/commands";
-import { TGitHubUpdateContent, TContent, TRepo, TTreeRename } from "../GitHub/types";
+import { TGitHubUpdateContent, TContent, TRepo, TTreeRename } from '../GitHub/types';
 import { RepoNode } from "../Tree/nodes";
 import { encodeText, getFileNameFromUri, getFilePathWithoutRepoNameFromUri, getRepoFullNameFromUri, removeLeadingSlash } from "../utils";
 import { store } from "./storage";
@@ -168,7 +168,7 @@ export class RepoFileSystemProvider implements FileSystemProvider {
         let repository = store.repos.find((repo) => repo!.name === repoName);
 
         let cleanRepositoryTree = repository!.tree!.tree.filter((path) => {
-            if (!path.path?.startsWith(folderName)) {
+            if (!path.path!.startsWith(folderName)) {
                 return path;
             }
         });

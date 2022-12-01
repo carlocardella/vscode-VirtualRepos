@@ -60,10 +60,10 @@ export type TTree = {
 };
 
 export type TTreeRename = {
-    path: string | undefined;
-    mode: "100644" | "100755" | "040000" | "160000" | "120000" | undefined;
-    type: "commit" | "tree" | "blob" | undefined;
-    sha: string | null | undefined;
+    path?: string | undefined;
+    mode?: "100644" | "100755" | "040000" | "160000" | "120000" | undefined | string;
+    type?: "commit" | "tree" | "blob" | undefined | string;
+    sha?: string | null | undefined;
 };
 
 export type TCommit = {
