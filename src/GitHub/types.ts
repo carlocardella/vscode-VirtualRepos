@@ -51,8 +51,8 @@ export type TTree = {
     truncated: boolean;
     tree: {
         path?: string | undefined;
-        mode?: string | undefined;
-        type?: string | undefined;
+        mode?: "100644" | "100755" | "040000" | "160000" | "120000" | undefined;
+        type?: "commit" | "tree" | "blob" | undefined;
         sha?: string | undefined;
         size?: number | undefined;
         url?: string | undefined;
@@ -61,8 +61,8 @@ export type TTree = {
 
 export type TTreeRename = {
     path?: string | undefined;
-    mode?: "100644" | "100755" | "040000" | "160000" | "120000" | undefined | string;
-    type?: "commit" | "tree" | "blob" | undefined | string;
+    mode?: "100644" | "100755" | "040000" | "160000" | "120000" | undefined;
+    type?: "commit" | "tree" | "blob" | undefined;
     sha?: string | null | undefined;
 };
 
@@ -102,7 +102,7 @@ export type TContent =
           encoding?: string | undefined;
           git_url?: string | undefined;
           html_url?: string | undefined;
-          mode?: string | undefined;
+          mode?: "100644" | "100755" | "040000" | "160000" | "120000" | undefined;
           name?: string | undefined;
           path?: string | undefined;
           sha?: string | undefined;

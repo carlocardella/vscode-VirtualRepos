@@ -130,7 +130,7 @@ export async function createOrUpdateFile(repo: RepoNode, file: TContent, content
  * @param {string} treeSHA
  * @returns {Promise<TTree>}
  */
-export async function getGitHubTree(repo: TRepo, treeSHA: string): Promise<TTree | undefined> {
+export async function getGitHubTree(repo: TRepo, treeSHA: string): Promise<TTree | TTreeRename | undefined> {
     const octokit = new rest.Octokit({
         auth: await credentials.getAccessToken(),
     });
@@ -160,7 +160,7 @@ export async function getGitHubTree(repo: TRepo, treeSHA: string): Promise<TTree
  * @param {string} branchName The branch to refresh the tree for
  * @returns {(Promise<TTree | undefined>)}
  */
-export async function refreshGitHubTree(repo: TRepo, branchName: string): Promise<TTree | undefined> {
+export async function refreshGitHubTree(repo: TRepo, branchName: string): Promise<TTree | TTreeRename | undefined> {
     const octokit = new rest.Octokit({
         auth: await credentials.getAccessToken(),
     });
@@ -473,19 +473,20 @@ export async function forkGitHubRepository(repo: TRepo): Promise<TRepo | undefin
  * @param {TTreeRename[]} newTree Contents of the new tree
  * @returns {(Promise<TTree | undefined>)}
  */
-export async function createGitHubTree(repo: RepoNode, newTree: TTreeRename[]): Promise<TTree | undefined> {
+export async function createGitHubTree(repo: RepoNode, newTree: TTreeRename[], deleteFolder?: boolean): Promise<TTree | TTreeRename | undefined> {
     const octokit = new rest.Octokit({
         auth: await credentials.getAccessToken(),
     });
 
     try {
-        const base_tree = repo!.tree!.sha;
-        const { data } = await octokit.git.createTree({
-            owner: repo.owner,
-            repo: repo.name,
-            // base_tree,
-            tree: newTree,
-        });
+        let options: any;
+        if (deleteFolder) {
+            options = { owner: repo.owner, repo: repo.name, tree: newTree };
+        } else {
+            const base_tree = repo!.tree!.sha;
+            options = { owner: repo.owner, repo: repo.name, base_tree, tree: newTree };
+        }
+        const { data } = await octokit.git.createTree(options);
 
         return Promise.resolve(data);
     } catch (e: any) {

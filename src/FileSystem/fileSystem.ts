@@ -21,10 +21,9 @@ import {
     updateGitHubRef,
     FileMode,
     TypeMode,
-    getGitHubTree,
 } from "../GitHub/api";
 import { getRepoFileContent } from "../GitHub/commands";
-import { TGitHubUpdateContent, TContent, TRepo, TTreeRename } from '../GitHub/types';
+import { TGitHubUpdateContent, TContent, TRepo, TTree } from "../GitHub/types";
 import { RepoNode } from "../Tree/nodes";
 import { encodeText, getFileNameFromUri, getFilePathWithoutRepoNameFromUri, getRepoFullNameFromUri, removeLeadingSlash } from "../utils";
 import { store } from "./storage";
@@ -154,7 +153,7 @@ export class RepoFileSystemProvider implements FileSystemProvider {
             },
         ];
         let newTree = await createGitHubTree(repo, tree);
-        let newCommit = await createGitHubCommit(repo, `Rename ${oldFile?.name} to ${newFile?.name}`, newTree!.sha, [repo.tree?.sha!]);
+        let newCommit = await createGitHubCommit(repo, `Rename ${oldFile?.name} to ${newFile?.name}`, newTree!.sha!, [repo.tree?.sha!]);
         let updatedRef = await updateGitHubRef(repo, `heads/${repo.repo.default_branch}`, newCommit!.sha);
 
         if (updatedRef) {
@@ -173,8 +172,8 @@ export class RepoFileSystemProvider implements FileSystemProvider {
             }
         });
 
-        let newTree = await createGitHubTree(repository!, cleanRepositoryTree);
-        let newCommit = await createGitHubCommit(repository!, `Delete ${folderName}`, newTree!.sha, [repository!.tree?.sha!]);
+        let newTree = await createGitHubTree(repository!, cleanRepositoryTree, true);
+        let newCommit = await createGitHubCommit(repository!, `Delete ${folderName}`, newTree!.sha!, [repository!.tree?.sha!]);
         let updatedRef = await updateGitHubRef(repository!, `heads/${repository!.repo.default_branch}`, newCommit!.sha);
 
         if (updatedRef) {
@@ -211,7 +210,7 @@ export class RepoFileSystemProvider implements FileSystemProvider {
             })
             .then(() => {
                 refreshGitHubTree(repository.repo, repository.repo.default_branch).then((tree) => {
-                    repository.repo.tree = tree;
+                    repository.repo.tree = tree as TTree;
                 });
             })
             .then(() => {
