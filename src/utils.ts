@@ -20,6 +20,12 @@ export function getRepoFullNameFromUri(uri: Uri): string | undefined {
     }
 }
 
+export function getRepoNameFromUri(uri: Uri): string | undefined {
+    if (uri.scheme === REPO_SCHEME) {
+        return uri.path.split("/")[1];
+    }
+}
+
 /**
  * Given a URI, returns "owner/path"
  *

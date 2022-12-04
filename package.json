@@ -267,10 +267,6 @@
                     "command": "VirtualRepos.purgeGlobalStorage"
                 },
                 {
-                    "command": "VirtualRepos.cloneRepository",
-                    "when": "false"
-                },
-                {
                     "command": "VirtualRepos.copyRemoteUrl",
                     "when": "false"
                 },
@@ -359,12 +355,12 @@
                 },
                 {
                     "command": "VirtualRepos.cloneRepository",
-                    "when": "viewItem == repo",
+                    "when": "viewItem =~ /.*[Rr]epo.*/",
                     "group": "2_close@5"
                 },
                 {
                     "command": "VirtualRepos.forkRepository",
-                    "when": "viewItem == repo",
+                    "when": "viewItem =~ /.*[Rr]epo.*/",
                     "group": "2_close@6"
                 },
                 {
@@ -389,6 +385,7 @@
                 },
                 {
                     "command": "VirtualRepos.deleteFolder",
+                    "when": "viewItem == isOwnedFolder",
                     "group": "9_delete@6"
                 }
             ]

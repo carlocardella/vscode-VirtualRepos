@@ -25,7 +25,7 @@ import {
 import { getRepoFileContent } from "../GitHub/commands";
 import { TGitHubUpdateContent, TContent, TRepo, TTree } from "../GitHub/types";
 import { RepoNode } from "../Tree/nodes";
-import { encodeText, getFileNameFromUri, getFilePathWithoutRepoNameFromUri, getRepoFullNameFromUri, removeLeadingSlash } from "../utils";
+import { encodeText, getFileNameFromUri, getFilePathWithoutRepoNameFromUri, getRepoFullNameFromUri, getRepoNameFromUri, removeLeadingSlash } from "../utils";
 import { store } from "./storage";
 
 export const REPO_SCHEME = "github-repo";
@@ -162,8 +162,8 @@ export class RepoFileSystemProvider implements FileSystemProvider {
     }
 
     async deleteDirectory(uri: Uri): Promise<void> {
-        const folderName = uri.path.split("/").slice(-1)[0];
-        const repoName = uri.path.split("/")[1];
+        const folderName = getFilePathWithoutRepoNameFromUri(uri)!;
+        const repoName = getRepoNameFromUri(uri)!;
         let repository = store.repos.find((repo) => repo!.name === repoName);
 
         let cleanRepositoryTree = repository!.tree!.tree.filter((path) => {
