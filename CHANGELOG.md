@@ -18,6 +18,17 @@ See the [list of open enhancements on GitHub](https://github.com/carlocardella/v
 * Sort repository list in TreeView
 * Adopt new [Log Output Channel](https://code.visualstudio.com/updates/v1_72#_log-output-channel) when the API will be finalized
 
+## [0.0.21] - 2022-12-05
+### Added
+
+* Rename file/folder command in context menu
+* Delete folder and all its content, command in context menu
+  * _Known issue_: The `Delete folder` currently works only with folders in the repository root, this is being tracked in [#29](https://github.com/carlocardella/vscode-VirtualRepos/issues/29)
+
+### Fixed
+
+* Restored `Clone` and `Fork` context menu commands, removed by mistake in the previous release
+
 ## [0.0.20] - 2022-11-26
 
 ### Added
