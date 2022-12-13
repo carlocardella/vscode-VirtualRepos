@@ -63,15 +63,17 @@ You can create a new repository (public or private), other repo operations (dele
 
 Changes are committed automatically after the file is saved. The commit message is `VirtualRepos: update file <filePath>`.
 
+## Easily identify forked repositories
+
+Repositories are represented with a `$(repo)` icon from from your [IconTheme](https://code.visualstudio.com/api/references/icons-in-labels) or the built-in `codicon`.
+Forked repos use a `$(repo-forked)` icon instead, to clearly identity an open repository as a fork. This also helps distinguish between the `upstream` repository (represented with the `repo` icon) and my fork (represented with the `repo-fork` icon):
+
+![image](https://user-images.githubusercontent.com/5784415/207214066-1e78d96b-b209-4e7c-a263-4a225db1ce92.png)
+
+
 ## Repo owner's avatar
 
-Imagine you fork a repo and then open both your fork and its upstream, you would see something like this in your TreeView:
-
-![multiple repos with the same name](https://user-images.githubusercontent.com/5784415/194788228-d99b47ea-177d-448b-8001-8843955cc553.png)
-
-Which one is your fork and which one is upstream?
-
-Well, you can hover with your mouse on the repo name to show the tooltip and get `owner/reponame`, or switch `VirtualRepos.UseRepoOwnerAvatar` to `true` (default is `false`) to replace the standard repo icon with the repo owner's GitHub avatar:
+You can identity repositories using their GitHub owner's avatar, just switch `VirtualRepos.UseRepoOwnerAvatar` to `true` (default is `false`) to replace the standard repo icon with the repo owner's GitHub avatar:
 
 ![UserRepoOwnerAvatar](https://user-images.githubusercontent.com/5784415/194788262-4eb6ad81-f924-4a42-a642-eec4c10a60b0.gif)
 
