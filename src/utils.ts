@@ -97,3 +97,14 @@ export function getFileNameFromUri(uri: Uri): string {
 export function stringToByteArray(value: string): Uint8Array {
     return new TextEncoder().encode(value);
 }
+
+/**
+ * Converts a byte array to a string
+ *
+ * @export
+ * @param {Uint8Array} value The byte array to convert
+ * @returns {string}
+ */
+export function byteArrayToString(value: Uint8Array): string {
+    return new TextDecoder().decode(value);
+}

@@ -18,7 +18,7 @@ import {
 import { TContent, TTreeRename } from "./types";
 import { credentials, extensionContext, output, repoFileSystemProvider, repoProvider } from "../extension";
 import { addToGlobalStorage, getReposFromGlobalStorage, removeFromGlobalStorage, store } from "../FileSystem/storage";
-import { charCodeAt, stringToByteArray } from "../utils";
+import { byteArrayToString, charCodeAt, getFileNameFromUri, removeLeadingSlash, stringToByteArray } from "../utils";
 
 /**
  * Returns the binary content of a file in the repository.
@@ -205,20 +205,28 @@ export async function uploadFiles(destination: ContentNode | RepoNode): Promise<
         return Promise.reject();
     }
 
-    files.forEach(async (file) => {
-        const content = await workspace.fs.readFile(file);
-        let uriPath = "path" in destination ? destination.path : "";
-        let uriFile = file.path.split("/").pop();
-        let uri = Uri.from({
-            scheme: REPO_SCHEME,
-            authority: destination.repo.name,
-            path: `${uriPath}/${uriFile}`,
-        });
+    await window.withProgress({ title: "Uploading files...", location: ProgressLocation.Notification }, async () => {
+        let tree = await Promise.all(
+            files.map(async (file) => {
+                return {
+                    path: removeLeadingSlash(destination.path + "/" + getFileNameFromUri(file)),
+                    mode: FileMode.file,
+                    type: TypeMode.blob,
+                    content: byteArrayToString(await workspace.fs.readFile(file)),
+                } as TTreeRename;
+            })
+        );
 
-        await repoFileSystemProvider.writeFile(uri, content, {
-            create: true,
-            overwrite: false,
-        });
+        const repo = store.repos.find((repo) => repo!.full_name === `${destination.repo.owner.login}/${destination.repo.name}`)!;
+
+        let newTree = await createGitHubTree(repo, tree);
+        let newCommit = await createGitHubCommit(repo, `Upload ${tree.map((t) => t.path)}`, newTree!.sha!, [repo.tree?.sha!]);
+        let updatedRef = await updateGitHubRef(repo, `heads/${repo.repo.default_branch}`, newCommit!.sha);
+
+        if (updatedRef) {
+            output?.appendLine(`Uploaded ${tree.map((t) => t.path)}`, output.messageType.info);
+            repoProvider.refresh();
+        }
     });
 
     return Promise.reject();
