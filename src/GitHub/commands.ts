@@ -130,7 +130,7 @@ export async function pickRepository() {
  * @param {ContentNode} e The TreeItem containing the file to create
  * @returns {*}
  */
-export async function addFile(e: ContentNode | RepoNode) {
+export async function addFile(e: ContentNode | RepoNode): Promise<Uri | undefined> {
     const newFileName = await window.showInputBox({ ignoreFocusOut: true, placeHolder: "path/filename", title: "Enter the filename (optional path)" });
     if (!newFileName) {
         return;
@@ -139,12 +139,15 @@ export async function addFile(e: ContentNode | RepoNode) {
     const [repoOwner, repoName, path] = RepoFileSystemProvider.getFileInfo(e.uri)!;
     const content = "";
 
+    const newFileUri = Uri.parse(`${REPO_SCHEME}://${repoOwner}/${repoName}/${path}/${newFileName}`);
     // prettier-ignore
-    repoFileSystemProvider.writeFile(
-        Uri.parse(`${REPO_SCHEME}://${repoOwner}/${repoName}/${path}/${newFileName}`), stringToByteArray(content), {
+    await repoFileSystemProvider.writeFile(
+        newFileUri, stringToByteArray(content), {
         create: true,
         overwrite: true,
     });
+
+    return Promise.resolve(newFileUri);
 }
 
 /**

@@ -23,7 +23,7 @@ export class RepoNode extends TreeItem {
 
         const tooltip = repo.description ? `${repo.html_url}${"\n"}${"\n"}${repo.description}` : repo.html_url;
         this.tooltip = tooltip;
-        
+
         this.repo = repo;
         this.owner = repo.owner.login;
         this.tree = tree;
@@ -84,10 +84,14 @@ export class ContentNode extends TreeItem {
 }
 
 export class RepoProvider implements TreeDataProvider<ContentNode> {
+    refreshing = false;
+
     getTreeItem = (node: ContentNode) => node;
 
     async getChildren(element?: ContentNode): Promise<any[]> {
         // @update: any
+        this.refreshing = true;
+
         if (element) {
             const content = await getGitHubRepoContent(element.owner, element.repo.name, element?.nodeContent?.path);
             let childNodes = Object.values(content)
@@ -95,11 +99,13 @@ export class RepoProvider implements TreeDataProvider<ContentNode> {
                 .sort((a, b) => a.nodeContent!.name!.localeCompare(b.nodeContent!.name!))
                 .sort((a, b) => a.nodeContent!.type!.localeCompare(b.nodeContent!.type!));
 
+            this.refreshing = false;
             return Promise.resolve(childNodes);
         } else {
             const reposFromGlobalStorage = await getReposFromGlobalStorage(extensionContext);
             if (reposFromGlobalStorage.length === 0) {
                 output?.appendLine("No repos found in global storage", output.messageType.info);
+                this.refreshing = false;
                 return Promise.resolve([]);
             }
 
@@ -133,6 +139,7 @@ export class RepoProvider implements TreeDataProvider<ContentNode> {
             );
 
             store.repos = childNodes ?? [];
+            this.refreshing = false;
             return Promise.resolve(store.repos);
         }
     }

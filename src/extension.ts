@@ -167,8 +167,19 @@ export async function activate(context: ExtensionContext) {
     );
 
     context.subscriptions.push(
-        commands.registerCommand("VirtualRepos.addFile", async (node) => {
-            await addFile(<ContentNode>node);
+        commands.registerCommand("VirtualRepos.addFile", async (node: ContentNode) => {
+            const newFileUri = await addFile(node);
+
+            repoProvider.refreshing = true;
+            repoProvider.refresh();
+
+            while (repoProvider.refreshing) {
+                output?.appendLine(`waiting`, output.messageType.debug);
+                await new Promise((resolve) => setTimeout(resolve, 500));
+            }
+
+            output?.appendLine(`Open ${newFileUri}`, output.messageType.debug);
+            commands.executeCommand("vscode.open", newFileUri);
         })
     );
 
