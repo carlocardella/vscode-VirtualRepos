@@ -14,11 +14,20 @@ export class RepoNode extends TreeItem {
     uri: Uri;
     path: string;
     clone_url: string;
+    fork: boolean;
 
     constructor(public repo: TRepo, tree?: any) {
         super(repo.name, TreeItemCollapsibleState.Collapsed);
 
-        const icon = config.get("UseRepoOwnerAvatar") ? Uri.parse(repo.owner.avatar_url) : new ThemeIcon("repo");
+        let icon: Uri | ThemeIcon;
+        if (config.get("UseRepoOwnerAvatar")) {
+            icon = Uri.parse(repo.owner.avatar_url);
+        } else if (repo.fork) {
+            icon = new ThemeIcon("repo-forked");
+        } else {
+            icon = new ThemeIcon("repo");
+        }
+
         this.iconPath = icon;
 
         const tooltip = repo.description ? `${repo.html_url}${"\n"}${"\n"}${repo.description}` : repo.html_url;
@@ -34,6 +43,7 @@ export class RepoNode extends TreeItem {
         this.description = repo.default_branch;
         this.clone_url = repo.clone_url;
         this.contextValue = this.isOwned ? "isOwnedRepo" : "repo";
+        this.fork = repo.fork;
     }
 
     get isOwned() {

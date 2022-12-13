@@ -222,6 +222,7 @@ export type TRepo = {
     has_pages: boolean;
     clone_url: string;
     html_url: string;
+    fork: boolean;
 };
 
 export type TUser = {
