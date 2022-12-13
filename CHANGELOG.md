@@ -18,6 +18,16 @@ See the [list of open enhancements on GitHub](https://github.com/carlocardella/v
 * Sort repository list in TreeView
 * Adopt new [Log Output Channel](https://code.visualstudio.com/updates/v1_72#_log-output-channel) when the API will be finalized
 
+## [0.0.22] - 2022-12-12
+
+### Added
+
+* Select and delete multiple files in a repo with one click
+
+### Changed
+
+* Improved new file experience: now the newly created file is automatically opened in the editor
+
 ## [0.0.21] - 2022-12-05
 ### Added
 
