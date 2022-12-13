@@ -18,6 +18,13 @@ See the [list of open enhancements on GitHub](https://github.com/carlocardella/v
 * Sort repository list in TreeView
 * Adopt new [Log Output Channel](https://code.visualstudio.com/updates/v1_72#_log-output-channel) when the API will be finalized
 
+## [0.0.23] - 2022-12-13
+
+### Changed
+
+* Forked repos use a "forked" icon rather than the generic "repo" icon
+* Upload multiple files in onw shot: [#1](https://github.com/carlocardella/vscode-VirtualRepos/issues/1)
+
 ## [0.0.22] - 2022-12-12
 
 ### Added
