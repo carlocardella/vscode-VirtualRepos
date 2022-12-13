@@ -9,7 +9,7 @@ import {
     cloneRepository,
     copyRemoteUrl,
     deleteFolder,
-    deleteNode,
+    deleteFile,
     deleteRepository,
     forkRepository,
     newRepository,
@@ -179,8 +179,10 @@ export async function activate(context: ExtensionContext) {
     );
 
     context.subscriptions.push(
-        commands.registerCommand("VirtualRepos.deleteNode", async (node) => {
-            await  deleteNode(<ContentNode>node);
+        commands.registerCommand("VirtualRepos.deleteFile", async (node: ContentNode, nodes: ContentNode[]) => {
+            const nodesToDelete = nodes || [node];
+
+            await deleteFile(nodesToDelete);
         })
     );
 

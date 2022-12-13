@@ -1,4 +1,4 @@
-import { commands, env, Uri, window, workspace } from "vscode";
+import { commands, env, Uri, window, workspace, ProgressLocation } from "vscode";
 import { RepoFileSystemProvider, REPO_SCHEME } from "../FileSystem/fileSystem";
 import { ContentNode, RepoNode } from "../Tree/nodes";
 import {
@@ -9,10 +9,15 @@ import {
     getStarredGitHubRepositories,
     getGitHubUser,
     forkGitHubRepository,
+    FileMode,
+    TypeMode,
+    createGitHubTree,
+    createGitHubCommit,
+    updateGitHubRef,
 } from "./api";
-import { TContent } from "./types";
+import { TContent, TTreeRename } from "./types";
 import { credentials, extensionContext, output, repoFileSystemProvider, repoProvider } from "../extension";
-import { addToGlobalStorage, removeFromGlobalStorage } from "../FileSystem/storage";
+import { addToGlobalStorage, getReposFromGlobalStorage, removeFromGlobalStorage, store } from "../FileSystem/storage";
 import { charCodeAt, stringToByteArray } from "../utils";
 
 /**
@@ -134,7 +139,9 @@ export async function addFile(e: ContentNode | RepoNode) {
     const [repoOwner, repoName, path] = RepoFileSystemProvider.getFileInfo(e.uri)!;
     const content = "";
 
-    repoFileSystemProvider.writeFile(Uri.parse(`${REPO_SCHEME}://${repoOwner}/${repoName}/${path}/${newFileName}`), stringToByteArray(content), {
+    // prettier-ignore
+    repoFileSystemProvider.writeFile(
+        Uri.parse(`${REPO_SCHEME}://${repoOwner}/${repoName}/${path}/${newFileName}`), stringToByteArray(content), {
         create: true,
         overwrite: true,
     });
@@ -145,16 +152,40 @@ export async function addFile(e: ContentNode | RepoNode) {
  *
  * @export
  * @async
- * @param {ContentNode} node TreeView node to delete
+ * @param {ContentNode} nodes TreeView nodes to delete
  * @returns {*}
  */
-export async function deleteNode(node: ContentNode) {
-    const confirm = await window.showWarningMessage(`Are you sure you want to delete '${node.path}'?`, "Yes", "No", "Cancel");
+export async function deleteFile(nodes: ContentNode[]) {
+    let confirm: "Yes" | "No" | undefined = undefined;
+    let message: string;
+    nodes.length === 1
+        ? (message = `Are you sure you want to delete '${nodes[0].label}'?`)
+        : (message = `Are you sure you want to delete ${nodes.length} files?`);
+
+    confirm = await window.showWarningMessage(message, { modal: true }, "Yes", "No");
     if (confirm !== "Yes") {
         return;
     }
 
-    repoFileSystemProvider.delete(node.uri);
+    let tree = nodes.map((node) => {
+        return {
+            path: node.path,
+            mode: FileMode.file,
+            type: TypeMode.blob,
+            sha: null,
+        } as TTreeRename;
+    });
+
+    const repo = store.repos.find((repo) => repo!.full_name === `${nodes[0].owner}/${nodes[0].repo.name}`)!;
+
+    let newTree = await createGitHubTree(repo, tree);
+    let newCommit = await createGitHubCommit(repo, `Delete ${tree.map((t) => t.path)}`, newTree!.sha!, [repo.tree?.sha!]);
+    let updatedRef = await updateGitHubRef(repo, `heads/${repo.repo.default_branch}`, newCommit!.sha);
+
+    if (updatedRef) {
+        output?.appendLine(`Deleted ${tree.map((t) => t.path)}`, output.messageType.info);
+        repoProvider.refresh();
+    }
 }
 
 /**
@@ -343,7 +374,12 @@ export async function forkRepository(repo: RepoNode) {
  * @returns {*}
  */
 export async function renameFile(file: ContentNode) {
-    const newFileName = await window.showInputBox({ ignoreFocusOut: true, placeHolder: "new file name", title: "Enter the new file name" });
+    const newFileName = await window.showInputBox({
+        ignoreFocusOut: true,
+        placeHolder: "new file name",
+        title: "Enter the new file name",
+        value: file.label as string,
+    });
     if (!newFileName) {
         return;
     }

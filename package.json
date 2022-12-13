@@ -112,7 +112,7 @@
             },
             {
                 "title": "Delete...",
-                "command": "VirtualRepos.deleteNode",
+                "command": "VirtualRepos.deleteFile",
                 "icon": "$(trash)",
                 "category": "Virtual Repositories"
             },
@@ -238,7 +238,7 @@
                     "when": "false"
                 },
                 {
-                    "command": "VirtualRepos.deleteNode",
+                    "command": "VirtualRepos.deleteFile",
                     "when": "false"
                 },
                 {
@@ -309,7 +309,7 @@
                     "group": "inline"
                 },
                 {
-                    "command": "VirtualRepos.deleteNode",
+                    "command": "VirtualRepos.deleteFile",
                     "when": "viewItem == isOwnedFolder || viewItem == isOwnedFile",
                     "group": "inline"
                 },
@@ -379,7 +379,7 @@
                     "group": "2_delete@1"
                 },
                 {
-                    "command": "VirtualRepos.deleteNode",
+                    "command": "VirtualRepos.deleteFile",
                     "when": "viewItem == isOwnedFile",
                     "group": "2_delete@2"
                 },

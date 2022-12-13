@@ -11,7 +11,7 @@ import {
     TextDocument,
     Uri,
 } from "vscode";
-import { repoProvider } from "../extension";
+import { output, repoProvider } from "../extension";
 import {
     deleteGitHubFile,
     refreshGitHubTree,
@@ -27,6 +27,7 @@ import { TGitHubUpdateContent, TContent, TRepo, TTree } from "../GitHub/types";
 import { RepoNode } from "../Tree/nodes";
 import { encodeText, getFileNameFromUri, getFilePathWithoutRepoNameFromUri, getRepoFullNameFromUri, getRepoNameFromUri, removeLeadingSlash } from "../utils";
 import { store } from "./storage";
+import { MessageType } from '../tracing';
 
 export const REPO_SCHEME = "github-repo";
 const REPO_QUERY = `${REPO_SCHEME}=`;
@@ -63,7 +64,7 @@ export class RepoFileSystemProvider implements FileSystemProvider {
     }
 
     static getRepoInfo(uri: Uri): [RepoNode, TContent] | undefined {
-        const [repoOwner, repoName, path] = RepoFileSystemProvider.getFileInfo(uri)!;
+        const [_, repoName, path] = RepoFileSystemProvider.getFileInfo(uri)!;
 
         const repository = store.repos.find((repo) => repo!.name === repoName)!;
         const file: TContent = repository!.tree?.tree.find((file: TContent) => file?.path === path);
@@ -126,7 +127,7 @@ export class RepoFileSystemProvider implements FileSystemProvider {
 
         await deleteGitHubFile(repository!.repo!, file);
 
-        this._onDidChangeFile.fire([{ type: FileChangeType.Deleted, uri }]);
+        this._onDidChangeFile.fire([{ type: FileChangeType.Deleted, uri }]); //@investigate: are both lines needed?
         repoProvider.refresh();
     }
 
@@ -209,6 +210,7 @@ export class RepoFileSystemProvider implements FileSystemProvider {
                 file!.url = response.content?.git_url;
             })
             .then(() => {
+                output?.appendLine(`File ${file!.path} created or updated`, MessageType.info);
                 refreshGitHubTree(repository.repo, repository.repo.default_branch).then((tree) => {
                     repository.repo.tree = tree as TTree;
                 });
