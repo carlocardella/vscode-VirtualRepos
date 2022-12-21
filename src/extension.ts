@@ -1,7 +1,7 @@
 import { Credentials } from "./GitHub/authentication";
 import * as config from "./config";
 import * as trace from "./tracing";
-import { commands, ExtensionContext, workspace, window, ProgressLocation } from "vscode";
+import { commands, ExtensionContext, workspace, window, ProgressLocation, Uri } from "vscode";
 import { ContentNode, RepoNode, RepoProvider } from "./Tree/nodes";
 import { RepoFileSystemProvider, REPO_SCHEME } from "./FileSystem/fileSystem";
 import {
@@ -18,11 +18,12 @@ import {
     showOnRemote,
     uploadFiles,
     viewRepoOwnerProfileOnGitHub,
+    toggleRepoStar,
 } from "./GitHub/commands";
 import { TGitHubUser } from "./GitHub/types";
 import { addToGlobalStorage, clearGlobalStorage, getReposFromGlobalStorage, purgeGlobalStorage, removeFromGlobalStorage } from "./FileSystem/storage";
 import { GLOBAL_STORAGE_KEY } from "./GitHub/constants";
-import { getGitHubAuthenticatedUser } from "./GitHub/api";
+import { getGitHubAuthenticatedUser, starGitHubRepository, unstarGitHubRepository } from "./GitHub/api";
 
 export let output: trace.Output;
 export const credentials = new Credentials();
@@ -206,6 +207,20 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.forkRepository", async (repo: RepoNode) => {
             await forkRepository(repo);
+        })
+    );
+
+    context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.starRepository", async (repo: RepoNode) => {
+            await toggleRepoStar(repo);
+        })
+    );
+
+    context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.unstarRepository", async (repo: RepoNode) => {
+            await toggleRepoStar(repo).then(() => {
+                repoProvider.refresh();
+            });
         })
     );
 

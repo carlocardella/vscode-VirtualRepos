@@ -14,8 +14,10 @@ import {
     createGitHubTree,
     createGitHubCommit,
     updateGitHubRef,
+    unstarGitHubRepository,
+    starGitHubRepository,
 } from "./api";
-import { TContent, TTreeRename } from "./types";
+import { TContent, TTreeRename, TRepo } from "./types";
 import { credentials, extensionContext, output, repoFileSystemProvider, repoProvider } from "../extension";
 import { addToGlobalStorage, getReposFromGlobalStorage, removeFromGlobalStorage, store } from "../FileSystem/storage";
 import { byteArrayToString, charCodeAt, getFileNameFromUri, removeLeadingSlash, stringToByteArray } from "../utils";
@@ -104,9 +106,10 @@ export async function pickRepository() {
             } else if (pick === QuickPickItems.starredRepos) {
                 quickPick.busy = true;
                 quickPick.placeholder = "Enter the repository to open, e.g. 'owner/repo'";
-                const starredRepos = await getStarredGitHubRepositories();
+                // const starredRepos = await getStarredGitHubRepositories();
+                const starredRepos = extensionContext.globalState.get("starredRepos") as string[];
                 quickPick.busy = false;
-                quickPick.items = starredRepos.map((repo) => ({ label: `${repo.owner.login}/${repo.name}` }));
+                quickPick.items = starredRepos.map((repo) => ({ label: repo }));
                 quickPick.show();
             } else {
                 output?.appendLine(`onDidAccept: ${pick}`, output.messageType.debug);
@@ -116,7 +119,7 @@ export async function pickRepository() {
         });
 
         quickPick.onDidChangeSelection(async (selection) => {
-            pick = selection[0].label;
+            pick = selection[0].label; // @fix: rejected promise not handled within 1 second: TypeError: Cannot read properties of undefined (reading 'label')
             output?.appendLine(`onDidChangeSelection: ${pick}`, output.messageType.debug);
         });
     });
@@ -401,6 +404,14 @@ export async function renameFile(file: ContentNode) {
     await repoFileSystemProvider.rename(oldUri, newUri, { overwrite: false });
 }
 
+/**
+ * Delete a folder from a repository
+ *
+ * @export
+ * @async
+ * @param {ContentNode} folder The folder to delete
+ * @returns {*}
+ */
 export async function deleteFolder(folder: ContentNode) {
     const confirm = await window.showWarningMessage(`Are you sure you want to delete "${folder.path}"?`, { modal: true }, "Yes", "No");
     if (confirm !== "Yes") {
@@ -409,4 +420,49 @@ export async function deleteFolder(folder: ContentNode) {
 
     output?.appendLine(`Delete "${folder.path}"`, output.messageType.info);
     await repoFileSystemProvider.deleteDirectory(folder.uri);
+}
+
+/**
+ * Star or unstar a repository
+ *
+ * @export
+ * @async
+ * @param {RepoNode} repo The repository to star or unstar
+ * @returns {*}
+ */
+export async function toggleRepoStar(repo: RepoNode) {
+    let starredRepos = extensionContext.globalState.get<string[]>("starredRepos") || [];
+    if (repo.starred) {
+        await unstarGitHubRepository(repo);
+        starredRepos = starredRepos.filter((r) => r !== repo.full_name);
+        repo.starred = false;
+        output?.appendLine(`Unstarred ${repo.full_name}`, output.messageType.info);
+    } else {
+        await starGitHubRepository(repo);
+        starredRepos.push(repo.full_name);
+        repo.starred = true;
+        output?.appendLine(`Starred ${repo.full_name}`, output.messageType.info);
+    }
+
+    await refreshStarredRepos(starredRepos);
+}
+
+/**
+ * Refresh the starred repositories
+ *
+ * @export
+ * @async
+ * @param {?(string[] | TRepo[])} [starredRepos] List of repositories
+ * @returns {*}
+ */
+export async function refreshStarredRepos(starredRepos?: string[] | TRepo[]) {
+    let starredReposNames: string[] = [];
+
+    if (!starredRepos) {
+        starredRepos = await getStarredGitHubRepositories();
+        starredReposNames = starredRepos.map((repo) => `${repo.owner.login}/${repo.name}`);
+    }
+
+    extensionContext.globalState.update("starredRepos", starredReposNames);
+    commands.executeCommand("setContext", "starredRepos", starredReposNames);
 }

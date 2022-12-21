@@ -1,9 +1,9 @@
-import { Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
+import { commands, Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
 import { credentials, extensionContext, output } from "../extension";
 import { RepoFileSystemProvider, REPO_SCHEME } from "../FileSystem/fileSystem";
 import { store, getReposFromGlobalStorage } from "../FileSystem/storage";
-import { getGitHubBranch, getGitHubRepoContent, getGitHubTree, openRepository } from "../GitHub/api";
-import { getRepoDetails } from "../GitHub/commands";
+import { getGitHubBranch, getGitHubRepoContent, getGitHubTree, getStarredGitHubRepositories, openRepository } from "../GitHub/api";
+import { getRepoDetails, refreshStarredRepos } from "../GitHub/commands";
 import { TRepo, ContentType, TContent, TTree } from "../GitHub/types";
 import * as config from "./../config";
 
@@ -15,6 +15,7 @@ export class RepoNode extends TreeItem {
     path: string;
     clone_url: string;
     fork: boolean;
+    starred: boolean;
 
     constructor(public repo: TRepo, tree?: any) {
         super(repo.name, TreeItemCollapsibleState.Collapsed);
@@ -42,8 +43,32 @@ export class RepoNode extends TreeItem {
         this.path = "/";
         this.description = repo.default_branch;
         this.clone_url = repo.clone_url;
-        this.contextValue = this.isOwned ? "isOwnedRepo" : "repo";
+        // this.contextValue = this.isOwned ? "isOwnedRepo" : "repo";
         this.fork = repo.fork;
+
+        let starredRepos: string[] = extensionContext.globalState.get("starredRepos", []);
+        // if (starredRepos.length === 0) {
+        //     getStarredGitHubRepositories().then((repos) => {
+        //         starredRepos = repos.map((repo) => {
+        //             return `${repo.owner.login}/${repo.name}`;
+        //         });
+        //         extensionContext.globalState.update("starredRepos", starredRepos);
+        //         commands.executeCommand("setContext", "starredRepos", starredRepos);
+        //     });
+        // }
+        this.starred = starredRepos.includes(this.full_name);
+        switch (this.isOwned) {
+            case true:
+                this.contextValue = "isOwnedRepo";
+                break;
+            case false:
+                if (this.starred) {
+                    this.contextValue = "starredRepo";
+                } else {
+                    this.contextValue = "unstarredRepo";
+                }
+                break;
+        }
     }
 
     get isOwned() {
@@ -112,6 +137,7 @@ export class RepoProvider implements TreeDataProvider<ContentNode> {
             this.refreshing = false;
             return Promise.resolve(childNodes);
         } else {
+            await refreshStarredRepos(); // @todo: called every time the tree is refreshed, can be fairly slow for users with logs of starred repositories. Needs improvement
             const reposFromGlobalStorage = await getReposFromGlobalStorage(extensionContext);
             if (reposFromGlobalStorage.length === 0) {
                 output?.appendLine("No repos found in global storage", output.messageType.info);
@@ -157,8 +183,8 @@ export class RepoProvider implements TreeDataProvider<ContentNode> {
     private _onDidChangeTreeData: EventEmitter<ContentNode | undefined | null | void> = new EventEmitter<ContentNode | undefined | null | void>();
     readonly onDidChangeTreeData: Event<ContentNode | undefined | null | void> = this._onDidChangeTreeData.event;
 
-    refresh(): void {
+    refresh(node?: ContentNode): void {
         output?.appendLine("Refreshing repos", output.messageType.info);
-        this._onDidChangeTreeData.fire();
+        this._onDidChangeTreeData.fire(node);
     }
 }

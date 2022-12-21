@@ -586,3 +586,57 @@ export async function updateGitHubRef(repo: RepoNode, ref: string, sha: string):
 
     return Promise.reject(undefined);
 }
+
+/**
+ * Star a GitHub repository
+ *
+ * @export
+ * @async
+ * @param {RepoNode} repo The repository to star
+ * @returns {unknown}
+ */
+export async function starGitHubRepository(repo: RepoNode) {
+    const octokit = new rest.Octokit({
+        auth: await credentials.getAccessToken(),
+    });
+
+    try {
+        const { data } = await octokit.activity.starRepoForAuthenticatedUser({
+            owner: repo.owner,
+            repo: repo.name,
+        });
+
+        return Promise.resolve(data);
+    } catch (e: any) {
+        output?.appendLine(`Error starring repository: ${e.message.trim()}`, output.messageType.error);
+    }
+
+    return Promise.reject(undefined);
+}
+
+/**
+ * Unstar a GitHub repository
+ *
+ * @export
+ * @async
+ * @param {RepoNode} repo The repository to unstar
+ * @returns {unknown}
+ */
+export async function unstarGitHubRepository(repo: RepoNode) {
+    const octokit = new rest.Octokit({
+        auth: await credentials.getAccessToken(),
+    });
+
+    try {
+        const { data } = await octokit.activity.unstarRepoForAuthenticatedUser({
+            owner: repo.owner,
+            repo: repo.name,
+        });
+
+        return Promise.resolve(data);
+    } catch (e: any) {
+        output?.appendLine(`Error unstarring repository: ${e.message.trim()}`, output.messageType.error);
+    }
+
+    return Promise.reject(undefined);
+}

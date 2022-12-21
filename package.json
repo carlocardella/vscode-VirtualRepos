@@ -81,6 +81,18 @@
                 "icon": "$(repo-forked)"
             },
             {
+                "title": "Star repository",
+                "command": "VirtualRepos.starRepository",
+                "category": "Virtual Repositories",
+                "icon": "$(star-empty)"
+            },
+            {
+                "title": "Unstar repository",
+                "command": "VirtualRepos.unstarRepository",
+                "category": "Virtual Repositories",
+                "icon": "$(star-full)"
+            },
+            {
                 "title": "Download repository...",
                 "command": "VirtualRepos.downloadRepository",
                 "category": "Virtual Repositories",
@@ -250,6 +262,14 @@
                     "when": "false"
                 },
                 {
+                    "command": "VirtualRepos.starRepository",
+                    "when": "false"
+                },
+                {
+                    "command": "VirtualRepos.unstarRepository",
+                    "when": "false"
+                },
+                {
                     "command": "VirtualRepos.cloneRepository",
                     "when": "false"
                 },
@@ -315,7 +335,17 @@
                 },
                 {
                     "command": "VirtualRepos.forkRepository",
-                    "when": "viewItem == repo",
+                    "when": "viewItem !isOwnedRepo",
+                    "group": "inline"
+                },
+                {
+                    "command": "VirtualRepos.starRepository",
+                    "when": "viewItem == unstarredRepo",
+                    "group": "inline"
+                },
+                {
+                    "command": "VirtualRepos.unstarRepository",
+                    "when": "viewItem == starredRepo",
                     "group": "inline"
                 },
                 {
@@ -360,8 +390,18 @@
                 },
                 {
                     "command": "VirtualRepos.forkRepository",
-                    "when": "viewItem =~ /.*[Rr]epo.*/",
+                    "when": "viewItem !isOwnedRepo",
                     "group": "2_close@6"
+                },
+                {
+                    "command": "VirtualRepos.starRepository",
+                    "when": "viewItem == unstarredRepo",
+                    "group": "2_close@7"
+                },
+                {
+                    "command": "VirtualRepos.unstarRepository",
+                    "when": "viewItem == starredRepo",
+                    "group": "2_close@7"
                 },
                 {
                     "command": "VirtualRepos.copyRemoteUrl",
