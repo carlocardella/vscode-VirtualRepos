@@ -212,7 +212,9 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.starRepository", async (repo: RepoNode) => {
-            await toggleRepoStar(repo);
+            await toggleRepoStar(repo).then(() => {
+                repoProvider.refresh();
+            });
         })
     );
 

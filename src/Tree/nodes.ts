@@ -3,7 +3,7 @@ import { credentials, extensionContext, output } from "../extension";
 import { RepoFileSystemProvider, REPO_SCHEME } from "../FileSystem/fileSystem";
 import { store, getReposFromGlobalStorage } from "../FileSystem/storage";
 import { getGitHubBranch, getGitHubRepoContent, getGitHubTree, getStarredGitHubRepositories, openRepository } from "../GitHub/api";
-import { getRepoDetails, refreshStarredRepos } from "../GitHub/commands";
+import { getRepoDetails, getStarredRepos, refreshStarredRepos } from "../GitHub/commands";
 import { TRepo, ContentType, TContent, TTree } from "../GitHub/types";
 import * as config from "./../config";
 
@@ -137,7 +137,7 @@ export class RepoProvider implements TreeDataProvider<ContentNode> {
             this.refreshing = false;
             return Promise.resolve(childNodes);
         } else {
-            await refreshStarredRepos(); // @todo: called every time the tree is refreshed, can be fairly slow for users with logs of starred repositories. Needs improvement
+            await getStarredRepos();
             const reposFromGlobalStorage = await getReposFromGlobalStorage(extensionContext);
             if (reposFromGlobalStorage.length === 0) {
                 output?.appendLine("No repos found in global storage", output.messageType.info);

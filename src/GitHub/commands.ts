@@ -431,7 +431,7 @@ export async function deleteFolder(folder: ContentNode) {
  * @returns {*}
  */
 export async function toggleRepoStar(repo: RepoNode) {
-    let starredRepos = extensionContext.globalState.get<string[]>("starredRepos") || [];
+    let starredRepos = await getStarredRepos();
     if (repo.starred) {
         await unstarGitHubRepository(repo);
         starredRepos = starredRepos.filter((r) => r !== repo.full_name);
@@ -458,11 +458,26 @@ export async function toggleRepoStar(repo: RepoNode) {
 export async function refreshStarredRepos(starredRepos?: string[] | TRepo[]) {
     let starredReposNames: string[] = [];
 
-    if (!starredRepos) {
+    if (starredRepos?.length === 0) {
+        output?.appendLine("Fetching starred repositories from GitHub", output.messageType.info);
         starredRepos = await getStarredGitHubRepositories();
         starredReposNames = starredRepos.map((repo) => `${repo.owner.login}/${repo.name}`);
+    } else {
+        starredReposNames = starredRepos as string[];
     }
 
     extensionContext.globalState.update("starredRepos", starredReposNames);
     commands.executeCommand("setContext", "starredRepos", starredReposNames);
+}
+
+export async function getStarredRepos(forceRefreshFromGitHub?: boolean): Promise<string[]> {
+    let starredRepos = extensionContext.globalState.get<string[]>("starredRepos") || [];
+
+    if (starredRepos.length === 0 || forceRefreshFromGitHub) {
+        output?.appendLine("Fetching starred repositories from GitHub", output.messageType.info);
+        const starredReposFromGitHub = await getStarredGitHubRepositories();
+        starredRepos = starredReposFromGitHub.map((repo) => `${repo.owner.login}/${repo.name}`);
+    }
+
+    return Promise.resolve(starredRepos);
 }
