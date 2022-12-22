@@ -18,6 +18,14 @@ See the [list of open enhancements on GitHub](https://github.com/carlocardella/v
 * Sort repository list in TreeView
 * Adopt new [Log Output Channel](https://code.visualstudio.com/updates/v1_72#_log-output-channel) when the API will be finalized
 
+## [0.0.24] - 2022-12-22
+
+### Added
+
+* Star and unstar an open repository
+  * Starred repositories are refreshed from GitHub every hour
+  * You can also use the `Refresh starred repositories from GitHub` command to force the refresh as needed
+
 ## [0.0.23] - 2022-12-13
 
 ### Changed
