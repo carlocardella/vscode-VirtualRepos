@@ -111,7 +111,7 @@
                 "category": "Virtual Repositories"
             },
             {
-                "title": "New file",
+                "title": "New file...",
                 "command": "VirtualRepos.addFile",
                 "icon": "$(new-file)",
                 "category": "Virtual Repositories"
@@ -147,11 +147,6 @@
             {
                 "title": "Purge Global Storage",
                 "command": "VirtualRepos.purgeGlobalStorage",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Clone Repository",
-                "command": "VirtualRepos.cloneRepository",
                 "category": "Virtual Repositories"
             },
             {
@@ -335,7 +330,7 @@
                 },
                 {
                     "command": "VirtualRepos.forkRepository",
-                    "when": "viewItem !isOwnedRepo",
+                    "when": "viewItem == starredRepo || viewItem == unstarredRepo",
                     "group": "inline"
                 },
                 {
@@ -390,7 +385,7 @@
                 },
                 {
                     "command": "VirtualRepos.forkRepository",
-                    "when": "viewItem !isOwnedRepo",
+                    "when": "viewItem == starredRepo || viewItem == unstarredRepo",
                     "group": "2_close@6"
                 },
                 {

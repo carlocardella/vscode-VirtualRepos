@@ -1,9 +1,9 @@
-import { commands, Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
+import { Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
 import { credentials, extensionContext, output } from "../extension";
 import { RepoFileSystemProvider, REPO_SCHEME } from "../FileSystem/fileSystem";
 import { store, getReposFromGlobalStorage } from "../FileSystem/storage";
-import { getGitHubBranch, getGitHubRepoContent, getGitHubTree, getStarredGitHubRepositories, openRepository } from "../GitHub/api";
-import { getRepoDetails, getStarredRepos, refreshStarredRepos } from "../GitHub/commands";
+import { getGitHubBranch, getGitHubRepoContent, getGitHubTree, openRepository } from "../GitHub/api";
+import { getRepoDetails, getStarredRepos } from "../GitHub/commands";
 import { TRepo, ContentType, TContent, TTree } from "../GitHub/types";
 import * as config from "./../config";
 
@@ -47,15 +47,6 @@ export class RepoNode extends TreeItem {
         this.fork = repo.fork;
 
         let starredRepos: string[] = extensionContext.globalState.get("starredRepos", []);
-        // if (starredRepos.length === 0) {
-        //     getStarredGitHubRepositories().then((repos) => {
-        //         starredRepos = repos.map((repo) => {
-        //             return `${repo.owner.login}/${repo.name}`;
-        //         });
-        //         extensionContext.globalState.update("starredRepos", starredRepos);
-        //         commands.executeCommand("setContext", "starredRepos", starredRepos);
-        //     });
-        // }
         this.starred = starredRepos.includes(this.full_name);
         switch (this.isOwned) {
             case true:
@@ -118,7 +109,7 @@ export class ContentNode extends TreeItem {
     }
 }
 
-export class RepoProvider implements TreeDataProvider<ContentNode> {
+export class RepoProvider implements TreeDataProvider<RepoNode | ContentNode> {
     refreshing = false;
 
     getTreeItem = (node: ContentNode) => node;
@@ -180,10 +171,10 @@ export class RepoProvider implements TreeDataProvider<ContentNode> {
         }
     }
 
-    private _onDidChangeTreeData: EventEmitter<ContentNode | undefined | null | void> = new EventEmitter<ContentNode | undefined | null | void>();
-    readonly onDidChangeTreeData: Event<ContentNode | undefined | null | void> = this._onDidChangeTreeData.event;
+    private _onDidChangeTreeData: EventEmitter<RepoNode | undefined | null | void> = new EventEmitter<RepoNode | undefined | null | void>();
+    readonly onDidChangeTreeData: Event<RepoNode | undefined | null | void> = this._onDidChangeTreeData.event;
 
-    refresh(node?: ContentNode): void {
+    refresh(node?: RepoNode): void {
         output?.appendLine("Refreshing repos", output.messageType.info);
         this._onDidChangeTreeData.fire(node);
     }

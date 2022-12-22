@@ -25,7 +25,7 @@ import {
 import { getRepoFileContent } from "../GitHub/commands";
 import { TGitHubUpdateContent, TContent, TRepo, TTree } from "../GitHub/types";
 import { RepoNode } from "../Tree/nodes";
-import { encodeText, getFileNameFromUri, getFilePathWithoutRepoNameFromUri, getRepoFullNameFromUri, getRepoNameFromUri, removeLeadingSlash } from "../utils";
+import { getFileNameFromUri, getFilePathWithoutRepoNameFromUri, getRepoFullNameFromUri, getRepoNameFromUri, removeLeadingSlash } from "../utils";
 import { store } from "./storage";
 import { MessageType } from '../tracing';
 
@@ -128,7 +128,7 @@ export class RepoFileSystemProvider implements FileSystemProvider {
         await deleteGitHubFile(repository!.repo!, file);
 
         this._onDidChangeFile.fire([{ type: FileChangeType.Deleted, uri }]); //@investigate: are both lines needed?
-        repoProvider.refresh();
+        repoProvider.refresh(repository!);
     }
 
     async rename(oldUri: Uri, newUri: Uri, options: { readonly overwrite: boolean }): Promise<void> {
@@ -158,7 +158,7 @@ export class RepoFileSystemProvider implements FileSystemProvider {
         let updatedRef = await updateGitHubRef(repo, `heads/${repo.repo.default_branch}`, newCommit!.sha);
 
         if (updatedRef) {
-            repoProvider.refresh();
+            repoProvider.refresh(repo);
         }
     }
 
@@ -178,7 +178,7 @@ export class RepoFileSystemProvider implements FileSystemProvider {
         let updatedRef = await updateGitHubRef(repository!, `heads/${repository!.repo.default_branch}`, newCommit!.sha);
 
         if (updatedRef) {
-            repoProvider.refresh();
+            repoProvider.refresh(repository);
         }
     }
 
@@ -217,7 +217,7 @@ export class RepoFileSystemProvider implements FileSystemProvider {
             })
             .then(() => {
                 this._onDidChangeFile.fire([{ type: FileChangeType.Changed, uri }]);
-                repoProvider.refresh();
+                repoProvider.refresh(repository);
             });
 
         return Promise.resolve();

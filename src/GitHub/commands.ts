@@ -19,7 +19,7 @@ import {
 } from "./api";
 import { TContent, TTreeRename, TRepo } from "./types";
 import { credentials, extensionContext, output, repoFileSystemProvider, repoProvider } from "../extension";
-import { addToGlobalStorage, getReposFromGlobalStorage, removeFromGlobalStorage, store } from "../FileSystem/storage";
+import { addToGlobalStorage, removeFromGlobalStorage, store } from "../FileSystem/storage";
 import { byteArrayToString, charCodeAt, getFileNameFromUri, removeLeadingSlash, stringToByteArray } from "../utils";
 
 /**
@@ -190,7 +190,7 @@ export async function deleteFile(nodes: ContentNode[]) {
 
     if (updatedRef) {
         output?.appendLine(`Deleted ${tree.map((t) => t.path)}`, output.messageType.info);
-        repoProvider.refresh();
+        repoProvider.refresh(repo);
     }
 }
 
@@ -228,7 +228,7 @@ export async function uploadFiles(destination: ContentNode | RepoNode): Promise<
 
         if (updatedRef) {
             output?.appendLine(`Uploaded ${tree.map((t) => t.path)}`, output.messageType.info);
-            repoProvider.refresh();
+            repoProvider.refresh(repo);
         }
     });
 
@@ -470,6 +470,14 @@ export async function refreshStarredRepos(starredRepos?: string[] | TRepo[]) {
     commands.executeCommand("setContext", "starredRepos", starredReposNames);
 }
 
+/**
+ * REturn the list of starred repositories, either from globalState or from GitHub
+ *
+ * @export
+ * @async
+ * @param {?boolean} [forceRefreshFromGitHub] Get the list from GitHub, ignore globalState
+ * @returns {Promise<string[]>}
+ */
 export async function getStarredRepos(forceRefreshFromGitHub?: boolean): Promise<string[]> {
     let starredRepos = extensionContext.globalState.get<string[]>("starredRepos") || [];
 
