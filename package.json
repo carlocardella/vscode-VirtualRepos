@@ -173,6 +173,11 @@
                 "title": "Delete Folder...",
                 "command": "VirtualRepos.deleteFolder",
                 "category": "Virtual Repositories"
+            },
+            {
+                "title": "Refresh starred repositories from GitHub",
+                "command": "VirtualRepos.refreshStarredRepos",
+                "category": "Virtual Repositories"
             }
         ],
         "configuration": {
@@ -223,6 +228,9 @@
                 },
                 {
                     "command": "VirtualRepos.openRepository"
+                },
+                {
+                    "command": "VirtualRepos.refreshStarredRepos"
                 },
                 {
                     "command": "VirtualRepos.addFile",

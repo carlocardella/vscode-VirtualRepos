@@ -64,7 +64,6 @@ export function removeFromGlobalStorage(context: ExtensionContext, repoFullName:
  */
 export async function getReposFromGlobalStorage(context: ExtensionContext): Promise<string[]> {
     return context.globalState.get(GLOBAL_STORAGE_KEY, []);
-    // return await purgeGlobalStorage(context);
 }
 
 /**

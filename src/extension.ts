@@ -19,6 +19,7 @@ import {
     uploadFiles,
     viewRepoOwnerProfileOnGitHub,
     toggleRepoStar,
+    refreshStarredRepos,
 } from "./GitHub/commands";
 import { TGitHubUser } from "./GitHub/types";
 import { addToGlobalStorage, clearGlobalStorage, getReposFromGlobalStorage, purgeGlobalStorage, removeFromGlobalStorage } from "./FileSystem/storage";
@@ -233,6 +234,12 @@ export async function activate(context: ExtensionContext) {
     );
 
     context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.refreshStarredRepos", async () => {
+            await refreshStarredRepos();
+        })
+    );
+
+    context.subscriptions.push(
         commands.registerCommand("VirtualRepos.deleteFolder", async (folder: ContentNode) => {
             await deleteFolder(folder);
         })
@@ -263,6 +270,11 @@ export async function activate(context: ExtensionContext) {
         showCollapseAll: true,
         canSelectMany: true,
     });
+
+    // refresh starred repos every hour
+    pullIntervalTimer = setInterval(() => {
+        refreshStarredRepos();
+    }, 3600000);
 
     context.subscriptions.push(
         workspace.onDidChangeConfiguration((e) => {
