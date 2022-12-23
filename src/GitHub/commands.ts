@@ -431,61 +431,46 @@ export async function deleteFolder(folder: ContentNode) {
  * @returns {*}
  */
 export async function toggleRepoStar(repo: RepoNode) {
-    let starredRepos = await getStarredRepos();
+    let starredRepos = await getOrRefreshStarredRepos();
     if (repo.starred) {
         await unstarGitHubRepository(repo);
-        starredRepos = starredRepos.filter((r) => r !== repo.full_name);
+        starredRepos = starredRepos?.filter((r) => r !== repo.full_name);
         repo.starred = false;
         output?.appendLine(`Unstarred ${repo.full_name}`, output.messageType.info);
     } else {
         await starGitHubRepository(repo);
-        starredRepos.push(repo.full_name);
+        starredRepos?.push(repo.full_name);
         repo.starred = true;
         output?.appendLine(`Starred ${repo.full_name}`, output.messageType.info);
     }
 
-    await refreshStarredRepos(starredRepos);
+    await getOrRefreshStarredRepos(starredRepos);
 }
 
 /**
- * Refresh the starred repositories
+ * Return or refresh the list of starred repositories
  *
  * @export
  * @async
- * @param {?(string[] | TRepo[])} [starredRepos] List of repositories
- * @returns {*}
+ * @param {?(string[] | TRepo[])} [starredRepoNames] The list of starred repositories
+ * @param {?boolean} [forceRefreshFromGitHub] Force refresh from GitHub
+ * @returns {(Promise<string[] | undefined>)}
  */
-export async function refreshStarredRepos(starredRepos?: string[] | TRepo[]) {
-    let starredReposNames: string[] = [];
+export async function getOrRefreshStarredRepos(starredRepoNames?: string[] | TRepo[], forceRefreshFromGitHub?: boolean): Promise<string[] | undefined> {
+    if (!starredRepoNames) {
+        starredRepoNames = extensionContext.globalState.get<string[]>("starredRepos", []);
+    }
 
-    if (starredRepos?.length === 0) {
+    if (starredRepoNames?.length === 0 || forceRefreshFromGitHub) {
         output?.appendLine("Fetching starred repositories from GitHub", output.messageType.info);
-        starredRepos = await getStarredGitHubRepositories();
-        starredReposNames = starredRepos.map((repo) => `${repo.owner.login}/${repo.name}`);
+        starredRepoNames = await getStarredGitHubRepositories();
+        starredRepoNames = starredRepoNames.map((repo) => `${repo.owner.login}/${repo.name}`);
+        extensionContext.globalState.update("starredRepos", starredRepoNames);
     } else {
-        starredReposNames = starredRepos as string[];
+        starredRepoNames = starredRepoNames as string[];
     }
 
-    extensionContext.globalState.update("starredRepos", starredReposNames);
-    commands.executeCommand("setContext", "starredRepos", starredReposNames);
-}
-
-/**
- * REturn the list of starred repositories, either from globalState or from GitHub
- *
- * @export
- * @async
- * @param {?boolean} [forceRefreshFromGitHub] Get the list from GitHub, ignore globalState
- * @returns {Promise<string[]>}
- */
-export async function getStarredRepos(forceRefreshFromGitHub?: boolean): Promise<string[]> {
-    let starredRepos = extensionContext.globalState.get<string[]>("starredRepos") || [];
-
-    if (starredRepos.length === 0 || forceRefreshFromGitHub) {
-        output?.appendLine("Fetching starred repositories from GitHub", output.messageType.info);
-        const starredReposFromGitHub = await getStarredGitHubRepositories();
-        starredRepos = starredReposFromGitHub.map((repo) => `${repo.owner.login}/${repo.name}`);
-    }
-
-    return Promise.resolve(starredRepos);
+    extensionContext.globalState.update("starredRepos", starredRepoNames);
+    commands.executeCommand("setContext", "starredRepos", starredRepoNames);
+    return Promise.resolve(starredRepoNames);
 }

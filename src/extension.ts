@@ -19,7 +19,7 @@ import {
     uploadFiles,
     viewRepoOwnerProfileOnGitHub,
     toggleRepoStar,
-    refreshStarredRepos,
+    getOrRefreshStarredRepos
 } from "./GitHub/commands";
 import { TGitHubUser } from "./GitHub/types";
 import { addToGlobalStorage, clearGlobalStorage, getReposFromGlobalStorage, purgeGlobalStorage, removeFromGlobalStorage } from "./FileSystem/storage";
@@ -214,7 +214,7 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.starRepository", async (repo: RepoNode) => {
             await toggleRepoStar(repo).then(() => {
-                repoProvider.refresh(repo);
+                repoProvider.refresh();
             });
         })
     );
@@ -222,7 +222,7 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.unstarRepository", async (repo: RepoNode) => {
             await toggleRepoStar(repo).then(() => {
-                repoProvider.refresh(repo);
+                repoProvider.refresh();
             });
         })
     );
@@ -235,7 +235,7 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.refreshStarredRepos", async () => {
-            await refreshStarredRepos();
+            await getOrRefreshStarredRepos();
         })
     );
 
@@ -273,7 +273,7 @@ export async function activate(context: ExtensionContext) {
 
     // refresh starred repos every hour
     pullIntervalTimer = setInterval(() => {
-        refreshStarredRepos();
+        getOrRefreshStarredRepos();
     }, 3600000);
 
     context.subscriptions.push(

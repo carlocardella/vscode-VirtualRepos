@@ -18,6 +18,12 @@ See the [list of open enhancements on GitHub](https://github.com/carlocardella/v
 * Sort repository list in TreeView
 * Adopt new [Log Output Channel](https://code.visualstudio.com/updates/v1_72#_log-output-channel) when the API will be finalized
 
+## [0.0.25] - 2022-12-22
+
+### Fixed
+
+* [#38 Fix star/unstar icon in treeview at extension startup](https://github.com/carlocardella/vscode-VirtualRepos/issues/38)
+
 ## [0.0.24] - 2022-12-22
 
 ### Added
