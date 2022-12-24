@@ -178,6 +178,21 @@
                 "title": "Refresh starred repositories from GitHub",
                 "command": "VirtualRepos.refreshStarredRepos",
                 "category": "Virtual Repositories"
+            },
+            {
+                "title": "Follow user on GitHub",
+                "command": "VirtualRepos.followUser",
+                "category": "Virtual Repositories"
+            },
+            {
+                "title": "Unfollow user on GitHub",
+                "command": "VirtualRepos.unfollowUser",
+                "category": "Virtual Repositories"
+            },
+            {
+                "title": "Refresh followed user from GitHub",
+                "command": "VirtualRepos.refreshFollowedUsers",
+                "category": "Virtual Repositories"
             }
         ],
         "configuration": {
@@ -233,6 +248,9 @@
                     "command": "VirtualRepos.refreshStarredRepos"
                 },
                 {
+                    "command": "VirtualRepos.refreshFollowedUsers"
+                },
+                {
                     "command": "VirtualRepos.addFile",
                     "when": "false"
                 },
@@ -270,6 +288,14 @@
                 },
                 {
                     "command": "VirtualRepos.unstarRepository",
+                    "when": "false"
+                },
+                {
+                    "command": "VirtualRepos.followUser",
+                    "when": "false"
+                },
+                {
+                    "command": "VirtualRepos.unfollowUser",
                     "when": "false"
                 },
                 {
@@ -338,17 +364,17 @@
                 },
                 {
                     "command": "VirtualRepos.forkRepository",
-                    "when": "viewItem == starredRepo || viewItem == unstarredRepo",
+                    "when": "viewItem =~ /.*[Ss]tarredRepo/",
                     "group": "inline"
                 },
                 {
                     "command": "VirtualRepos.starRepository",
-                    "when": "viewItem == unstarredRepo",
+                    "when": "viewItem =~ /notStarredRepo.*/",
                     "group": "inline"
                 },
                 {
                     "command": "VirtualRepos.unstarRepository",
-                    "when": "viewItem == starredRepo",
+                    "when": "viewItem =~ /starredRepo.*/",
                     "group": "inline"
                 },
                 {
@@ -379,7 +405,17 @@
                 {
                     "command": "VirtualRepos.viewRepoOwnerProfileOnGitHub",
                     "when": "viewItem =~ /.*[Rr]epo.*/",
-                    "group": "2_close03"
+                    "group": "3_user@1"
+                },
+                {
+                    "command": "VirtualRepos.followUser",
+                    "when": "viewItem =~ /.*notFollowedUser/",
+                    "group": "3_user@2"
+                },
+                {
+                    "command": "VirtualRepos.unfollowUser",
+                    "when": "viewItem =~ /.*followedUser/",
+                    "group": "3_user@3"
                 },
                 {
                     "command": "VirtualRepos.closeRepository",
@@ -393,17 +429,17 @@
                 },
                 {
                     "command": "VirtualRepos.forkRepository",
-                    "when": "viewItem == starredRepo || viewItem == unstarredRepo",
+                    "when": "viewItem =~ /.*[Ss]tarredRepo/",
                     "group": "2_close@6"
                 },
                 {
                     "command": "VirtualRepos.starRepository",
-                    "when": "viewItem == unstarredRepo",
+                    "when": "viewItem =~ /notStarredRepo.*/",
                     "group": "2_close@7"
                 },
                 {
                     "command": "VirtualRepos.unstarRepository",
-                    "when": "viewItem == starredRepo",
+                    "when": "viewItem =~ /starredRepo.*/",
                     "group": "2_close@7"
                 },
                 {

@@ -67,6 +67,10 @@ If you opened a repository you do not own, you can now fork it from the context 
 
 If you opened a repository you do not own, you can now star or unstar it. The list of starred repositories is automatically refreshed from GitHub every hour.
 
+### Follow/Unfollow a user
+
+If you opened a repository you do not own, you can follow or unfollow its owner. The list of followed users is automatically refreshed from GitHub every hour.
+
 ## Automatic commits
 
 Changes are committed automatically after the file is saved. The commit message is `VirtualRepos: update file <filePath>`.
@@ -95,6 +99,7 @@ You can enable `VirtualRepos.EnableTracing` in your User or Workspace settings t
 The extension uses the following [GitHub authentication scopes](https://docs.github.com/en/developers/apps/building-oauth-apps/scopes-for-oauth-apps)
 
 - `user:email`: needed to authenticate to GitHub
+- `user:follow`: needed to follow/unfollow a user on GitHub
 - `repo`: needed to create and update repositories (and their content) for the authenticated user
 - `delete_repo`: needed to delete repositories
 

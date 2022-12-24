@@ -7,7 +7,7 @@ import { TGitHubUser } from "./types";
 const GITHUB_AUTH_PROVIDER_ID = "github";
 // The GitHub Authentication Provider accepts the scopes described here:
 // https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/
-const SCOPES = ["user:email, repo, delete_repo"];
+const SCOPES = ["user:email, user:follow, repo, delete_repo"];
 
 export class Credentials {
     private octokit: Octokit.Octokit | undefined;

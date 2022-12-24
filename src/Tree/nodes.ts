@@ -1,9 +1,9 @@
 import { Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
-import { credentials, extensionContext, output } from "../extension";
+import { credentials, extensionContext, output, repoFileSystemProvider } from "../extension";
 import { RepoFileSystemProvider, REPO_SCHEME } from "../FileSystem/fileSystem";
 import { store, getReposFromGlobalStorage } from "../FileSystem/storage";
 import { getGitHubBranch, getGitHubRepoContent, getGitHubTree, openRepository } from "../GitHub/api";
-import { getOrRefreshStarredRepos, getRepoDetails,  } from "../GitHub/commands";
+import { getOrRefreshFollowedUsers, getOrRefreshStarredRepos, getRepoDetails } from "../GitHub/commands";
 import { TRepo, ContentType, TContent, TTree } from "../GitHub/types";
 import * as config from "./../config";
 
@@ -15,7 +15,7 @@ export class RepoNode extends TreeItem {
     path: string;
     clone_url: string;
     fork: boolean;
-    starred: boolean;
+    isStarred: boolean;
 
     constructor(public repo: TRepo, tree?: any) {
         super(repo.name, TreeItemCollapsibleState.Collapsed);
@@ -47,26 +47,52 @@ export class RepoNode extends TreeItem {
         this.fork = repo.fork;
 
         let starredRepos: string[] = extensionContext.globalState.get("starredRepos", []);
-        this.starred = starredRepos.includes(this.full_name);
+        this.isStarred = starredRepos.includes(this.full_name);
+    }
+
+    // The constructor cannot be async, so we need to call this method to initialize the context value
+    async init() {
         switch (this.isOwned) {
             case true:
                 this.contextValue = "isOwnedRepo";
                 break;
             case false:
-                if (this.starred) {
+                if (this.isStarred) {
                     this.contextValue = "starredRepo";
                 } else {
-                    this.contextValue = "unstarredRepo";
+                    this.contextValue = "notStarredRepo";
+                }
+
+                let isFollowedUser = await this.isFollowedUser;
+                if (isFollowedUser) {
+                    this.contextValue += ";followedUser";
+                } else {
+                    this.contextValue += ";notFollowedUser";
                 }
                 break;
         }
     }
 
-    get isOwned() {
+    get isFollowedUser() {
+        let isFollowedUser = false;
+
+        return new Promise((resolve, reject) => {
+            getOrRefreshFollowedUsers().then((followedUsers) => {
+                if (followedUsers) {
+                    isFollowedUser = followedUsers.includes(this.owner);
+                    resolve(isFollowedUser);
+                }
+            });
+        });
+
+        return isFollowedUser;
+    }
+
+    get isOwned(): boolean {
         return this.owner === credentials.authenticatedUser.login;
     }
 
-    get full_name() {
+    get full_name(): string {
         return `${this.owner}/${this.name}`;
     }
 }
@@ -129,6 +155,7 @@ export class RepoProvider implements TreeDataProvider<RepoNode | ContentNode> {
             return Promise.resolve(childNodes);
         } else {
             await getOrRefreshStarredRepos();
+            await getOrRefreshFollowedUsers();
             const reposFromGlobalStorage = await getReposFromGlobalStorage(extensionContext);
             if (reposFromGlobalStorage.length === 0) {
                 output?.appendLine("No repos found in global storage", output.messageType.info);
@@ -154,7 +181,9 @@ export class RepoProvider implements TreeDataProvider<RepoNode | ContentNode> {
                         try {
                             let branch = await getGitHubBranch(repo!, repo!.default_branch);
                             let tree = (await getGitHubTree(repo!, branch!.commit.sha)) ?? undefined;
-                            return new RepoNode(repo!, tree);
+                            let repoNode = new RepoNode(repo!, tree);
+                            await repoNode.init();
+                            return repoNode;
                         } catch (error: any) {
                             if (error.name === "HttpError") {
                                 output?.appendLine(`Error reading repo ${repo!.name}: ${error.response.data.message}`, output.messageType.error);

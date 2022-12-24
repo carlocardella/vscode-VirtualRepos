@@ -608,7 +608,7 @@ export async function starGitHubRepository(repo: RepoNode) {
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output?.appendLine(`Error starring repository: ${e.message.trim()}`, output.messageType.error);
+        output?.appendLine(`Error starring repository ${repo.full_name}: ${e.message.trim()}`, output.messageType.error);
     }
 
     return Promise.reject(undefined);
@@ -635,8 +635,74 @@ export async function unstarGitHubRepository(repo: RepoNode) {
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output?.appendLine(`Error unstarring repository: ${e.message.trim()}`, output.messageType.error);
+        output?.appendLine(`Error unstarring repository ${repo.full_name}: ${e.message.trim()}`, output.messageType.error);
     }
 
     return Promise.reject(undefined);
+}
+
+export async function followGitHubUser(user: string) {
+    const octokit = new rest.Octokit({
+        auth: await credentials.getAccessToken(),
+    });
+
+    try {
+        const { data } = await octokit.users.follow({ username: user });
+
+        return Promise.resolve(data);
+    } catch (e: any) {
+        output?.appendLine(`Error following user ${user}: ${e.message.trim()}`, output.messageType.error);
+    }
+
+    return Promise.reject(undefined);
+}
+
+export async function unfollowGitHubUser(user: string) {
+    const octokit = new rest.Octokit({
+        auth: await credentials.getAccessToken(),
+    });
+
+    try {
+        const { data } = await octokit.users.unfollow({ username: user });
+
+        return Promise.resolve(data);
+    } catch (e: any) {
+        output?.appendLine(`Error unfollowing user ${user}: ${e.message.trim()}`, output.messageType.error);
+    }
+
+    return Promise.reject(undefined);
+}
+
+export async function getGutHubFollowedUsers(): Promise<TUser[] | undefined> {
+    const octokit = new rest.Octokit({
+        auth: await credentials.getAccessToken(),
+    });
+
+    try {
+        const { data } = await octokit.users.listFollowedByAuthenticatedUser();
+
+        return Promise.resolve(data);
+    } catch (e: any) {
+        output?.appendLine(`Error getting followed users: ${e.message.trim()}`, output.messageType.error);
+    }
+
+    return Promise.reject(undefined);
+}
+
+export async function isFollowedUser(user: TUser): Promise<boolean> {
+    const octokit = new rest.Octokit({
+        auth: await credentials.getAccessToken(),
+    });
+
+    try {
+        const response = await octokit.users.checkFollowingForUser({ username: credentials.authenticatedUser.name!, target_user: user.login });
+
+        if (response.status === 204) {
+            return Promise.resolve(true);
+        }
+    } catch (e: any) {
+        output?.appendLine(`Error checking if user ${user.login} is followed: ${e.message.trim()}`, output.messageType.error);
+    }
+
+    return Promise.reject(false);
 }

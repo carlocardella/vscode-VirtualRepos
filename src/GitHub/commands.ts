@@ -16,8 +16,11 @@ import {
     updateGitHubRef,
     unstarGitHubRepository,
     starGitHubRepository,
+    unfollowGitHubUser,
+    followGitHubUser,
+    getGutHubFollowedUsers,
 } from "./api";
-import { TContent, TTreeRename, TRepo } from "./types";
+import { TContent, TTreeRename, TRepo, TUser } from "./types";
 import { credentials, extensionContext, output, repoFileSystemProvider, repoProvider } from "../extension";
 import { addToGlobalStorage, removeFromGlobalStorage, store } from "../FileSystem/storage";
 import { byteArrayToString, charCodeAt, getFileNameFromUri, removeLeadingSlash, stringToByteArray } from "../utils";
@@ -432,15 +435,15 @@ export async function deleteFolder(folder: ContentNode) {
  */
 export async function toggleRepoStar(repo: RepoNode) {
     let starredRepos = await getOrRefreshStarredRepos();
-    if (repo.starred) {
+    if (repo.isStarred) {
         await unstarGitHubRepository(repo);
         starredRepos = starredRepos?.filter((r) => r !== repo.full_name);
-        repo.starred = false;
+        repo.isStarred = false;
         output?.appendLine(`Unstarred ${repo.full_name}`, output.messageType.info);
     } else {
         await starGitHubRepository(repo);
         starredRepos?.push(repo.full_name);
-        repo.starred = true;
+        repo.isStarred = true;
         output?.appendLine(`Starred ${repo.full_name}`, output.messageType.info);
     }
 
@@ -473,4 +476,44 @@ export async function getOrRefreshStarredRepos(starredRepoNames?: string[] | TRe
     extensionContext.globalState.update("starredRepos", starredRepoNames);
     commands.executeCommand("setContext", "starredRepos", starredRepoNames);
     return Promise.resolve(starredRepoNames);
+}
+
+export async function toggleFollowUser(user: string) {
+    let followingUsers = await getOrRefreshFollowedUsers();
+    if (followingUsers) {
+        let isFollowedUser = followingUsers?.includes(user);
+
+        if (isFollowedUser) {
+            await unfollowGitHubUser(user);
+            followingUsers = followingUsers?.filter((u) => u !== user);
+            // user.following = false;
+            output?.appendLine(`Unfollowed ${user}`, output.messageType.info);
+        } else {
+            await followGitHubUser(user);
+            followingUsers?.push(user);
+            // user.following = true;
+            output?.appendLine(`Followed ${user}`, output.messageType.info);
+        }
+
+        await getOrRefreshFollowedUsers(followingUsers);
+    }
+}
+
+export async function getOrRefreshFollowedUsers(followedUsers?: string[] | TUser[], forceRefreshFromGitHub?: boolean): Promise<string[] | undefined> {
+    if (!followedUsers) {
+        followedUsers = extensionContext.globalState.get<string[]>("followedUsers", []);
+    }
+
+    if (followedUsers?.length === 0 || forceRefreshFromGitHub) {
+        output?.appendLine("Fetching following users from GitHub", output.messageType.info);
+        followedUsers = await getGutHubFollowedUsers();
+        followedUsers = followedUsers!.map((user) => user.login);
+        extensionContext.globalState.update("followedUsers", followedUsers);
+    } else {
+        followedUsers = followedUsers as string[];
+    }
+
+    extensionContext.globalState.update("followedUsers", followedUsers);
+    commands.executeCommand("setContext", "followedUsers", followedUsers); // @investigate: can be duplicate with L511
+    return Promise.resolve(followedUsers);
 }

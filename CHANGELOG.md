@@ -8,15 +8,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 See the [list of open enhancements on GitHub](https://github.com/carlocardella/vscode-VirtualRepos/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3Aenhancement)
 
-### Wiki
+## [0.0.26] - 2022-12-24
 
-* Manage doc repo as wiki
+### Added
 
-### Other
-
-* Push changes at configurable intervals (only if there are changes to push) rather than other on save; users may have auto-save enabled, that would generate lots of small push changes and potentially exceed the GitHub [API rate limit](https://docs.github.com/en/rest/rate-limit#about-the-rate-limit-api)
-* Sort repository list in TreeView
-* Adopt new [Log Output Channel](https://code.visualstudio.com/updates/v1_72#_log-output-channel) when the API will be finalized
+* [#37 Follow//unfollow a user on GitHub](https://github.com/carlocardella/vscode-VirtualRepos/issues/37)
+* The extension now requires `user:follow` authentication context on GitHub, this is needed to be able to follow/unfollow a user. You will need to re-authorize the extension in VSCode after update
 
 ## [0.0.25] - 2022-12-22
 
@@ -50,6 +47,7 @@ See the [list of open enhancements on GitHub](https://github.com/carlocardella/v
 * Improved new file experience: now the newly created file is automatically opened in the editor
 
 ## [0.0.21] - 2022-12-05
+
 ### Added
 
 * Rename file/folder command in context menu

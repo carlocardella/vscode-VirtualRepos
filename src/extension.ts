@@ -19,7 +19,9 @@ import {
     uploadFiles,
     viewRepoOwnerProfileOnGitHub,
     toggleRepoStar,
-    getOrRefreshStarredRepos
+    getOrRefreshStarredRepos,
+    getOrRefreshFollowedUsers,
+    toggleFollowUser,
 } from "./GitHub/commands";
 import { TGitHubUser } from "./GitHub/types";
 import { addToGlobalStorage, clearGlobalStorage, getReposFromGlobalStorage, purgeGlobalStorage, removeFromGlobalStorage } from "./FileSystem/storage";
@@ -228,6 +230,22 @@ export async function activate(context: ExtensionContext) {
     );
 
     context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.followUser", async (repo: RepoNode) => {
+            await toggleFollowUser(repo.owner).then(() => {
+                repoProvider.refresh();
+            });
+        })
+    );
+
+    context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.unfollowUser", async (repo: RepoNode) => {
+            await toggleFollowUser(repo.owner).then(() => {
+                repoProvider.refresh();
+            });
+        })
+    );
+
+    context.subscriptions.push(
         commands.registerCommand("VirtualRepos.renameFile", async (file: ContentNode) => {
             await renameFile(file);
         })
@@ -235,7 +253,13 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.refreshStarredRepos", async () => {
-            await getOrRefreshStarredRepos();
+            await getOrRefreshStarredRepos(undefined, true);
+        })
+    );
+
+    context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.refreshFollowedUsers", async () => {
+            await getOrRefreshFollowedUsers(undefined, true);
         })
     );
 
@@ -271,9 +295,10 @@ export async function activate(context: ExtensionContext) {
         canSelectMany: true,
     });
 
-    // refresh starred repos every hour
+    // refresh starred repos and followed users every hour
     pullIntervalTimer = setInterval(() => {
         getOrRefreshStarredRepos();
+        getOrRefreshFollowedUsers();
     }, 3600000);
 
     context.subscriptions.push(
