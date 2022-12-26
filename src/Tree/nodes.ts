@@ -1,11 +1,13 @@
 import { Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
 import { credentials, extensionContext, output, repoFileSystemProvider } from "../extension";
 import { RepoFileSystemProvider, REPO_SCHEME } from "../FileSystem/fileSystem";
-import { store, getReposFromGlobalStorage } from "../FileSystem/storage";
+import { store, getRepoFromGlobalStorage, getFromGlobalState } from "../FileSystem/storage";
 import { getGitHubBranch, getGitHubRepoContent, getGitHubTree, openRepository } from "../GitHub/api";
 import { getOrRefreshFollowedUsers, getOrRefreshStarredRepos, getRepoDetails } from "../GitHub/commands";
+import { GlobalStorageKeys } from "../GitHub/constants";
 import { TRepo, ContentType, TContent, TTree } from "../GitHub/types";
 import * as config from "./../config";
+import { SortDirection, sortRepos, SortType } from "./sort";
 
 export class RepoNode extends TreeItem {
     owner: string;
@@ -16,6 +18,11 @@ export class RepoNode extends TreeItem {
     clone_url: string;
     fork: boolean;
     isStarred: boolean;
+    stargazers_count: number;
+    watchers_count: number;
+    forks_count: number;
+    created_at: string;
+    updated_at: string;
 
     constructor(public repo: TRepo, tree?: any) {
         super(repo.name, TreeItemCollapsibleState.Collapsed);
@@ -48,6 +55,11 @@ export class RepoNode extends TreeItem {
 
         let starredRepos: string[] = extensionContext.globalState.get("starredRepos", []);
         this.isStarred = starredRepos.includes(this.full_name);
+        this.stargazers_count = repo.stargazers_count;
+        this.watchers_count = repo.watchers_count;
+        this.forks_count = repo.forks_count;
+        this.created_at = repo.created_at;
+        this.updated_at = repo.updated_at;
     }
 
     // The constructor cannot be async, so we need to call this method to initialize the context value
@@ -156,7 +168,7 @@ export class RepoProvider implements TreeDataProvider<RepoNode | ContentNode> {
         } else {
             await getOrRefreshStarredRepos();
             await getOrRefreshFollowedUsers();
-            const reposFromGlobalStorage = await getReposFromGlobalStorage(extensionContext);
+            const reposFromGlobalStorage = await getRepoFromGlobalStorage(extensionContext);
             if (reposFromGlobalStorage.length === 0) {
                 output?.appendLine("No repos found in global storage", output.messageType.info);
                 this.refreshing = false;
@@ -173,6 +185,13 @@ export class RepoProvider implements TreeDataProvider<RepoNode | ContentNode> {
                     return;
                 })
             );
+
+            // sort repos
+            const sortType = getFromGlobalState(extensionContext, GlobalStorageKeys.sortType);
+            const sortDirection = getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
+            if (sortType || sortDirection) {
+                repos = sortRepos(repos as TRepo[], sortType, sortDirection);
+            }
 
             let childNodes = await Promise.all(
                 repos

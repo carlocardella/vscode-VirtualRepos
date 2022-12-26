@@ -24,8 +24,14 @@ import {
     toggleFollowUser,
 } from "./GitHub/commands";
 import { TGitHubUser } from "./GitHub/types";
-import { addToGlobalStorage, clearGlobalStorage, getReposFromGlobalStorage, purgeGlobalStorage, removeFromGlobalStorage } from "./FileSystem/storage";
-import { GLOBAL_STORAGE_KEY } from "./GitHub/constants";
+import {
+    addRepoToGlobalStorage,
+    clearGlobalStorage,
+    getRepoFromGlobalStorage,
+    purgeRepoGlobalStorage,
+    removeRepoFromGlobalStorage,
+} from "./FileSystem/storage";
+import { REPO_GLOBAL_STORAGE_KEY } from "./GitHub/constants";
 import { getGitHubAuthenticatedUser } from "./GitHub/api";
 
 export let output: trace.Output;
@@ -75,7 +81,7 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.getGlobalStorage", async () => {
-            const reposFromGlobalStorage = await getReposFromGlobalStorage(context);
+            const reposFromGlobalStorage = await getRepoFromGlobalStorage(context);
             if (reposFromGlobalStorage.length > 0) {
                 output?.appendLine(`Global storage: ${reposFromGlobalStorage}`, output.messageType.info);
             } else {
@@ -89,7 +95,7 @@ export async function activate(context: ExtensionContext) {
             const pick = (await pickRepository()) as string;
             if (pick) {
                 output?.appendLine(`Picked repository: ${pick}`, output.messageType.info);
-                await addToGlobalStorage(context, pick);
+                await addRepoToGlobalStorage(context, pick);
             } else {
                 output?.appendLine("Open repository cancelled by uer", output.messageType.info);
             }
@@ -104,13 +110,13 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.purgeGlobalStorage", async () => {
-            purgeGlobalStorage(extensionContext);
+            purgeRepoGlobalStorage(extensionContext);
         })
     );
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.closeRepository", async (node) => {
-            removeFromGlobalStorage(context, node.repo.full_name);
+            removeRepoFromGlobalStorage(context, node.repo.full_name);
         })
     );
 
@@ -157,15 +163,23 @@ export async function activate(context: ExtensionContext) {
     );
 
     context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.sortRepoMyName", async (item) => {
+            // @todo: implement
+            // throw new Error("Not implemented");
+            item;
+        })
+    );
+
+    context.subscriptions.push(
         commands.registerCommand("VirtualRepos.removeFromGlobalStorage", async () => {
-            const reposFromGlobalStorage = await getReposFromGlobalStorage(context);
+            const reposFromGlobalStorage = await getRepoFromGlobalStorage(context);
             const repoToRemove = await window.showQuickPick(reposFromGlobalStorage, {
                 placeHolder: "Select repository to remove from global storage",
                 ignoreFocusOut: true,
                 canPickMany: false,
             });
             if (repoToRemove) {
-                removeFromGlobalStorage(context, repoToRemove);
+                removeRepoFromGlobalStorage(context, repoToRemove);
             }
         })
     );
@@ -286,7 +300,7 @@ export async function activate(context: ExtensionContext) {
     }
 
     // register global storage
-    const keysForSync = [GLOBAL_STORAGE_KEY];
+    const keysForSync = [REPO_GLOBAL_STORAGE_KEY];
     context.globalState.setKeysForSync(keysForSync);
 
     const treeView = window.createTreeView("virtualReposView", {

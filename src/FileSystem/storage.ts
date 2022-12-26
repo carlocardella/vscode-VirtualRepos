@@ -1,6 +1,6 @@
 import { RepoNode } from "../Tree/nodes";
 import { ExtensionContext } from "vscode";
-import { GLOBAL_STORAGE_KEY } from "../GitHub/constants";
+import { REPO_GLOBAL_STORAGE_KEY, GlobalStorageKeys } from "../GitHub/constants";
 import { credentials, output, repoProvider } from "../extension";
 import { openRepository } from "../GitHub/api";
 
@@ -15,9 +15,9 @@ export const store = {
  * @param {ExtensionContext} context Extension context
  * @param {string} value Repository to add
  */
-export async function addToGlobalStorage(context: ExtensionContext, value: string): Promise<void> {
-    let globalStorage = await getReposFromGlobalStorage(context);
-    
+export async function addRepoToGlobalStorage(context: ExtensionContext, value: string): Promise<void> {
+    let globalStorage = await getRepoFromGlobalStorage(context);
+
     let [owner, repoName] = ["", ""];
     if (value.indexOf("/") === -1) {
         owner = credentials.authenticatedUser.login;
@@ -27,12 +27,20 @@ export async function addToGlobalStorage(context: ExtensionContext, value: strin
     }
 
     globalStorage.push(`${owner}/${repoName}`);
-    context.globalState.update(GLOBAL_STORAGE_KEY, globalStorage);
+    context.globalState.update(REPO_GLOBAL_STORAGE_KEY, globalStorage);
 
     repoProvider.refresh();
 
     output?.appendLine(`Added ${value} to global storage`, output.messageType.info);
     output?.appendLine(`Global storage: ${globalStorage}`, output.messageType.info);
+}
+
+export function addToGlobalState(context: ExtensionContext, key: GlobalStorageKeys, value: any): void {
+    context.globalState.update(key, value);
+}
+
+export function getFromGlobalState(context: ExtensionContext, key: GlobalStorageKeys): any {
+    return context.globalState.get(key) || undefined;
 }
 
 /**
@@ -42,11 +50,11 @@ export async function addToGlobalStorage(context: ExtensionContext, value: strin
  * @param {ExtensionContext} context Extension context
  * @param {string} repoFullName Repository to remove
  */
-export function removeFromGlobalStorage(context: ExtensionContext, repoFullName: string): void {
-    let globalStorage = context.globalState.get(GLOBAL_STORAGE_KEY) as string[];
+export function removeRepoFromGlobalStorage(context: ExtensionContext, repoFullName: string): void {
+    let globalStorage = context.globalState.get(REPO_GLOBAL_STORAGE_KEY) as string[];
     if (globalStorage) {
         globalStorage = globalStorage.filter((item) => item.toLocaleLowerCase() !== repoFullName.toLocaleLowerCase());
-        context.globalState.update(GLOBAL_STORAGE_KEY, globalStorage);
+        context.globalState.update(REPO_GLOBAL_STORAGE_KEY, globalStorage);
 
         repoProvider.refresh();
 
@@ -62,8 +70,8 @@ export function removeFromGlobalStorage(context: ExtensionContext, repoFullName:
  * @param {ExtensionContext} context Extension context
  * @returns {string[]}
  */
-export async function getReposFromGlobalStorage(context: ExtensionContext): Promise<string[]> {
-    return context.globalState.get(GLOBAL_STORAGE_KEY, []);
+export async function getRepoFromGlobalStorage(context: ExtensionContext): Promise<string[]> {
+    return context.globalState.get(REPO_GLOBAL_STORAGE_KEY, []);
 }
 
 /**
@@ -73,7 +81,7 @@ export async function getReposFromGlobalStorage(context: ExtensionContext): Prom
  * @param {ExtensionContext} context
  */
 export function clearGlobalStorage(context: ExtensionContext) {
-    context.globalState.update(GLOBAL_STORAGE_KEY, []);
+    context.globalState.update(REPO_GLOBAL_STORAGE_KEY, []);
     output?.appendLine(`Cleared global storage`, output.messageType.info);
     repoProvider.refresh();
 }
@@ -87,20 +95,20 @@ export function clearGlobalStorage(context: ExtensionContext) {
  * @param {?string[]} [repos] Repositories to check
  * @returns {Promise<string[]>}
  */
-export async function purgeGlobalStorage(context: ExtensionContext, repos?: string[]): Promise<string[]> {
+export async function purgeRepoGlobalStorage(context: ExtensionContext, repos?: string[]): Promise<string[]> {
     let cleanedGlobalStorage: string[] = [];
     if (repos) {
         cleanedGlobalStorage = repos.filter((item) => item !== undefined);
-        context.globalState.update(GLOBAL_STORAGE_KEY, cleanedGlobalStorage);
+        context.globalState.update(REPO_GLOBAL_STORAGE_KEY, cleanedGlobalStorage);
     } else {
-        const globalStorage = context.globalState.get(GLOBAL_STORAGE_KEY, []) as string[];
+        const globalStorage = context.globalState.get(REPO_GLOBAL_STORAGE_KEY, []) as string[];
         cleanedGlobalStorage = await Promise.all(
             globalStorage.map(async (repo) => {
                 let repoOwner = repo.split("/")[0];
                 let repoName = repo.split("/")[1];
                 let validRepo = await openRepository(repoOwner, repoName);
                 if (!validRepo) {
-                    removeFromGlobalStorage(context, repo);
+                    removeRepoFromGlobalStorage(context, repo);
                     output?.appendLine(`Removed ${repo} from global storage`, output.messageType.info);
                     return Promise.resolve(repo);
                 } else {

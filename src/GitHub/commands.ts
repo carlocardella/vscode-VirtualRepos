@@ -22,7 +22,7 @@ import {
 } from "./api";
 import { TContent, TTreeRename, TRepo, TUser } from "./types";
 import { credentials, extensionContext, output, repoFileSystemProvider, repoProvider } from "../extension";
-import { addToGlobalStorage, removeFromGlobalStorage, store } from "../FileSystem/storage";
+import { addRepoToGlobalStorage, removeRepoFromGlobalStorage, store } from "../FileSystem/storage";
 import { byteArrayToString, charCodeAt, getFileNameFromUri, removeLeadingSlash, stringToByteArray } from "../utils";
 
 /**
@@ -266,7 +266,7 @@ export async function newRepository(isPrivate: boolean): Promise<void> {
 
     if (githubRepo) {
         //add the new repository to the tree view
-        await addToGlobalStorage(extensionContext, `${githubRepo.owner.login}/${githubRepo.name}`);
+        await addRepoToGlobalStorage(extensionContext, `${githubRepo.owner.login}/${githubRepo.name}`);
     }
 }
 
@@ -287,7 +287,7 @@ export async function deleteRepository(repo: RepoNode): Promise<void> {
 
     const deleted = await deleteGitHubRepository(repo.repo);
     if (deleted) {
-        removeFromGlobalStorage(extensionContext, `${repo.repo.owner.login}/${repo.name}`);
+        removeRepoFromGlobalStorage(extensionContext, `${repo.repo.owner.login}/${repo.name}`);
     }
 }
 
@@ -374,7 +374,7 @@ export async function viewRepoOwnerProfileOnGitHub(username: string) {
 export async function forkRepository(repo: RepoNode) {
     const forkedRepo = await forkGitHubRepository(repo.repo);
     if (forkedRepo) {
-        await addToGlobalStorage(extensionContext, `${forkedRepo.owner.login}/${forkedRepo.name}`);
+        await addRepoToGlobalStorage(extensionContext, `${forkedRepo.owner.login}/${forkedRepo.name}`);
         output?.appendLine(`Forked ${repo.name} to ${forkedRepo.owner.login}/${forkedRepo.name}`, output.messageType.info);
         return Promise.resolve();
     }
@@ -473,11 +473,19 @@ export async function getOrRefreshStarredRepos(starredRepoNames?: string[] | TRe
         starredRepoNames = starredRepoNames as string[];
     }
 
-    extensionContext.globalState.update("starredRepos", starredRepoNames);
+    extensionContext.globalState.update("starredRepos", starredRepoNames); // @investigate: duplicate of L471?
     commands.executeCommand("setContext", "starredRepos", starredRepoNames);
     return Promise.resolve(starredRepoNames);
 }
 
+/**
+ * Follow or unfollow a user on GitHub
+ *
+ * @export
+ * @async
+ * @param {string} user The user to follow or unfollow
+ * @returns {*}
+ */
 export async function toggleFollowUser(user: string) {
     let followingUsers = await getOrRefreshFollowedUsers();
     if (followingUsers) {
@@ -499,6 +507,15 @@ export async function toggleFollowUser(user: string) {
     }
 }
 
+/**
+ * Return or refresh the list of followed users
+ *
+ * @export
+ * @async
+ * @param {?(string[] | TUser[])} [followedUsers] The list of followed users
+ * @param {?boolean} [forceRefreshFromGitHub] Force refresh from GitHub
+ * @returns {(Promise<string[] | undefined>)}
+ */
 export async function getOrRefreshFollowedUsers(followedUsers?: string[] | TUser[], forceRefreshFromGitHub?: boolean): Promise<string[] | undefined> {
     if (!followedUsers) {
         followedUsers = extensionContext.globalState.get<string[]>("followedUsers", []);

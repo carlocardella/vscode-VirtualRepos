@@ -193,6 +193,54 @@
                 "title": "Refresh followed user from GitHub",
                 "command": "VirtualRepos.refreshFollowedUsers",
                 "category": "Virtual Repositories"
+            },
+            {
+                "title": "Sort by name",
+                "command": "VirtualRepos.sortRepoMyName",
+                "group": "1_sortType@1",
+                "category": "Virtual Repositories"
+            },
+            {
+                "title": "Sort by forks",
+                "command": "VirtualRepos.sortRepoByForks",
+                "group": "1_sortType@2",
+                "category": "Virtual Repositories"
+            },
+            {
+                "title": "Sort by stars",
+                "command": "VirtualRepos.sortRepoByStars",
+                "group": "1_sortType@3",
+                "category": "Virtual Repositories"
+            },
+            {
+                "title": "Sort by creation time",
+                "command": "VirtualRepos.sortByCreationTime",
+                "group": "1_sortType@4",
+                "category": "Virtual Repositories"
+            },
+            {
+                "title": "Sort by update time",
+                "command": "VirtualRepos.sortByUpdateTime",
+                "group": "1_sortType@5",
+                "category": "Virtual Repositories"
+            },
+            {
+                "title": "Sort by watchers",
+                "command": "VirtualRepos.sortByWatchers",
+                "group": "1_sortType@6",
+                "category": "Virtual Repositories"
+            },
+            {
+                "title": "Sort ascending",
+                "command": "VirtualRepos.sortAscending",
+                "group": "2_sortDirection@1",
+                "category": "Virtual Repositories"
+            },
+            {
+                "title": "Sort descending",
+                "command": "VirtualRepos.sortDescending",
+                "group": "2_sortDirection@2",
+                "category": "Virtual Repositories"
             }
         ],
         "configuration": {
@@ -240,6 +288,30 @@
                 {
                     "command": "VirtualRepos.closeRepository",
                     "when": "false"
+                },
+                {
+                    "command": "VirtualRepos.sortRepoMyName"
+                },
+                {
+                    "command": "VirtualRepos.sortRepoByForks"
+                },
+                {
+                    "command": "VirtualRepos.sortRepoByStars"
+                },
+                {
+                    "command": "VirtualRepos.sortByCreationTime"
+                },
+                {
+                    "command": "VirtualRepos.sortByUpdateTime"
+                },
+                {
+                    "command": "VirtualRepos.sortByWatchers"
+                },
+                {
+                    "command": "VirtualRepos.sortAscending"
+                },
+                {
+                    "command": "VirtualRepos.sortDescending"
                 },
                 {
                     "command": "VirtualRepos.openRepository"
@@ -344,6 +416,38 @@
                     "command": "VirtualRepos.newPrivateRepository",
                     "when": "view == virtualReposView",
                     "group": "navigation"
+                },
+                {
+                    "command": "VirtualRepos.sortRepoMyName",
+                    "group": "1_sortType@1"
+                },
+                {
+                    "command": "VirtualRepos.sortRepoByForks",
+                    "group": "1_sortType@2"
+                },
+                {
+                    "command": "VirtualRepos.sortRepoByStars",
+                    "group": "1_sortType@3"
+                },
+                {
+                    "command": "VirtualRepos.sortByCreationTime",
+                    "group": "1_sortType@4"
+                },
+                {
+                    "command": "VirtualRepos.sortByUpdateTime",
+                    "group": "1_sortType@5"
+                },
+                {
+                    "command": "VirtualRepos.sortByWatchers",
+                    "group": "1_sortType@6"
+                },
+                {
+                    "command": "VirtualRepos.sortAscending",
+                    "group": "2_sortDirection@1"
+                },
+                {
+                    "command": "VirtualRepos.sortDescending",
+                    "group": "2_sortDirection@2"
                 }
             ],
             "view/item/context": [
@@ -376,11 +480,6 @@
                     "command": "VirtualRepos.unstarRepository",
                     "when": "viewItem =~ /starredRepo.*/",
                     "group": "inline"
-                },
-                {
-                    "command": "VirtualRepos.addFile",
-                    "when": "viewItem == isOwnedFolder || viewItem == isOwnedRepo",
-                    "group": "1_add@1"
                 },
                 {
                     "command": "VirtualRepos.uploadFile",
@@ -418,29 +517,9 @@
                     "group": "3_user@3"
                 },
                 {
-                    "command": "VirtualRepos.closeRepository",
-                    "when": "viewItem =~ /.*[Rr]epo.*/",
-                    "group": "2_close@4"
-                },
-                {
                     "command": "VirtualRepos.cloneRepository",
                     "when": "viewItem =~ /.*[Rr]epo.*/",
                     "group": "2_close@5"
-                },
-                {
-                    "command": "VirtualRepos.forkRepository",
-                    "when": "viewItem =~ /.*[Ss]tarredRepo/",
-                    "group": "2_close@6"
-                },
-                {
-                    "command": "VirtualRepos.starRepository",
-                    "when": "viewItem =~ /notStarredRepo.*/",
-                    "group": "2_close@7"
-                },
-                {
-                    "command": "VirtualRepos.unstarRepository",
-                    "when": "viewItem =~ /starredRepo.*/",
-                    "group": "2_close@7"
                 },
                 {
                     "command": "VirtualRepos.copyRemoteUrl",

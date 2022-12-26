@@ -223,6 +223,11 @@ export type TRepo = {
     clone_url: string;
     html_url: string;
     fork: boolean;
+    stargazers_count: number;
+    watchers_count: number;
+    forks_count: number;
+    created_at: string;
+    updated_at: string;
 };
 
 export type TUser = {
