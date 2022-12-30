@@ -398,24 +398,24 @@
             ],
             "view/title": [
                 {
-                    "command": "VirtualRepos.refreshTree",
-                    "when": "view == virtualReposView",
-                    "group": "navigation"
-                },
-                {
                     "command": "VirtualRepos.openRepository",
                     "when": "view == virtualReposView",
-                    "group": "navigation"
+                    "group": "navigation@1"
                 },
                 {
                     "command": "VirtualRepos.newPublicRepository",
                     "when": "view == virtualReposView",
-                    "group": "navigation"
+                    "group": "navigation@2"
                 },
                 {
                     "command": "VirtualRepos.newPrivateRepository",
                     "when": "view == virtualReposView",
-                    "group": "navigation"
+                    "group": "navigation@3"
+                },
+                {
+                    "command": "VirtualRepos.refreshTree",
+                    "when": "view == virtualReposView",
+                    "group": "navigation@4"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByName",
