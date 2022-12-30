@@ -487,9 +487,14 @@
                     "group": "1_add@2"
                 },
                 {
+                    "command": "VirtualRepos.cloneRepository",
+                    "when": "viewItem =~ /.*[Rr]epo.*/",
+                    "group": "2_repoOperations@1"
+                },
+                {
                     "command": "VirtualRepos.deleteRepository",
                     "when": "viewItem == isOwnedRepo",
-                    "group": "2_repoOperations@1"
+                    "group": "2_repoOperations@2"
                 },
                 {
                     "command": "VirtualRepos.copyRemoteUrl",
@@ -515,11 +520,6 @@
                     "command": "VirtualRepos.unfollowUser",
                     "when": "viewItem =~ /.*followedUser/",
                     "group": "3_user@3"
-                },
-                {
-                    "command": "VirtualRepos.cloneRepository",
-                    "when": "viewItem =~ /.*[Rr]epo.*/",
-                    "group": "2_close@5"
                 },
                 {
                     "command": "VirtualRepos.copyRemoteUrl",

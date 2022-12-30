@@ -80,6 +80,9 @@ export class RepoNode extends TreeItem {
                 }
                 break;
         }
+
+        let tooltip = ` ${this.repo.html_url}${"\n"}${"\n"} ${this.repo.description}${"\n"} Is forked: ${this.fork}${"\n"} Forks: ${this.forks_count}${"\n"} Stars: ${this.stargazers_count}${"\n"} Watchers: ${this.watchers_count}${"\n"} Created: ${this.created_at}${"\n"} Updated: ${this.updated_at} `;
+        this.tooltip = tooltip;
     }
 
     get isFollowedUser() {
