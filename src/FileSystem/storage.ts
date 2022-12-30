@@ -6,6 +6,12 @@ import { getGitHubBranch, getGitHubRepository, getGitHubTree } from "../GitHub/a
 import { getOrRefreshFollowedUsers, getOrRefreshStarredRepos, getRepoDetails } from "../GitHub/commands";
 import { TRepo } from "../GitHub/types";
 
+/**
+ * Properties to sort repositories by
+ *
+ * @export
+ * @enum {number}
+ */
 export enum SortType {
     name,
     stars,
@@ -15,21 +21,66 @@ export enum SortType {
     watchers,
 }
 
+/**
+ * Direction to sort repositories by
+ *
+ * @export
+ * @enum {number}
+ */
 export enum SortDirection {
     ascending,
     descending,
 }
 
+/**
+ * Class to store and manage repositories; used as source for the TreeVIew
+ *
+ * @export
+ * @class Store
+ * @typedef {Store}
+ */
 export class Store {
+    /**
+     * Repositories array
+     *
+     * @public
+     * @type {((RepoNode | undefined)[])}
+     */
     public repos: (RepoNode | undefined)[] = [];
+
+    /**
+     * Indicates whether the repositories are sorted
+     *
+     * @public
+     * @type {boolean}
+     */
     public isSorted = false;
+    
+    /**
+     * Repositories sort by property
+     *
+     * @public
+     * @type {SortType}
+     */
     public sortType: SortType = SortType.name;
+
+    /**
+     * Repositories sort direction
+     *
+     * @public
+     * @type {SortDirection}
+     */
     public sortDirection: SortDirection = SortDirection.ascending;
 
+    /**
+     * Initialize or refresh the Store object
+     *
+     * @async
+     */
     async init() {
         await getOrRefreshStarredRepos();
         await getOrRefreshFollowedUsers();
-        const reposFromGlobalStorage = this.getRepoFromGlobalStorage(extensionContext);
+        const reposFromGlobalStorage = this.getRepoFromGlobalState(extensionContext);
         if (reposFromGlobalStorage.length === 0) {
             output?.appendLine("No repos found in global storage", output.messageType.info);
             return Promise.resolve([]);
@@ -41,7 +92,6 @@ export class Store {
                 let [owner, name] = getRepoDetails(repo);
                 let repoFromGitHub = await getGitHubRepository(owner, name);
                 if (repoFromGitHub) {
-                    // return repoFromGitHub;
                     return Promise.resolve(repoFromGitHub as TRepo);
                 }
                 return Promise.reject();
@@ -80,63 +130,58 @@ export class Store {
         repoProvider.refresh();
     }
 
-    public async getReposFromGitHub(): Promise<any[]> {
-        if (this.repos.length === 0) {
-            output?.appendLine("Reading repositories from GitHub", output.messageType.info);
-
-            const reposFromGlobalStorage = this.getRepoFromGlobalStorage(extensionContext);
-
-            let repos = await Promise.all(
-                reposFromGlobalStorage?.map(async (repo: string) => {
-                    let [owner, name] = getRepoDetails(repo);
-                    let repoFromGitHub = await getGitHubRepository(owner, name);
-                    if (repoFromGitHub) {
-                        return repoFromGitHub;
-                    }
-                    return;
-                })
-            );
-
-            this.repos = await Promise.all(
-                repos
-                    .filter((repo) => repo !== undefined)
-                    .map(async (repo) => {
-                        try {
-                            let branch = await getGitHubBranch(repo!, repo!.default_branch);
-                            let tree = (await getGitHubTree(repo!, branch!.commit.sha)) ?? undefined;
-                            let repoNode = new RepoNode(repo!, tree);
-                            await repoNode.init();
-                            return repoNode;
-                        } catch (error: any) {
-                            if (error.name === "HttpError") {
-                                output?.appendLine(`Error reading repo ${repo!.name}: ${error.response.data.message}`, output.messageType.error);
-                            } else {
-                                output?.appendLine(`${repo!.name}: ${error.response}`, output.messageType.error);
-                            }
-                        }
-                    })
-            );
-        }
-
-        return Promise.resolve([]);
-    }
-
+    /**
+     * Add a new value to the global storage
+     *
+     * @public
+     * @param {ExtensionContext} context Extension context
+     * @param {GlobalStorageKeys} key Key to store the value under
+     * @param {*} value Value to store, must be json serializable
+     */
     public addToGlobalState(context: ExtensionContext, key: GlobalStorageKeys, value: any) {
         context.globalState.update(key, value);
     }
 
+    /**
+     * Read a value from the global storage
+     *
+     * @public
+     * @param {ExtensionContext} context Extension context
+     * @param {GlobalStorageKeys} key Key to read the value from
+     * @returns {*}
+     */
     public getFromGlobalState(context: ExtensionContext, key: GlobalStorageKeys): any {
         return context.globalState.get(key);
     }
 
+    /**
+     * Remove a value from the global storage
+     *
+     * @public
+     * @param {ExtensionContext} context Extension context
+     * @param {GlobalStorageKeys} key Key to remove from global storage
+     */
     public removeFromGlobalState(context: ExtensionContext, key: GlobalStorageKeys) {
         context.globalState.update(key, undefined);
     }
 
-    public getRepoFromGlobalStorage(context: ExtensionContext): string[] {
+    /**
+     * Get repositories from global storage
+     *
+     * @public
+     * @param {ExtensionContext} context Extension context
+     * @returns {string[]}
+     */
+    public getRepoFromGlobalState(context: ExtensionContext): string[] {
         return context.globalState.get(GlobalStorageKeys.repoGlobalStorage, []);
     }
 
+    /**
+     * Sort repositories
+     *
+     * @param {SortType} sortType Sort by property
+     * @param {SortDirection} sortDirection Sort direction
+     */
     sortRepos(sortType: SortType, sortDirection: SortDirection) {
         let repos = this.repos as RepoNode[];
 
@@ -187,6 +232,11 @@ export class Store {
         // return repos;
     }
 
+    /**
+     * Remove all entries from global storage
+     *
+     * @param {ExtensionContext} context Extension context
+     */
     clearGlobalStorage(context: ExtensionContext) {
         context.globalState.update(GlobalStorageKeys.repoGlobalStorage, []);
         context.globalState.update(GlobalStorageKeys.sortDirection, []);
@@ -196,6 +246,14 @@ export class Store {
         this.init();
     }
 
+    /**
+     * Remove invalid repositories from global storage
+     *
+     * @async
+     * @param {ExtensionContext} context Extension context
+     * @param {?string[]} [repos] Repositories to validate
+     * @returns {Promise<string[]>}
+     */
     async purgeRepoGlobalStorage(context: ExtensionContext, repos?: string[]): Promise<string[]> {
         let cleanedGlobalStorage: string[] = [];
         if (repos) {
@@ -222,6 +280,12 @@ export class Store {
         return cleanedGlobalStorage;
     }
 
+    /**
+     * Remove a repository from global storage
+     *
+     * @param {ExtensionContext} context Extension context
+     * @param {string} repoFullName Full name (owner/name) or the repository to remove from global storage
+     */
     removeRepoFromGlobalStorage(context: ExtensionContext, repoFullName: string): void {
         let globalStorage = context.globalState.get(GlobalStorageKeys.repoGlobalStorage) as string[];
         if (globalStorage) {
@@ -235,8 +299,16 @@ export class Store {
         }
     }
 
+    /**
+     * Add a repository to global storage
+     *
+     * @async
+     * @param {ExtensionContext} context Extension context
+     * @param {string} value Repository full name (owner/name) to add to global storage
+     * @returns {Promise<void>}
+     */
     async addRepoToGlobalStorage(context: ExtensionContext, value: string): Promise<void> {
-        let globalStorage = this.getRepoFromGlobalStorage(context);
+        let globalStorage = this.getRepoFromGlobalState(context);
 
         let [owner, repoName] = ["", ""];
         if (value.indexOf("/") === -1) {
