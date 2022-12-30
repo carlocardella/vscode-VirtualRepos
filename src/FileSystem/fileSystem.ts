@@ -11,7 +11,7 @@ import {
     TextDocument,
     Uri,
 } from "vscode";
-import { output, repoProvider } from "../extension";
+import { output, repoProvider, store } from "../extension";
 import {
     deleteGitHubFile,
     refreshGitHubTree,
@@ -26,7 +26,6 @@ import { getRepoFileContent } from "../GitHub/commands";
 import { TGitHubUpdateContent, TContent, TRepo, TTree } from "../GitHub/types";
 import { RepoNode } from "../Tree/nodes";
 import { getFileNameFromUri, getFilePathWithoutRepoNameFromUri, getRepoFullNameFromUri, getRepoNameFromUri, removeLeadingSlash } from "../utils";
-import { store } from "./storage";
 import { MessageType } from '../tracing';
 
 export const REPO_SCHEME = "github-repo";

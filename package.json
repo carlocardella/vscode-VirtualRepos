@@ -196,7 +196,7 @@
             },
             {
                 "title": "Sort by name",
-                "command": "VirtualRepos.sortRepoMyName",
+                "command": "VirtualRepos.sortRepoByName",
                 "group": "1_sortType@1",
                 "category": "Virtual Repositories"
             },
@@ -214,19 +214,19 @@
             },
             {
                 "title": "Sort by creation time",
-                "command": "VirtualRepos.sortByCreationTime",
+                "command": "VirtualRepos.sortRepoByCreationTime",
                 "group": "1_sortType@4",
                 "category": "Virtual Repositories"
             },
             {
                 "title": "Sort by update time",
-                "command": "VirtualRepos.sortByUpdateTime",
+                "command": "VirtualRepos.sortRepoByUpdateTime",
                 "group": "1_sortType@5",
                 "category": "Virtual Repositories"
             },
             {
                 "title": "Sort by watchers",
-                "command": "VirtualRepos.sortByWatchers",
+                "command": "VirtualRepos.sortRepoByWatchers",
                 "group": "1_sortType@6",
                 "category": "Virtual Repositories"
             },
@@ -290,7 +290,7 @@
                     "when": "false"
                 },
                 {
-                    "command": "VirtualRepos.sortRepoMyName"
+                    "command": "VirtualRepos.sortRepoByName"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByForks"
@@ -299,13 +299,13 @@
                     "command": "VirtualRepos.sortRepoByStars"
                 },
                 {
-                    "command": "VirtualRepos.sortByCreationTime"
+                    "command": "VirtualRepos.sortRepoByCreationTime"
                 },
                 {
-                    "command": "VirtualRepos.sortByUpdateTime"
+                    "command": "VirtualRepos.sortRepoByUpdateTime"
                 },
                 {
-                    "command": "VirtualRepos.sortByWatchers"
+                    "command": "VirtualRepos.sortRepoByWatchers"
                 },
                 {
                     "command": "VirtualRepos.sortAscending"
@@ -418,7 +418,7 @@
                     "group": "navigation"
                 },
                 {
-                    "command": "VirtualRepos.sortRepoMyName",
+                    "command": "VirtualRepos.sortRepoByName",
                     "group": "1_sortType@1"
                 },
                 {
@@ -430,15 +430,15 @@
                     "group": "1_sortType@3"
                 },
                 {
-                    "command": "VirtualRepos.sortByCreationTime",
+                    "command": "VirtualRepos.sortRepoByCreationTime",
                     "group": "1_sortType@4"
                 },
                 {
-                    "command": "VirtualRepos.sortByUpdateTime",
+                    "command": "VirtualRepos.sortRepoByUpdateTime",
                     "group": "1_sortType@5"
                 },
                 {
-                    "command": "VirtualRepos.sortByWatchers",
+                    "command": "VirtualRepos.sortRepoByWatchers",
                     "group": "1_sortType@6"
                 },
                 {

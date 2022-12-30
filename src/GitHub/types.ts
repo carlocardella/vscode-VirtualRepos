@@ -226,8 +226,8 @@ export type TRepo = {
     stargazers_count: number;
     watchers_count: number;
     forks_count: number;
-    created_at: string;
-    updated_at: string;
+    created_at?: string | undefined | null;
+    updated_at?: string | undefined | null;
 };
 
 export type TUser = {

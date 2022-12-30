@@ -1,13 +1,10 @@
 import { Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
-import { credentials, extensionContext, output, repoFileSystemProvider } from "../extension";
+import { credentials, extensionContext, output, store } from "../extension";
 import { RepoFileSystemProvider, REPO_SCHEME } from "../FileSystem/fileSystem";
-import { store, getRepoFromGlobalStorage, getFromGlobalState } from "../FileSystem/storage";
-import { getGitHubBranch, getGitHubRepoContent, getGitHubTree, openRepository } from "../GitHub/api";
-import { getOrRefreshFollowedUsers, getOrRefreshStarredRepos, getRepoDetails } from "../GitHub/commands";
-import { GlobalStorageKeys } from "../GitHub/constants";
+import { getGitHubRepoContent } from "../GitHub/api";
+import { getOrRefreshFollowedUsers } from "../GitHub/commands";
 import { TRepo, ContentType, TContent, TTree } from "../GitHub/types";
 import * as config from "./../config";
-import { SortDirection, sortRepos, SortType } from "./sort";
 
 export class RepoNode extends TreeItem {
     owner: string;
@@ -21,8 +18,8 @@ export class RepoNode extends TreeItem {
     stargazers_count: number;
     watchers_count: number;
     forks_count: number;
-    created_at: string;
-    updated_at: string;
+    created_at: string | undefined | null;
+    updated_at: string | undefined | null;
 
     constructor(public repo: TRepo, tree?: any) {
         super(repo.name, TreeItemCollapsibleState.Collapsed);
@@ -158,65 +155,14 @@ export class RepoProvider implements TreeDataProvider<RepoNode | ContentNode> {
 
         if (element) {
             const content = await getGitHubRepoContent(element.owner, element.repo.name, element?.nodeContent?.path);
-            let childNodes = Object.values(content)
-                .map((node) => new ContentNode(<TContent>node, element.repo))
-                .sort((a, b) => a.nodeContent!.name!.localeCompare(b.nodeContent!.name!))
-                .sort((a, b) => a.nodeContent!.type!.localeCompare(b.nodeContent!.type!));
+            let childNodes = Object.values(content).map((node) => new ContentNode(<TContent>node, element.repo));
 
             this.refreshing = false;
             return Promise.resolve(childNodes);
-        } else {
-            await getOrRefreshStarredRepos();
-            await getOrRefreshFollowedUsers();
-            const reposFromGlobalStorage = await getRepoFromGlobalStorage(extensionContext);
-            if (reposFromGlobalStorage.length === 0) {
-                output?.appendLine("No repos found in global storage", output.messageType.info);
-                this.refreshing = false;
-                return Promise.resolve([]);
-            }
-
-            let repos = await Promise.all(
-                reposFromGlobalStorage?.map(async (repo: string) => {
-                    let [owner, name] = getRepoDetails(repo);
-                    let repoFromGitHub = await openRepository(owner, name);
-                    if (repoFromGitHub) {
-                        return repoFromGitHub;
-                    }
-                    return;
-                })
-            );
-
-            // sort repos
-            const sortType = getFromGlobalState(extensionContext, GlobalStorageKeys.sortType);
-            const sortDirection = getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
-            if (sortType || sortDirection) {
-                repos = sortRepos(repos as TRepo[], sortType, sortDirection);
-            }
-
-            let childNodes = await Promise.all(
-                repos
-                    .filter((repo) => repo !== undefined)
-                    .map(async (repo) => {
-                        try {
-                            let branch = await getGitHubBranch(repo!, repo!.default_branch);
-                            let tree = (await getGitHubTree(repo!, branch!.commit.sha)) ?? undefined;
-                            let repoNode = new RepoNode(repo!, tree);
-                            await repoNode.init();
-                            return repoNode;
-                        } catch (error: any) {
-                            if (error.name === "HttpError") {
-                                output?.appendLine(`Error reading repo ${repo!.name}: ${error.response.data.message}`, output.messageType.error);
-                            } else {
-                                output?.appendLine(`${repo!.name}: ${error.response}`, output.messageType.error);
-                            }
-                        }
-                    })
-            );
-
-            store.repos = childNodes ?? [];
-            this.refreshing = false;
-            return Promise.resolve(store.repos);
         }
+
+        this.refreshing = false;
+        return Promise.resolve(store.repos);
     }
 
     private _onDidChangeTreeData: EventEmitter<RepoNode | undefined | null | void> = new EventEmitter<RepoNode | undefined | null | void>();

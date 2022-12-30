@@ -269,7 +269,7 @@ export async function createFolder(): Promise<void> {
 }
 
 /**
- * Open a new GitHub repository
+ * Get a GitHub repository
  *
  * @export
  * @async
@@ -277,7 +277,7 @@ export async function createFolder(): Promise<void> {
  * @param {string} repoName The name of the repository
  * @returns {(Promise<TRepo | undefined>)}
  */
-export async function openRepository(owner: string, repoName: string): Promise<TRepo | undefined> {
+export async function getGitHubRepository(owner: string, repoName: string): Promise<TRepo | undefined> {
     const octokit = new rest.Octokit({
         auth: await credentials.getAccessToken(),
     });

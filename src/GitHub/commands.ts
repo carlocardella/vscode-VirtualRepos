@@ -21,8 +21,7 @@ import {
     getGutHubFollowedUsers,
 } from "./api";
 import { TContent, TTreeRename, TRepo, TUser } from "./types";
-import { credentials, extensionContext, output, repoFileSystemProvider, repoProvider } from "../extension";
-import { addRepoToGlobalStorage, removeRepoFromGlobalStorage, store } from "../FileSystem/storage";
+import { credentials, extensionContext, output, repoFileSystemProvider, repoProvider, store } from "../extension";
 import { byteArrayToString, charCodeAt, getFileNameFromUri, removeLeadingSlash, stringToByteArray } from "../utils";
 
 /**
@@ -266,7 +265,7 @@ export async function newRepository(isPrivate: boolean): Promise<void> {
 
     if (githubRepo) {
         //add the new repository to the tree view
-        await addRepoToGlobalStorage(extensionContext, `${githubRepo.owner.login}/${githubRepo.name}`);
+        await store.addRepoToGlobalStorage(extensionContext, `${githubRepo.owner.login}/${githubRepo.name}`);
     }
 }
 
@@ -287,7 +286,7 @@ export async function deleteRepository(repo: RepoNode): Promise<void> {
 
     const deleted = await deleteGitHubRepository(repo.repo);
     if (deleted) {
-        removeRepoFromGlobalStorage(extensionContext, `${repo.repo.owner.login}/${repo.name}`);
+        store.removeRepoFromGlobalStorage(extensionContext, `${repo.repo.owner.login}/${repo.name}`);
     }
 }
 
@@ -374,7 +373,7 @@ export async function viewRepoOwnerProfileOnGitHub(username: string) {
 export async function forkRepository(repo: RepoNode) {
     const forkedRepo = await forkGitHubRepository(repo.repo);
     if (forkedRepo) {
-        await addRepoToGlobalStorage(extensionContext, `${forkedRepo.owner.login}/${forkedRepo.name}`);
+        await store.addRepoToGlobalStorage(extensionContext, `${forkedRepo.owner.login}/${forkedRepo.name}`);
         output?.appendLine(`Forked ${repo.name} to ${forkedRepo.owner.login}/${forkedRepo.name}`, output.messageType.info);
         return Promise.resolve();
     }
