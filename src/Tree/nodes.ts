@@ -155,7 +155,10 @@ export class RepoProvider implements TreeDataProvider<RepoNode | ContentNode> {
 
         if (element) {
             const content = await getGitHubRepoContent(element.owner, element.repo.name, element?.nodeContent?.path);
-            let childNodes = Object.values(content).map((node) => new ContentNode(<TContent>node, element.repo));
+            let childNodes = Object.values(content)
+                .map((node) => new ContentNode(<TContent>node, element.repo))
+                .sort((a, b) => a.nodeContent!.name!.localeCompare(b.nodeContent!.name!))
+                .sort((a, b) => a.nodeContent!.type!.localeCompare(b.nodeContent!.type!));
 
             this.refreshing = false;
             return Promise.resolve(childNodes);
