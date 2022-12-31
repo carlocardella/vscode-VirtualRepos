@@ -207,49 +207,51 @@
             {
                 "title": "Sort by name",
                 "command": "VirtualRepos.sortRepoByName",
-                "group": "1_sortType@1",
                 "category": "Virtual Repositories"
             },
             {
                 "title": "Sort by forks",
                 "command": "VirtualRepos.sortRepoByForks",
-                "group": "1_sortType@2",
                 "category": "Virtual Repositories"
             },
             {
                 "title": "Sort by stars",
                 "command": "VirtualRepos.sortRepoByStars",
-                "group": "1_sortType@3",
                 "category": "Virtual Repositories"
             },
             {
                 "title": "Sort by creation time",
                 "command": "VirtualRepos.sortRepoByCreationTime",
-                "group": "1_sortType@4",
                 "category": "Virtual Repositories"
             },
             {
                 "title": "Sort by update time",
                 "command": "VirtualRepos.sortRepoByUpdateTime",
-                "group": "1_sortType@5",
                 "category": "Virtual Repositories"
             },
             {
                 "title": "Sort by watchers",
                 "command": "VirtualRepos.sortRepoByWatchers",
-                "group": "1_sortType@6",
                 "category": "Virtual Repositories"
             },
             {
                 "title": "Sort ascending",
                 "command": "VirtualRepos.sortAscending",
-                "group": "2_sortDirection@1",
                 "category": "Virtual Repositories"
             },
             {
                 "title": "Sort descending",
                 "command": "VirtualRepos.sortDescending",
-                "group": "2_sortDirection@2",
+                "category": "Virtual Repositories"
+            },
+            {
+                "title": "Change to private...",
+                "command": "VirtualRepos.makeRepoPrivate",
+                "category": "Virtual Repositories"
+            },
+            {
+                "title": "Change to public...",
+                "command": "VirtualRepos.makeRepoPublic",
                 "category": "Virtual Repositories"
             }
         ],
@@ -331,6 +333,14 @@
                 },
                 {
                     "command": "VirtualRepos.refreshFollowedUsers"
+                },
+                {
+                    "command": "VirtualRepos.makeRepoPrivate",
+                    "when": "false"
+                },
+                {
+                    "command": "VirtualRepos.makeRepoPublic",
+                    "when": "false"
                 },
                 {
                     "command": "VirtualRepos.addFile",
@@ -511,8 +521,18 @@
                 },
                 {
                     "command": "VirtualRepos.deleteRepository",
-                    "when": "viewItem == isOwnedRepo",
+                    "when": "viewItem =~ /.*isOwnedRepo.*/",
                     "group": "2_repoOperations@2"
+                },
+                {
+                    "command": "VirtualRepos.makeRepoPrivate",
+                    "when": "viewItem =~ /.*isOwnedRepo.*isPublic.*/",
+                    "group": "2_repoOperations@3"
+                },
+                {
+                    "command": "VirtualRepos.makeRepoPublic",
+                    "when": "viewItem =~ /.*isOwnedRepo.*isPrivate.*/",
+                    "group": "2_repoOperations@3"
                 },
                 {
                     "command": "VirtualRepos.copyRemoteUrl",

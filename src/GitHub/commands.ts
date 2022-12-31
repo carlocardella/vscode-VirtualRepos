@@ -19,6 +19,7 @@ import {
     unfollowGitHubUser,
     followGitHubUser,
     getGutHubFollowedUsers,
+    updateGitHubRepository,
 } from "./api";
 import { TContent, TTreeRename, TRepo, TUser } from "./types";
 import { credentials, extensionContext, output, repoFileSystemProvider, repoProvider, store } from "../extension";
@@ -559,4 +560,26 @@ export function showUpstream(node: RepoNode) {
         env.openExternal(Uri.parse(url));
         output?.appendLine(`Show upstream ${url}`, output.messageType.info);
     }
+}
+
+/**
+ * Toggle visibility of a GitHub repository
+ *
+ * @export
+ * @async
+ * @param {RepoNode} repo The repository to toggle the visibility of
+ * @returns {*}
+ */
+export async function toggleRepoVisibility(repo: RepoNode) {
+    let visibility = repo.private ? "public" : "private";
+    let confirm = await window.showWarningMessage(`Are you sure you want to make "${repo.name}" ${visibility}?`, { modal: true }, "Yes", "No");
+
+    if (confirm !== "Yes") {
+        return;
+    }
+
+    output?.appendLine(`Toggle visibility of ${repo.full_name} to ${visibility}`, output.messageType.info);
+    await updateGitHubRepository(repo, !repo.private, undefined);
+    repo.private = !repo.private;
+    store.init();
 }

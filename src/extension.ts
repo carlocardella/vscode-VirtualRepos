@@ -24,6 +24,7 @@ import {
     toggleFollowUser,
     copyUpstreamUrl,
     showUpstream,
+    toggleRepoVisibility,
 } from "./GitHub/commands";
 import { TGitHubUser } from "./GitHub/types";
 import { GlobalStorageKeys } from "./GitHub/constants";
@@ -172,6 +173,22 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.showOnUpstream", async (node) => {
             showUpstream(node);
+        })
+    );
+
+    context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.makeRepoPrivate", async (repo) => {
+            if (repo instanceof RepoNode) {
+                toggleRepoVisibility(repo);
+            }
+        })
+    );
+
+    context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.makeRepoPublic", async (repo) => {
+            if (repo instanceof RepoNode) {
+                toggleRepoVisibility(repo);
+            }
         })
     );
 

@@ -10,6 +10,7 @@ export class RepoNode extends TreeItem {
     owner: string;
     tree?: TTree;
     name: string;
+    private: boolean;
     uri: Uri;
     path: string;
     clone_url: string;
@@ -24,11 +25,15 @@ export class RepoNode extends TreeItem {
     constructor(public repo: TRepo, tree?: any) {
         super(repo.name, TreeItemCollapsibleState.Collapsed);
 
+        this.private = repo.private;
+
         let icon: Uri | ThemeIcon;
         if (config.get("UseRepoOwnerAvatar")) {
             icon = Uri.parse(repo.owner.avatar_url);
         } else if (repo.fork) {
             icon = new ThemeIcon("repo-forked");
+        } else if (this.private) {
+            icon = new ThemeIcon("lock");
         } else {
             icon = new ThemeIcon("repo");
         }
@@ -64,9 +69,15 @@ export class RepoNode extends TreeItem {
         switch (this.isOwned) {
             case true:
                 this.contextValue = "isOwnedRepo";
-                
+
                 if (this.fork) {
                     this.contextValue += ";isFork";
+                }
+
+                if (this.private) {
+                    this.contextValue += ";isPrivate";
+                } else {
+                    this.contextValue += ";isPublic";
                 }
                 break;
             case false:
@@ -88,7 +99,11 @@ export class RepoNode extends TreeItem {
         let forkCount = this.forks_count;
         let starsCount = this.stargazers_count;
         let watchersCount = this.watchers_count;
-        let tooltip = ` ${this.repo.html_url}${"\n"}${"\n"} ${this.repo.description}${"\n"} Is forked: ${this.fork}${"\n"} Forks: ${forkCount}${"\n"} Stars: ${starsCount}${"\n"} Watchers: ${watchersCount}${"\n"} Created: ${this.created_at}${"\n"} Updated: ${this.updated_at} `;
+        let tooltip = ` ${this.repo.html_url}${"\n"}${"\n"} ${this.repo.description}${"\n"} Is forked: ${
+            this.fork
+        }${"\n"} Forks: ${forkCount}${"\n"} Stars: ${starsCount}${"\n"} Watchers: ${watchersCount}${"\n"} Created: ${this.created_at}${"\n"} Updated: ${
+            this.updated_at
+        } `;
         this.tooltip = tooltip;
     }
 

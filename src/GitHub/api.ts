@@ -706,3 +706,35 @@ export async function isFollowedUser(user: TUser): Promise<boolean> {
 
     return Promise.reject(false);
 }
+
+/**
+ * Update a GitHub repository
+ *
+ * @export
+ * @async
+ * @param {RepoNode} repo The repository to update
+ * @param {?string} [name] The new name of the repository
+ * @param {?boolean} [isPrivate] Whether the repository should be private or not
+ * @param {?boolean} [has_wiki] Whether the repository should have a wiki or not
+ * @returns {unknown}
+ */
+export async function updateGitHubRepository(repo: RepoNode, isPrivate?: boolean, has_wiki?: boolean) {
+    const octokit = new rest.Octokit({
+        auth: await credentials.getAccessToken(),
+    });
+
+    try {
+        const { data } = await octokit.repos.update({
+            owner: repo.owner,
+            repo: repo.name,
+            private: isPrivate,
+            has_wiki: has_wiki,
+        });
+
+        return Promise.resolve(data);
+    } catch (e: any) {
+        output?.appendLine(`Error updating repository ${repo.full_name}: ${e.message.trim()}`, output.messageType.error);
+    }
+
+    return Promise.reject(undefined);
+}
