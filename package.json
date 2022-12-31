@@ -481,7 +481,7 @@
             "view/item/context": [
                 {
                     "command": "VirtualRepos.addFile",
-                    "when": "viewItem == isOwnedFolder || viewItem == isOwnedRepo",
+                    "when": "viewItem == isOwnedFolder || viewItem =~ /.*isOwnedRepo.*/",
                     "group": "inline"
                 },
                 {
@@ -511,7 +511,7 @@
                 },
                 {
                     "command": "VirtualRepos.uploadFile",
-                    "when": "viewItem == isOwnedFolder || viewItem == isOwnedRepo",
+                    "when": "viewItem == isOwnedFolder || viewItem =~ /.*isOwnedRepo.*/",
                     "group": "1_add@2"
                 },
                 {

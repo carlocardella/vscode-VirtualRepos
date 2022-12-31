@@ -131,6 +131,13 @@ export class Store {
     }
 
     /**
+     * Wrapper around init() to refresh the Store object
+     */
+    refresh() {
+        this.init();
+    }
+
+    /**
      * Add a new value to the global storage
      *
      * @public

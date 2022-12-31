@@ -77,7 +77,7 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.refreshTree", async () => {
-            repoProvider.refresh();
+            store.refresh();
         })
     );
 
@@ -269,7 +269,7 @@ export async function activate(context: ExtensionContext) {
             const newFileUri = await addFile(node);
 
             repoProvider.refreshing = true;
-            repoProvider.refresh(); // @investigate: refresh only the repo that was changed
+            store.refresh();
 
             while (repoProvider.refreshing) {
                 output?.appendLine(`waiting`, output.messageType.debug);
@@ -310,7 +310,7 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.starRepository", async (repo: RepoNode) => {
             await toggleRepoStar(repo).then(() => {
-                repoProvider.refresh();
+                store.refresh();
             });
         })
     );
@@ -318,7 +318,7 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.unstarRepository", async (repo: RepoNode) => {
             await toggleRepoStar(repo).then(() => {
-                repoProvider.refresh();
+                store.refresh();
             });
         })
     );
@@ -326,7 +326,7 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.followUser", async (repo: RepoNode) => {
             await toggleFollowUser(repo.owner).then(() => {
-                repoProvider.refresh();
+                store.refresh();
             });
         })
     );
@@ -334,7 +334,7 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.unfollowUser", async (repo: RepoNode) => {
             await toggleFollowUser(repo.owner).then(() => {
-                repoProvider.refresh();
+                store.refresh();
             });
         })
     );
@@ -372,7 +372,7 @@ export async function activate(context: ExtensionContext) {
 
     if (pullInterval > 0) {
         pullIntervalTimer = setInterval(() => {
-            repoProvider.refresh();
+            store.refresh();
         }, pullInterval);
     }
     if (pullInterval > 0) {
@@ -411,7 +411,7 @@ export async function activate(context: ExtensionContext) {
 
                     clearInterval(pullIntervalTimer);
                     pullIntervalTimer = setInterval(() => {
-                        repoProvider.refresh();
+                        store.refresh();
                     }, pullInterval);
                     output?.appendLine(`Updated refresh interval to ${pullInterval / 1000} seconds`, trace.MessageType.info);
                 } else {
@@ -421,7 +421,7 @@ export async function activate(context: ExtensionContext) {
             }
 
             if (e.affectsConfiguration("VirtualRepos.UseRepoOwnerAvatar")) {
-                repoProvider.refresh();
+                store.refresh(); // @investigate: is it possible to just update the icon without refreshing the store?
                 output?.appendLine("UseRepoOwnerAvatar changed", output.messageType.info);
             }
         })

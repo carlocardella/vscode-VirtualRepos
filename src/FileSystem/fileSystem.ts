@@ -216,7 +216,6 @@ export class RepoFileSystemProvider implements FileSystemProvider {
             })
             .then(() => {
                 this._onDidChangeFile.fire([{ type: FileChangeType.Changed, uri }]);
-                repoProvider.refresh(repository);
             });
 
         return Promise.resolve();

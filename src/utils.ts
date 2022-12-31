@@ -1,7 +1,5 @@
 import { Uri } from "vscode";
 import { REPO_SCHEME } from "./FileSystem/fileSystem";
-import { RepoNode } from "./Tree/nodes";
-import { TRepo } from "./GitHub/types";
 
 /**
  * Given a URI, returns the repository full_name (owner/name).
