@@ -6,6 +6,21 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.28] - 2022-12-31
+
+### Added
+
+* Toggle GitHub repository visibility (public or private)
+
+### Fixed
+
+* [#42 Error when creating new file under a folder (/folder/newfile.md)](https://github.com/carlocardella/vscode-VirtualRepos/issues/42)
+* Various other smaller fixes
+
+### Changed
+
+* Private repositories are represented by a lock icon
+
 ## [0.0.27] - 2022-12-30
 
 ### Added
