@@ -223,6 +223,7 @@ export type TRepo = {
     clone_url: string;
     html_url: string;
     fork: boolean;
+    parent?: TRepo | undefined;
     stargazers_count: number;
     watchers_count: number;
     forks_count: number;

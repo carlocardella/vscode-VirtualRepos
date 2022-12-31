@@ -331,7 +331,7 @@ export function copyRemoteUrl(node: RepoNode | ContentNode) {
  * @export
  * @param {(RepoNode | ContentNode)} node The node to show on remote
  */
-export function showOnRemote(node: RepoNode | ContentNode) {
+export function showRemote(node: RepoNode | ContentNode) {
     let url: string | undefined;
 
     if (node instanceof RepoNode) {
@@ -532,4 +532,31 @@ export async function getOrRefreshFollowedUsers(followedUsers?: string[] | TUser
     extensionContext.globalState.update("followedUsers", followedUsers);
     commands.executeCommand("setContext", "followedUsers", followedUsers); // @investigate: can be duplicate with L511
     return Promise.resolve(followedUsers);
+}
+
+/**
+ * Copy the upstream URL to the clipboard
+ *
+ * @export
+ * @async
+ * @param {RepoNode} repo The repository to copy the upstream URL from
+ * @returns {*}
+ */
+export async function copyUpstreamUrl(repo: RepoNode) {
+    await env.clipboard.writeText(repo.parent!.html_url);
+}
+
+/**
+ * Open the upstream URL in the browser
+ *
+ * @export
+ * @param {RepoNode} node The repository to open the upstream URL from
+ */
+export function showUpstream(node: RepoNode) {
+    let url = node.parent!.html_url;
+
+    if (url) {
+        env.openExternal(Uri.parse(url));
+        output?.appendLine(`Show upstream ${url}`, output.messageType.info);
+    }
 }

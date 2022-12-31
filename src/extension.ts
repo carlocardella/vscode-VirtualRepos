@@ -15,13 +15,15 @@ import {
     newRepository,
     pickRepository,
     renameFile,
-    showOnRemote,
+    showRemote,
     uploadFiles,
     viewRepoOwnerProfileOnGitHub,
     toggleRepoStar,
     getOrRefreshStarredRepos,
     getOrRefreshFollowedUsers,
     toggleFollowUser,
+    copyUpstreamUrl,
+    showUpstream,
 } from "./GitHub/commands";
 import { TGitHubUser } from "./GitHub/types";
 import { GlobalStorageKeys } from "./GitHub/constants";
@@ -156,8 +158,20 @@ export async function activate(context: ExtensionContext) {
     );
 
     context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.copyUpstreamUrl", async (node) => {
+            copyUpstreamUrl(node);
+        })
+    );
+
+    context.subscriptions.push(
         commands.registerCommand("VirtualRepos.showOnRemote", async (node) => {
-            showOnRemote(node);
+            showRemote(node);
+        })
+    );
+
+    context.subscriptions.push(
+        commands.registerCommand("VirtualRepos.showOnUpstream", async (node) => {
+            showUpstream(node);
         })
     );
 

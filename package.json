@@ -155,8 +155,18 @@
                 "category": "Virtual Repositories"
             },
             {
-                "title": "Show on remote",
+                "title": "Copy upstream url",
+                "command": "VirtualRepos.copyUpstreamUrl",
+                "category": "Virtual Repositories"
+            },
+            {
+                "title": "Show remote",
                 "command": "VirtualRepos.showOnRemote",
+                "category": "Virtual Repositories"
+            },
+            {
+                "title": "Show upstream",
+                "command": "VirtualRepos.showOnUpstream",
                 "category": "Virtual Repositories"
             },
             {
@@ -392,7 +402,15 @@
                     "when": "false"
                 },
                 {
+                    "command": "VirtualRepos.copyUpstreamUrl",
+                    "when": "false"
+                },
+                {
                     "command": "VirtualRepos.showOnRemote",
+                    "when": "false"
+                },
+                {
+                    "command": "VirtualRepos.showOnUpstream",
                     "when": "false"
                 }
             ],
@@ -505,6 +523,16 @@
                     "command": "VirtualRepos.showOnRemote",
                     "when": "viewItem =~ /.*[Rr]epo.*/",
                     "group": "2_close@2"
+                },
+                {
+                    "command": "VirtualRepos.copyUpstreamUrl",
+                    "when": "viewItem =~ /.*isFork.*/",
+                    "group": "2_close@3"
+                },
+                {
+                    "command": "VirtualRepos.showOnUpstream",
+                    "when": "viewItem =~ /.*isFork.*/",
+                    "group": "2_close@4"
                 },
                 {
                     "command": "VirtualRepos.viewRepoOwnerProfileOnGitHub",

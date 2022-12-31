@@ -64,6 +64,10 @@ export class RepoNode extends TreeItem {
         switch (this.isOwned) {
             case true:
                 this.contextValue = "isOwnedRepo";
+                
+                if (this.fork) {
+                    this.contextValue += ";isFork";
+                }
                 break;
             case false:
                 if (this.isStarred) {
@@ -81,7 +85,10 @@ export class RepoNode extends TreeItem {
                 break;
         }
 
-        let tooltip = ` ${this.repo.html_url}${"\n"}${"\n"} ${this.repo.description}${"\n"} Is forked: ${this.fork}${"\n"} Forks: ${this.forks_count}${"\n"} Stars: ${this.stargazers_count}${"\n"} Watchers: ${this.watchers_count}${"\n"} Created: ${this.created_at}${"\n"} Updated: ${this.updated_at} `;
+        let forkCount = this.forks_count;
+        let starsCount = this.stargazers_count;
+        let watchersCount = this.watchers_count;
+        let tooltip = ` ${this.repo.html_url}${"\n"}${"\n"} ${this.repo.description}${"\n"} Is forked: ${this.fork}${"\n"} Forks: ${forkCount}${"\n"} Stars: ${starsCount}${"\n"} Watchers: ${watchersCount}${"\n"} Created: ${this.created_at}${"\n"} Updated: ${this.updated_at} `;
         this.tooltip = tooltip;
     }
 
@@ -102,6 +109,10 @@ export class RepoNode extends TreeItem {
 
     get isOwned(): boolean {
         return this.owner === credentials.authenticatedUser.login;
+    }
+
+    get parent(): TRepo | undefined {
+        return this.repo.parent;
     }
 
     get full_name(): string {

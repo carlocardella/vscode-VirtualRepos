@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.27] - 2022-12-30
+
+### Added
+
+* Sort repositories by name, stars, forks, watchers, creation time, update time
+* `Copy upstream url` (available for forked repos only)
+* `Show upstream` (available for forked repos only)
+
+### Changed
+
+* Renamed `Show on remote` to `Show remote` to be consistent with the new `Show upstream`
+
 See the [list of open enhancements on GitHub](https://github.com/carlocardella/vscode-VirtualRepos/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3Aenhancement)
 
 ## [0.0.26] - 2022-12-24
