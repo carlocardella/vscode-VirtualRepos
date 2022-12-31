@@ -75,12 +75,19 @@ If you opened a repository you do not own, you can follow or unfollow its owner.
 
 Changes are committed automatically after the file is saved. The commit message is `VirtualRepos: update file <filePath>`.
 
-## Easily identify forked repositories
+## Easily identify forked and private repositories
 
-Repositories are represented with a `$(repo)` icon from from your [IconTheme](https://code.visualstudio.com/api/references/icons-in-labels) or the built-in `codicon`.
+Public repositories are represented with a `$(repo)` icon from from your [IconTheme](https://code.visualstudio.com/api/references/icons-in-labels) or the built-in `codicon`, while private repositories use a `$(lock)` icon.
 Forked repos use a `$(repo-forked)` icon instead, to clearly identity an open repository as a fork. This also helps distinguish between the `upstream` repository (represented with the `repo` icon) and my fork (represented with the `repo-fork` icon):
 
-![image](https://user-images.githubusercontent.com/5784415/207214066-1e78d96b-b209-4e7c-a263-4a225db1ce92.png)
+<!--![image](https://user-images.githubusercontent.com/5784415/207214066-1e78d96b-b209-4e7c-a263-4a225db1ce92.png)-->
+![image](https://user-images.githubusercontent.com/5784415/210154421-d8eda221-d096-42fe-98e3-fc5f37773f58.png)
+
+### Get repository info
+
+You can get basic details about a repository by hovering the mouse on it:
+
+![image](https://user-images.githubusercontent.com/5784415/210154457-25a31281-bf1e-430c-8f73-efddbfa15dce.png)
 
 ## Repo owner's avatar
 
