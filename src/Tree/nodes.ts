@@ -99,11 +99,8 @@ export class RepoNode extends TreeItem {
         let starsCount = this.stargazers_count;
         let watchersCount = this.watchers_count;
 
-        let tooltip = ` ${this.repo.html_url}${"\n"}${"\n"} ${this.repo.description}${"\n"} Is forked: ${
-            this.fork
-        }${"\n"} Forks: ${forkCount}${"\n"} Stars: ${starsCount}${"\n"} Watchers: ${watchersCount}${"\n"} Created: ${this.created_at}${"\n"} Updated: ${
-            this.pushed_at
-        } `;
+        // prettier-ignore
+        let tooltip = ` ${this.repo.html_url}${"\n\n"} Description: ${this.repo.description ?? ""}${"\n\n"} Is forked: ${this.fork}${"\n"} Forks: ${forkCount}${"\n"} Stars: ${starsCount}${"\n"} Watchers: ${watchersCount}${"\n"} Created: ${this.created_at}${"\n"} Updated: ${this.updated_at}`;
         this.tooltip = tooltip;
     }
 
