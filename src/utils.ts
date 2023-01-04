@@ -1,5 +1,8 @@
-import { Uri } from "vscode";
+import { commands, Uri } from "vscode";
+import { extensionContext, store } from "./extension";
 import { REPO_SCHEME } from "./FileSystem/fileSystem";
+import { SortDirection, SortType } from "./FileSystem/storage";
+import { GlobalStorageKeys } from "./GitHub/constants";
 
 /**
  * Given a URI, returns the repository full_name (owner/name).
@@ -105,4 +108,40 @@ export function stringToByteArray(value: string): Uint8Array {
  */
 export function byteArrayToString(value: Uint8Array): string {
     return new TextDecoder().decode(value);
+}
+
+/**
+ * Add SortType to global storage and set context.
+ *
+ * @export
+ * @param {SortType} sortType The sort type to set.
+ */
+export function setSortTypeContext(sortType: SortType) {
+    Object.keys(SortType).forEach((key) => {
+        if (key === sortType) {
+            commands.executeCommand("setContext", `tt.sortType.${key}`, true);
+        } else {
+            commands.executeCommand("setContext", `tt.sortType.${key}`, false);
+        }
+    });
+    store.sortType = sortType;
+    store.addToGlobalState(extensionContext, GlobalStorageKeys.sortType, sortType);
+}
+
+/**
+ * Add SortDirection to global storage and set context.
+ *
+ * @export
+ * @param {SortDirection} sortDirection The sort direction to set.
+ */
+export function setSortDirectionContext(sortDirection: SortDirection) {
+    Object.keys(SortDirection).forEach((key) => {
+        if (key === sortDirection) {
+            commands.executeCommand("setContext", `tt.sortDirection.${key}`, true);
+        } else {
+            commands.executeCommand("setContext", `tt.sortDirection.${key}`, false);
+        }
+    });
+    store.sortDirection = sortDirection;
+    store.addToGlobalState(extensionContext, GlobalStorageKeys.sortDirection, sortDirection);
 }

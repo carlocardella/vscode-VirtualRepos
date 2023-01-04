@@ -45,10 +45,13 @@ export let store = new Store();
 // @hack: https://angularfixing.com/how-to-access-textencoder-as-a-global-instead-of-importing-it-from-the-util-package/
 import { TextEncoder as _TextEncoder } from "node:util";
 import { TextDecoder as _TextDecoder } from "node:util";
+import { setSortDirectionContext, setSortTypeContext } from "./utils";
 declare global {
     var TextEncoder: typeof _TextEncoder;
     var TextDecoder: typeof _TextDecoder;
 }
+
+
 
 export async function activate(context: ExtensionContext) {
     extensionContext = context;
@@ -58,9 +61,6 @@ export async function activate(context: ExtensionContext) {
     }
 
     gitHubAuthenticatedUser = await getGitHubAuthenticatedUser();
-
-    output?.appendLine("Virtual Repositories extension is now active!", output.messageType.info);
-
     await credentials.initialize(context);
     if (!credentials.isAuthenticated) {
         credentials.initialize(context);
@@ -74,6 +74,10 @@ export async function activate(context: ExtensionContext) {
     });
 
     await store.init();
+    setSortTypeContext(store.sortType);
+    setSortDirectionContext(store.sortDirection);
+
+    output?.appendLine("Virtual Repositories extension is now active!", output.messageType.info);
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.refreshTree", async () => {
@@ -85,10 +89,13 @@ export async function activate(context: ExtensionContext) {
         commands.registerCommand("VirtualRepos.getGlobalStorage", async () => {
             const reposFromGlobalStorage = await store.getRepoFromGlobalState(context);
             if (reposFromGlobalStorage.length > 0) {
-                output?.appendLine(`Global storage: ${reposFromGlobalStorage}`, output.messageType.info);
+                output?.appendLine(`Repos: ${reposFromGlobalStorage}`, output.messageType.info);
             } else {
-                output?.appendLine(`Global storage is empty`, output.messageType.info);
+                output?.appendLine(`No repos in global storage`, output.messageType.info);
             }
+
+            output?.appendLine(`Sort Type: ${store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortType)}`, output.messageType.info);
+            output?.appendLine(`Sort Direction: ${store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection)}`, output.messageType.info);
         })
     );
 
@@ -194,61 +201,79 @@ export async function activate(context: ExtensionContext) {
 
     // sort repos
     context.subscriptions.push(
-        commands.registerCommand("VirtualRepos.sortRepoByName", async (item) => {
+        commands.registerCommand("VirtualRepos.sortRepoByName", async () => {
             const sortDirection = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
+            setSortTypeContext(SortType.name);
             store.sortRepos(SortType.name, sortDirection);
             repoProvider.refresh();
         })
     );
     context.subscriptions.push(
-        commands.registerCommand("VirtualRepos.sortRepoByCreationTime", async (item) => {
+        commands.registerCommand("VirtualRepos.sortRepoByCreationTime", async () => {
             const sortDirection = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
+            setSortTypeContext(SortType.creationTime);
             store.sortRepos(SortType.creationTime, sortDirection);
             repoProvider.refresh();
         })
     );
     context.subscriptions.push(
-        commands.registerCommand("VirtualRepos.sortRepoByForks", async (item) => {
+        commands.registerCommand("VirtualRepos.sortRepoByForks", async () => {
             const sortDirection = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
+            setSortTypeContext(SortType.forks);
             store.sortRepos(SortType.forks, sortDirection);
             repoProvider.refresh();
         })
     );
     context.subscriptions.push(
-        commands.registerCommand("VirtualRepos.sortRepoByStars", async (item) => {
+        commands.registerCommand("VirtualRepos.sortRepoByStars", async () => {
             const sortDirection = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
+            setSortTypeContext(SortType.stars);
             store.sortRepos(SortType.stars, sortDirection);
             repoProvider.refresh();
         })
     );
     context.subscriptions.push(
-        commands.registerCommand("VirtualRepos.sortRepoByUpdateTime", async (item) => {
+        commands.registerCommand("VirtualRepos.sortRepoByUpdateTime", async () => {
             const sortDirection = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
+            setSortTypeContext(SortType.updateTime);
             store.sortRepos(SortType.updateTime, sortDirection);
             repoProvider.refresh();
         })
     );
     context.subscriptions.push(
-        commands.registerCommand("VirtualRepos.sortRepoByWatchers", async (item) => {
+        commands.registerCommand("VirtualRepos.sortRepoByWatchers", async () => {
             const sortDirection = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
+            setSortTypeContext(SortType.watchers);
             store.sortRepos(SortType.watchers, sortDirection);
             repoProvider.refresh();
         })
     );
     context.subscriptions.push(
-        commands.registerCommand("VirtualRepos.sortAscending", async (item) => {
+        commands.registerCommand("VirtualRepos.sortAscending", async () => {
             const sortType = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortType);
+            setSortDirectionContext(SortDirection.ascending);
             store.sortRepos(sortType, SortDirection.ascending);
             repoProvider.refresh();
         })
     );
     context.subscriptions.push(
-        commands.registerCommand("VirtualRepos.sortDescending", async (item) => {
+        commands.registerCommand("VirtualRepos.sortDescending", async () => {
             const sortType = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortType);
+            setSortDirectionContext(SortDirection.descending);
             store.sortRepos(sortType, SortDirection.descending);
             repoProvider.refresh();
         })
     );
+
+    // sort empty
+    context.subscriptions.push(commands.registerCommand("VirtualRepos.sortRepoByNameEmpty", async () => {}));
+    context.subscriptions.push(commands.registerCommand("VirtualRepos.sortRepoByCreationTimeEmpty", async () => {}));
+    context.subscriptions.push(commands.registerCommand("VirtualRepos.sortRepoByForksEmpty", async () => {}));
+    context.subscriptions.push(commands.registerCommand("VirtualRepos.sortRepoByStarsEmpty", async () => {}));
+    context.subscriptions.push(commands.registerCommand("VirtualRepos.sortRepoByUpdateTimeEmpty", async () => {}));
+    context.subscriptions.push(commands.registerCommand("VirtualRepos.sortRepoByWatchersEmpty", async () => {}));
+    context.subscriptions.push(commands.registerCommand("VirtualRepos.sortAscendingEmpty", async () => {}));
+    context.subscriptions.push(commands.registerCommand("VirtualRepos.sortDescendingEmpty", async () => {}));
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.removeFromGlobalStorage", async () => {

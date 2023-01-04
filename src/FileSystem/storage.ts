@@ -13,12 +13,12 @@ import { TRepo } from "../GitHub/types";
  * @enum {number}
  */
 export enum SortType {
-    name,
-    stars,
-    forks,
-    creationTime,
-    updateTime,
-    watchers,
+    name = "name",
+    stars = "stars",
+    forks = "forks",
+    creationTime = "creationTime",
+    updateTime = "updateTime",
+    watchers = "watchers",
 }
 
 /**
@@ -28,8 +28,8 @@ export enum SortType {
  * @enum {number}
  */
 export enum SortDirection {
-    ascending,
-    descending,
+    ascending = "ascending",
+    descending = "descending",
 }
 
 /**
@@ -55,14 +55,22 @@ export class Store {
      * @type {boolean}
      */
     public isSorted = false;
-    
+
     /**
      * Repositories sort by property
      *
      * @public
      * @type {SortType}
      */
-    public sortType: SortType = SortType.name;
+    // private _sortType: SortType | undefined;
+    get sortType(): SortType {
+        // return this._sortType;
+        return this.getFromGlobalState(extensionContext, GlobalStorageKeys.sortType) ?? SortType.name;
+    }
+    set sortType(value: SortType) {
+        // this._sortType = value;
+        this.addToGlobalState(extensionContext, GlobalStorageKeys.sortType, value);
+    }
 
     /**
      * Repositories sort direction
@@ -70,7 +78,15 @@ export class Store {
      * @public
      * @type {SortDirection}
      */
-    public sortDirection: SortDirection = SortDirection.ascending;
+    // private _sortDirection: SortDirection | undefined;
+    get sortDirection(): SortDirection {
+        // return this._sortDirection;
+        return this.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection) ?? SortDirection.ascending;
+    }
+    set sortDirection(value: SortDirection) {
+        // this._sortDirection = value;
+        this.addToGlobalState(extensionContext, GlobalStorageKeys.sortDirection, value);
+    }
 
     /**
      * Initialize or refresh the Store object
@@ -120,8 +136,10 @@ export class Store {
 
         this.repos = childNodes;
 
-        let sortType = this.getFromGlobalState(extensionContext, GlobalStorageKeys.sortType);
-        let sortDirection = this.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
+        this.sortType = this.getFromGlobalState(extensionContext, GlobalStorageKeys.sortType);
+        this.sortDirection = this.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
+        let sortType = this.sortType;
+        let sortDirection = this.sortDirection;
 
         if (sortType !== undefined && sortDirection !== undefined) {
             this.sortRepos(sortType, sortDirection);
@@ -215,7 +233,7 @@ export class Store {
                 break;
             case SortType.updateTime:
                 repos.sort((a, b) => {
-                    return new Date(a.updated_at!).getTime() - new Date(b.updated_at!).getTime();
+                    return new Date(a.pushed_at!).getTime() - new Date(b.pushed_at!).getTime();
                 });
                 break;
             case SortType.watchers:
@@ -229,7 +247,7 @@ export class Store {
             repos.reverse();
         }
 
-        this.addToGlobalState(extensionContext, GlobalStorageKeys.sortType, SortType.name);
+        this.addToGlobalState(extensionContext, GlobalStorageKeys.sortType, sortType);
         this.addToGlobalState(extensionContext, GlobalStorageKeys.sortDirection, sortDirection);
         this.isSorted = true;
 

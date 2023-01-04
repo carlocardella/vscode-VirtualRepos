@@ -20,7 +20,7 @@ export class RepoNode extends TreeItem {
     watchers_count: number;
     forks_count: number;
     created_at: string | undefined | null;
-    updated_at: string | undefined | null;
+    pushed_at: string | undefined | null;
 
     constructor(public repo: TRepo, tree?: any) {
         super(repo.name, TreeItemCollapsibleState.Collapsed);
@@ -60,7 +60,7 @@ export class RepoNode extends TreeItem {
         this.watchers_count = repo.watchers_count;
         this.forks_count = repo.forks_count;
         this.created_at = repo.created_at;
-        this.updated_at = repo.updated_at;
+        this.pushed_at = repo.pushed_at;
     }
 
     // The constructor cannot be async, so we need to call this method to initialize the context value
@@ -98,11 +98,11 @@ export class RepoNode extends TreeItem {
         let forkCount = this.forks_count;
         let starsCount = this.stargazers_count;
         let watchersCount = this.watchers_count;
-        
+
         let tooltip = ` ${this.repo.html_url}${"\n"}${"\n"} ${this.repo.description}${"\n"} Is forked: ${
             this.fork
         }${"\n"} Forks: ${forkCount}${"\n"} Stars: ${starsCount}${"\n"} Watchers: ${watchersCount}${"\n"} Created: ${this.created_at}${"\n"} Updated: ${
-            this.updated_at
+            this.pushed_at
         } `;
         this.tooltip = tooltip;
     }

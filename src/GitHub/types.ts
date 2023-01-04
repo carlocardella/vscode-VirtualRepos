@@ -42,7 +42,7 @@ export type TGitHubUser = {
     followers: number;
     following: number;
     created_at: string;
-    updated_at: string;
+    pushed_at: string;
 };
 
 export type TTree = {
@@ -228,7 +228,7 @@ export type TRepo = {
     watchers_count: number;
     forks_count: number;
     created_at?: string | undefined | null;
-    updated_at?: string | undefined | null;
+    pushed_at?: string | undefined | null;
 };
 
 export type TUser = {
