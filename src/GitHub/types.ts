@@ -42,7 +42,6 @@ export type TGitHubUser = {
     followers: number;
     following: number;
     created_at: string;
-    pushed_at: string;
 };
 
 export type TTree = {
