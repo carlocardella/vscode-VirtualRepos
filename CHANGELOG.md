@@ -6,6 +6,16 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.29] - 2023-01-03
+
+### Changed
+
+* The sort commands menu uses "toggle" items: the currently selected sert type and direction are identified with a checkmark
+
+### Fixed
+
+* Minor bug fixes and code refactoring
+
 ## [0.0.28] - 2022-12-31
 
 ### Added
