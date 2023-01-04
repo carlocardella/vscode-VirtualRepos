@@ -571,12 +571,12 @@
                 {
                     "command": "VirtualRepos.addFile",
                     "when": "viewItem == isOwnedFolder || viewItem =~ /.*isOwnedRepo.*/",
-                    "group": "inline"
+                    "group": "inline@1"
                 },
                 {
                     "command": "VirtualRepos.closeRepository",
                     "when": "viewItem =~ /.*[Rr]epo.*/",
-                    "group": "inline"
+                    "group": "inline@9"
                 },
                 {
                     "command": "VirtualRepos.deleteFile",
