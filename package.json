@@ -581,12 +581,12 @@
                 {
                     "command": "VirtualRepos.deleteFile",
                     "when": "viewItem == isOwnedFile",
-                    "group": "inline"
+                    "group": "inline@9"
                 },
                 {
                     "command": "VirtualRepos.deleteFolder",
                     "when": "viewItem == isOwnedFolder",
-                    "group": "inline"
+                    "group": "inline@9"
                 },
                 {
                     "command": "VirtualRepos.forkRepository",
