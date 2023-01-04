@@ -127,7 +127,7 @@ export class RepoFileSystemProvider implements FileSystemProvider {
         await deleteGitHubFile(repository!.repo!, file);
 
         this._onDidChangeFile.fire([{ type: FileChangeType.Deleted, uri }]); //@investigate: are both lines needed?
-        repoProvider.refresh(repository!);
+        store.refresh();
     }
 
     async rename(oldUri: Uri, newUri: Uri, options: { readonly overwrite: boolean }): Promise<void> {

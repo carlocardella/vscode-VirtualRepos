@@ -182,6 +182,7 @@
             {
                 "title": "Delete Folder...",
                 "command": "VirtualRepos.deleteFolder",
+                "icon": "$(trash)",
                 "category": "Virtual Repositories"
             },
             {
@@ -579,7 +580,12 @@
                 },
                 {
                     "command": "VirtualRepos.deleteFile",
-                    "when": "viewItem == isOwnedFolder || viewItem == isOwnedFile",
+                    "when": "viewItem == isOwnedFile",
+                    "group": "inline"
+                },
+                {
+                    "command": "VirtualRepos.deleteFolder",
+                    "when": "viewItem == isOwnedFolder",
                     "group": "inline"
                 },
                 {
@@ -608,11 +614,6 @@
                     "group": "2_repoOperations@1"
                 },
                 {
-                    "command": "VirtualRepos.deleteRepository",
-                    "when": "viewItem =~ /.*isOwnedRepo.*/",
-                    "group": "2_repoOperations@2"
-                },
-                {
                     "command": "VirtualRepos.makeRepoPrivate",
                     "when": "viewItem =~ /.*isOwnedRepo.*isPublic.*/",
                     "group": "2_repoOperations@3"
@@ -621,6 +622,11 @@
                     "command": "VirtualRepos.makeRepoPublic",
                     "when": "viewItem =~ /.*isOwnedRepo.*isPrivate.*/",
                     "group": "2_repoOperations@3"
+                },
+                {
+                    "command": "VirtualRepos.deleteRepository",
+                    "when": "viewItem =~ /.*isOwnedRepo.*/",
+                    "group": "2_repoOperations@9"
                 },
                 {
                     "command": "VirtualRepos.copyRemoteUrl",
@@ -658,30 +664,21 @@
                     "group": "3_user@3"
                 },
                 {
+                    "command": "VirtualRepos.renameFile",
+                    "when": "viewItem == isOwnedFile",
+                    "group": "1_edit@1"
+                },
+                {
                     "command": "VirtualRepos.copyRemoteUrl",
                     "when": "viewItem =~ /.*[Ff]older.*|.*[Ff]ile.*/",
-                    "group": "1_remote@1"
+                    "group": "2_remote@1"
                 },
                 {
                     "command": "VirtualRepos.showOnRemote",
                     "when": "viewItem =~ /.*[Ff]older.*|.*[Ff]ile.*/",
-                    "group": "1_remote@2"
-                },
-                {
-                    "command": "VirtualRepos.renameFile",
-                    "when": "viewItem == isOwnedFile",
-                    "group": "2_delete@1"
-                },
-                {
-                    "command": "VirtualRepos.deleteFile",
-                    "when": "viewItem == isOwnedFile",
-                    "group": "2_delete@2"
-                },
-                {
-                    "command": "VirtualRepos.deleteFolder",
-                    "when": "viewItem == isOwnedFolder",
-                    "group": "9_delete@6"
+                    "group": "2_remote@2"
                 }
+                
             ]
         }
     },

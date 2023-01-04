@@ -114,6 +114,7 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.uploadFile", async (node) => {
             uploadFiles(node);
+            store.refresh();
         })
     );
 
@@ -317,6 +318,7 @@ export async function activate(context: ExtensionContext) {
             const nodesToDelete = nodes || [node];
 
             await deleteFile(nodesToDelete);
+            store.refresh();
         })
     );
 
@@ -367,6 +369,7 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.renameFile", async (file: ContentNode) => {
             await renameFile(file);
+            store.refresh();
         })
     );
 
