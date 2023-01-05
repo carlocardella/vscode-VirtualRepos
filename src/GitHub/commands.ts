@@ -145,7 +145,7 @@ export async function addFile(e: ContentNode | RepoNode): Promise<Uri | undefine
     const [repoOwner, repoName, path] = RepoFileSystemProvider.getFileInfo(e.uri)!;
     const content = "";
 
-    const newFileUri = Uri.parse(`${REPO_SCHEME}://${repoOwner}/${repoName}/${path}/${newFileName}`);
+    const newFileUri = Uri.parse(`${REPO_SCHEME}://${repoOwner}/${repoName}/${path}/${newFileName}`); // @ugly: if the file is created under root, path is empty and the output is '//'
     // prettier-ignore
     await repoFileSystemProvider.writeFile(
         newFileUri, stringToByteArray(content), {

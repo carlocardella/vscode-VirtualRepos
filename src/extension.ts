@@ -51,8 +51,6 @@ declare global {
     var TextDecoder: typeof _TextDecoder;
 }
 
-
-
 export async function activate(context: ExtensionContext) {
     extensionContext = context;
 
@@ -298,8 +296,8 @@ export async function activate(context: ExtensionContext) {
             store.refresh();
 
             while (repoProvider.refreshing) {
-                output?.appendLine(`waiting`, output.messageType.debug);
-                await new Promise((resolve) => setTimeout(resolve, 500));
+                output?.appendLine(`waiting for ${newFileUri}`, output.messageType.debug);
+                await new Promise((resolve) => setTimeout(resolve, 2000));
             }
 
             output?.appendLine(`Open ${newFileUri}`, output.messageType.debug);
