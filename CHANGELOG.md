@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+See the [list of open enhancements on GitHub](https://github.com/carlocardella/vscode-VirtualRepos/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3Aenhancement)
+
+## [0.0.30] - 2023-01-07
+
+### Changed
+
+* Reordered inline commands for folder and repositories
+* Update repository tooltip
+* Tweak tracing messages
+* Improve TreeView refresh, show refresh progress bar more consistently
+
 ## [0.0.29] - 2023-01-03
 
 ### Changed
