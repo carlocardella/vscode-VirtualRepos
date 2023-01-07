@@ -79,7 +79,7 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.refreshTree", async () => {
-            store.refresh();
+            repoProvider.refresh();
         })
     );
 
@@ -103,6 +103,7 @@ export async function activate(context: ExtensionContext) {
             if (pick) {
                 output?.appendLine(`Picked repository: ${pick}`, output.messageType.info);
                 await store.addRepoToGlobalStorage(context, pick);
+                repoProvider.refresh();
             } else {
                 output?.appendLine("Open repository cancelled by uer", output.messageType.info);
             }
@@ -112,7 +113,7 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.uploadFile", async (node) => {
             uploadFiles(node);
-            store.refresh();
+            repoProvider.refresh();
         })
     );
 
@@ -125,6 +126,7 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.closeRepository", async (node) => {
             store.removeRepoFromGlobalStorage(context, node.repo.full_name);
+            repoProvider.refresh();
         })
     );
 
@@ -136,19 +138,22 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.newPrivateRepository", async () => {
-            newRepository(true);
+            await newRepository(true);
+            repoProvider.refresh();
         })
     );
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.newPublicRepository", async () => {
-            newRepository(false);
+            await newRepository(false);
+            repoProvider.refresh();
         })
     );
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.deleteRepository", async (node) => {
-            deleteRepository(node);
+            await deleteRepository(node);
+            repoProvider.refresh();
         })
     );
 
@@ -204,7 +209,7 @@ export async function activate(context: ExtensionContext) {
             const sortDirection = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
             setSortTypeContext(SortType.name);
             store.sortRepos(SortType.name, sortDirection);
-            repoProvider.refresh();
+            repoProvider.refresh(undefined, true);
         })
     );
     context.subscriptions.push(
@@ -212,7 +217,7 @@ export async function activate(context: ExtensionContext) {
             const sortDirection = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
             setSortTypeContext(SortType.creationTime);
             store.sortRepos(SortType.creationTime, sortDirection);
-            repoProvider.refresh();
+            repoProvider.refresh(undefined, true);
         })
     );
     context.subscriptions.push(
@@ -220,7 +225,7 @@ export async function activate(context: ExtensionContext) {
             const sortDirection = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
             setSortTypeContext(SortType.forks);
             store.sortRepos(SortType.forks, sortDirection);
-            repoProvider.refresh();
+            repoProvider.refresh(undefined, true);
         })
     );
     context.subscriptions.push(
@@ -228,7 +233,7 @@ export async function activate(context: ExtensionContext) {
             const sortDirection = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
             setSortTypeContext(SortType.stars);
             store.sortRepos(SortType.stars, sortDirection);
-            repoProvider.refresh();
+            repoProvider.refresh(undefined, true);
         })
     );
     context.subscriptions.push(
@@ -236,7 +241,7 @@ export async function activate(context: ExtensionContext) {
             const sortDirection = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
             setSortTypeContext(SortType.updateTime);
             store.sortRepos(SortType.updateTime, sortDirection);
-            repoProvider.refresh();
+            repoProvider.refresh(undefined, true);
         })
     );
     context.subscriptions.push(
@@ -244,7 +249,7 @@ export async function activate(context: ExtensionContext) {
             const sortDirection = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
             setSortTypeContext(SortType.watchers);
             store.sortRepos(SortType.watchers, sortDirection);
-            repoProvider.refresh();
+            repoProvider.refresh(undefined, true);
         })
     );
     context.subscriptions.push(
@@ -252,7 +257,7 @@ export async function activate(context: ExtensionContext) {
             const sortType = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortType);
             setSortDirectionContext(SortDirection.ascending);
             store.sortRepos(sortType, SortDirection.ascending);
-            repoProvider.refresh();
+            repoProvider.refresh(undefined, true);
         })
     );
     context.subscriptions.push(
@@ -260,7 +265,7 @@ export async function activate(context: ExtensionContext) {
             const sortType = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortType);
             setSortDirectionContext(SortDirection.descending);
             store.sortRepos(sortType, SortDirection.descending);
-            repoProvider.refresh();
+            repoProvider.refresh(undefined, true);
         })
     );
 
@@ -293,7 +298,7 @@ export async function activate(context: ExtensionContext) {
             const newFileUri = await addFile(node);
 
             repoProvider.refreshing = true;
-            store.refresh();
+            repoProvider.refresh();
 
             while (repoProvider.refreshing) {
                 output?.appendLine(`waiting for ${newFileUri}`, output.messageType.debug);
@@ -316,7 +321,7 @@ export async function activate(context: ExtensionContext) {
             const nodesToDelete = nodes || [node];
 
             await deleteFile(nodesToDelete);
-            store.refresh();
+            repoProvider.refresh();
         })
     );
 
@@ -335,7 +340,7 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.starRepository", async (repo: RepoNode) => {
             await toggleRepoStar(repo).then(() => {
-                store.refresh();
+                repoProvider.refresh();
             });
         })
     );
@@ -343,7 +348,7 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.unstarRepository", async (repo: RepoNode) => {
             await toggleRepoStar(repo).then(() => {
-                store.refresh();
+                repoProvider.refresh();
             });
         })
     );
@@ -351,7 +356,7 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.followUser", async (repo: RepoNode) => {
             await toggleFollowUser(repo.owner).then(() => {
-                store.refresh();
+                repoProvider.refresh();
             });
         })
     );
@@ -359,7 +364,7 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.unfollowUser", async (repo: RepoNode) => {
             await toggleFollowUser(repo.owner).then(() => {
-                store.refresh();
+                repoProvider.refresh();
             });
         })
     );
@@ -367,7 +372,7 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.renameFile", async (file: ContentNode) => {
             await renameFile(file);
-            store.refresh();
+            repoProvider.refresh();
         })
     );
 
@@ -398,7 +403,7 @@ export async function activate(context: ExtensionContext) {
 
     if (pullInterval > 0) {
         pullIntervalTimer = setInterval(() => {
-            store.refresh();
+            repoProvider.refresh();
         }, pullInterval);
     }
     if (pullInterval > 0) {
@@ -437,7 +442,7 @@ export async function activate(context: ExtensionContext) {
 
                     clearInterval(pullIntervalTimer);
                     pullIntervalTimer = setInterval(() => {
-                        store.refresh();
+                        repoProvider.refresh();
                     }, pullInterval);
                     output?.appendLine(`Updated refresh interval to ${pullInterval / 1000} seconds`, trace.MessageType.info);
                 } else {
@@ -447,7 +452,7 @@ export async function activate(context: ExtensionContext) {
             }
 
             if (e.affectsConfiguration("VirtualRepos.UseRepoOwnerAvatar")) {
-                store.refresh(); // @investigate: is it possible to just update the icon without refreshing the store?
+                repoProvider.refresh();
                 output?.appendLine("UseRepoOwnerAvatar changed", output.messageType.info);
             }
         })

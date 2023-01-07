@@ -144,15 +144,6 @@ export class Store {
         if (sortType !== undefined && sortDirection !== undefined) {
             this.sortRepos(sortType, sortDirection);
         }
-
-        repoProvider.refresh();
-    }
-
-    /**
-     * Wrapper around init() to refresh the Store object
-     */
-    refresh() {
-        this.init();
     }
 
     /**

@@ -26,7 +26,7 @@ import { getRepoFileContent } from "../GitHub/commands";
 import { TGitHubUpdateContent, TContent, TRepo, TTree } from "../GitHub/types";
 import { RepoNode } from "../Tree/nodes";
 import { getFileNameFromUri, getFilePathWithoutRepoNameFromUri, getRepoFullNameFromUri, getRepoNameFromUri, removeLeadingSlash } from "../utils";
-import { MessageType } from '../tracing';
+import { MessageType } from "../tracing";
 
 export const REPO_SCHEME = "github-repo";
 const REPO_QUERY = `${REPO_SCHEME}=`;
@@ -127,7 +127,7 @@ export class RepoFileSystemProvider implements FileSystemProvider {
         await deleteGitHubFile(repository!.repo!, file);
 
         this._onDidChangeFile.fire([{ type: FileChangeType.Deleted, uri }]); //@investigate: are both lines needed?
-        store.refresh();
+        repoProvider.refresh();
     }
 
     async rename(oldUri: Uri, newUri: Uri, options: { readonly overwrite: boolean }): Promise<void> {

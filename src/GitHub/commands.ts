@@ -231,7 +231,7 @@ export async function uploadFiles(destination: ContentNode | RepoNode): Promise<
 
         if (updatedRef) {
             output?.appendLine(`Uploaded ${tree.map((t) => t.path)}`, output.messageType.info);
-            repoProvider.refresh(repo);
+            repoProvider.refresh();
         }
     });
 
