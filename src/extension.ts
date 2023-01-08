@@ -102,8 +102,9 @@ export async function activate(context: ExtensionContext) {
             const pick = (await pickRepository()) as string;
             if (pick) {
                 output?.appendLine(`Picked repository: ${pick}`, output.messageType.info);
-                await store.addRepoToGlobalStorage(context, pick);
-                repoProvider.refresh();
+                if (await store.addRepoToGlobalStorage(context, pick)) {
+                    repoProvider.refresh();
+                }
             } else {
                 output?.appendLine("Open repository cancelled by uer", output.messageType.info);
             }

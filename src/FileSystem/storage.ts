@@ -323,7 +323,7 @@ export class Store {
      * @param {string} value Repository full name (owner/name) to add to global storage
      * @returns {Promise<void>}
      */
-    async addRepoToGlobalStorage(context: ExtensionContext, value: string): Promise<void> {
+    async addRepoToGlobalStorage(context: ExtensionContext, value: string): Promise<boolean> {
         let globalStorage = this.getRepoFromGlobalState(context);
 
         let [owner, repoName] = ["", ""];
@@ -334,12 +334,21 @@ export class Store {
             [owner, repoName] = value.split("/");
         }
 
-        globalStorage.push(`${owner}/${repoName}`);
+        let fullName = `${owner}/${repoName}`;
+
+        if (globalStorage.includes(fullName)) {
+            output?.appendLine(`${fullName} is already in global storage`, output.messageType.info);
+            return false;
+        }
+
+        globalStorage.push(fullName);
         context.globalState.update(GlobalStorageKeys.repoGlobalStorage, globalStorage);
 
         this.init();
 
-        output?.appendLine(`Added ${value} to global storage`, output.messageType.info);
+        output?.appendLine(`Added ${fullName} to global storage`, output.messageType.info);
         output?.appendLine(`Global storage: ${globalStorage}`, output.messageType.info);
+
+        return true;
     }
 }
