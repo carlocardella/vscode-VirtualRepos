@@ -119,9 +119,9 @@ export function byteArrayToString(value: Uint8Array): string {
 export function setSortTypeContext(sortType: SortType) {
     Object.keys(SortType).forEach((key) => {
         if (key === sortType) {
-            commands.executeCommand("setContext", `tt.sortType.${key}`, true);
+            commands.executeCommand("setContext", `VirtualRepos.sortType.${key}`, true);
         } else {
-            commands.executeCommand("setContext", `tt.sortType.${key}`, false);
+            commands.executeCommand("setContext", `VirtualRepos.sortType.${key}`, false);
         }
     });
     store.sortType = sortType;
@@ -137,9 +137,9 @@ export function setSortTypeContext(sortType: SortType) {
 export function setSortDirectionContext(sortDirection: SortDirection) {
     Object.keys(SortDirection).forEach((key) => {
         if (key === sortDirection) {
-            commands.executeCommand("setContext", `tt.sortDirection.${key}`, true);
+            commands.executeCommand("setContext", `VirtualRepos.sortDirection.${key}`, true);
         } else {
-            commands.executeCommand("setContext", `tt.sortDirection.${key}`, false);
+            commands.executeCommand("setContext", `VirtualRepos.sortDirection.${key}`, false);
         }
     });
     store.sortDirection = sortDirection;

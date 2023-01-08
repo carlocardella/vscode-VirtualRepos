@@ -488,82 +488,82 @@
                 },
                 {
                     "command": "VirtualRepos.sortRepoByNameEmpty",
-                    "when": "tt.sortType.name",
+                    "when": "VirtualRepos.sortType.name",
                     "group": "1_sortType@1"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByName",
-                    "when": "!tt.sortType.name",
+                    "when": "!VirtualRepos.sortType.name",
                     "group": "1_sortType@1"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByForksEmpty",
-                    "when": "tt.sortType.forks",
+                    "when": "VirtualRepos.sortType.forks",
                     "group": "1_sortType@2"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByForks",
-                    "when": "!tt.sortType.forks",
+                    "when": "!VirtualRepos.sortType.forks",
                     "group": "1_sortType@2"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByStarsEmpty",
-                    "when": "tt.sortType.stars",
+                    "when": "VirtualRepos.sortType.stars",
                     "group": "1_sortType@3"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByStars",
-                    "when": "!tt.sortType.stars",
+                    "when": "!VirtualRepos.sortType.stars",
                     "group": "1_sortType@3"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByCreationTimeEmpty",
-                    "when": "tt.sortType.creationTime",
+                    "when": "VirtualRepos.sortType.creationTime",
                     "group": "1_sortType@4"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByCreationTime",
-                    "when": "!tt.sortType.creationTime",
+                    "when": "!VirtualRepos.sortType.creationTime",
                     "group": "1_sortType@4"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByUpdateTimeEmpty",
-                    "when": "tt.sortType.updateTime",
+                    "when": "VirtualRepos.sortType.updateTime",
                     "group": "1_sortType@5"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByUpdateTime",
-                    "when": "!tt.sortType.updateTime",
+                    "when": "!VirtualRepos.sortType.updateTime",
                     "group": "1_sortType@5"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByWatchersEmpty",
-                    "when": "tt.sortType.watchers",
+                    "when": "VirtualRepos.sortType.watchers",
                     "group": "1_sortType@6"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByWatchers",
-                    "when": "!tt.sortType.watchers",
+                    "when": "!VirtualRepos.sortType.watchers",
                     "group": "1_sortType@6"
                 },
                 {
                     "command": "VirtualRepos.sortAscendingEmpty",
-                    "when": "tt.sortDirection.ascending",
+                    "when": "VirtualRepos.sortDirection.ascending",
                     "group": "2_sortDirection@1"
                 },
                 {
                     "command": "VirtualRepos.sortAscending",
-                    "when": "!tt.sortDirection.ascending",
+                    "when": "!VirtualRepos.sortDirection.ascending",
                     "group": "2_sortDirection@1"
                 },
                 {
                     "command": "VirtualRepos.sortDescendingEmpty",
-                    "when": "tt.sortDirection.descending",
+                    "when": "VirtualRepos.sortDirection.descending",
                     "group": "2_sortDirection@2"
                 },
                 {
                     "command": "VirtualRepos.sortDescending",
-                    "when": "!tt.sortDirection.descending",
+                    "when": "!VirtualRepos.sortDirection.descending",
                     "group": "2_sortDirection@2"
                 }
             ],
