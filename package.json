@@ -488,82 +488,82 @@
                 },
                 {
                     "command": "VirtualRepos.sortRepoByNameEmpty",
-                    "when": "VirtualRepos.sortType.name",
+                    "when": "view == virtualReposView && VirtualRepos.sortType.name",
                     "group": "1_sortType@1"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByName",
-                    "when": "!VirtualRepos.sortType.name",
+                    "when": "view == virtualReposView && !VirtualRepos.sortType.name",
                     "group": "1_sortType@1"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByForksEmpty",
-                    "when": "VirtualRepos.sortType.forks",
+                    "when": "view == virtualReposView && VirtualRepos.sortType.forks",
                     "group": "1_sortType@2"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByForks",
-                    "when": "!VirtualRepos.sortType.forks",
+                    "when": "view == virtualReposView && !VirtualRepos.sortType.forks",
                     "group": "1_sortType@2"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByStarsEmpty",
-                    "when": "VirtualRepos.sortType.stars",
+                    "when": "view == virtualReposView && VirtualRepos.sortType.stars",
                     "group": "1_sortType@3"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByStars",
-                    "when": "!VirtualRepos.sortType.stars",
+                    "when": "view == virtualReposView && !VirtualRepos.sortType.stars",
                     "group": "1_sortType@3"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByCreationTimeEmpty",
-                    "when": "VirtualRepos.sortType.creationTime",
+                    "when": "view == virtualReposView && VirtualRepos.sortType.creationTime",
                     "group": "1_sortType@4"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByCreationTime",
-                    "when": "!VirtualRepos.sortType.creationTime",
+                    "when": "view == virtualReposView && !VirtualRepos.sortType.creationTime",
                     "group": "1_sortType@4"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByUpdateTimeEmpty",
-                    "when": "VirtualRepos.sortType.updateTime",
+                    "when": "view == virtualReposView && VirtualRepos.sortType.updateTime",
                     "group": "1_sortType@5"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByUpdateTime",
-                    "when": "!VirtualRepos.sortType.updateTime",
+                    "when": "view == virtualReposView && !VirtualRepos.sortType.updateTime",
                     "group": "1_sortType@5"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByWatchersEmpty",
-                    "when": "VirtualRepos.sortType.watchers",
+                    "when": "view == virtualReposView && VirtualRepos.sortType.watchers",
                     "group": "1_sortType@6"
                 },
                 {
                     "command": "VirtualRepos.sortRepoByWatchers",
-                    "when": "!VirtualRepos.sortType.watchers",
+                    "when": "view == virtualReposView && !VirtualRepos.sortType.watchers",
                     "group": "1_sortType@6"
                 },
                 {
                     "command": "VirtualRepos.sortAscendingEmpty",
-                    "when": "VirtualRepos.sortDirection.ascending",
+                    "when": "view == virtualReposView && VirtualRepos.sortDirection.ascending",
                     "group": "2_sortDirection@1"
                 },
                 {
                     "command": "VirtualRepos.sortAscending",
-                    "when": "!VirtualRepos.sortDirection.ascending",
+                    "when": "view == virtualReposView && !VirtualRepos.sortDirection.ascending",
                     "group": "2_sortDirection@1"
                 },
                 {
                     "command": "VirtualRepos.sortDescendingEmpty",
-                    "when": "VirtualRepos.sortDirection.descending",
+                    "when": "view == virtualReposView && VirtualRepos.sortDirection.descending",
                     "group": "2_sortDirection@2"
                 },
                 {
                     "command": "VirtualRepos.sortDescending",
-                    "when": "!VirtualRepos.sortDirection.descending",
+                    "when": "view == virtualReposView && !VirtualRepos.sortDirection.descending",
                     "group": "2_sortDirection@2"
                 }
             ],

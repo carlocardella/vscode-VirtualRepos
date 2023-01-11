@@ -8,6 +8,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 See the [list of open enhancements on GitHub](https://github.com/carlocardella/vscode-VirtualRepos/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3Aenhancement)
 
+## [0.0.31] - 2023-01-10
+
+### Fixed
+
+* [#45 Sort menu duplicate commands](https://github.com/carlocardella/vscode-VirtualRepos/issues/45)
+
 ## [0.0.30] - 2023-01-07
 
 ### Changed
