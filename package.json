@@ -472,12 +472,12 @@
                     "group": "navigation@1"
                 },
                 {
-                    "command": "VirtualRepos.newPublicRepository",
+                    "command": "VirtualRepos.newPrivateRepository",
                     "when": "view == virtualReposView",
                     "group": "navigation@2"
                 },
                 {
-                    "command": "VirtualRepos.newPrivateRepository",
+                    "command": "VirtualRepos.newPublicRepository",
                     "when": "view == virtualReposView",
                     "group": "navigation@3"
                 },
