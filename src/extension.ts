@@ -35,7 +35,7 @@ export let output: trace.Output;
 export const credentials = new Credentials();
 export let gitHubAuthenticatedUser: TGitHubUser;
 export let extensionContext: ExtensionContext;
-export const repoProvider = new RepoProvider();
+export let repoProvider: RepoProvider; // = new RepoProvider(extensionContext);
 export const repoFileSystemProvider = new RepoFileSystemProvider();
 let pullInterval = config.get("PullInterval") * 1000;
 let pullIntervalTimer: NodeJS.Timer | undefined = undefined;
@@ -53,6 +53,7 @@ declare global {
 
 export async function activate(context: ExtensionContext) {
     extensionContext = context;
+    repoProvider = new RepoProvider(extensionContext);
 
     if (config.get("EnableTracing")) {
         output = new trace.Output();
@@ -415,11 +416,11 @@ export async function activate(context: ExtensionContext) {
     const keysForSync = [GlobalStorageKeys.repoGlobalStorage];
     context.globalState.setKeysForSync(keysForSync);
 
-    const treeView = window.createTreeView("virtualReposView", {
-        treeDataProvider: repoProvider,
-        showCollapseAll: true,
-        canSelectMany: true,
-    });
+    // const treeView = window.createTreeView("virtualReposView", {
+    //     treeDataProvider: repoProvider,
+    //     showCollapseAll: true,
+    //     canSelectMany: true,
+    // });
 
     // refresh starred repos and followed users every hour
     pullIntervalTimer = setInterval(() => {
