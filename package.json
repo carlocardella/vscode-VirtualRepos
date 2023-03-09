@@ -1,729 +1,729 @@
 {
-    "name": "vscode-VirtualRepos",
-    "displayName": "Virtual Repositories for Visual Studio Code",
-    "description": "Easily open and update virtual repositories without cloning",
-    "publisher": "carlocardella",
-    "author": {
-        "name": "Carlo Cardella",
-        "url": "https://cloudnotes.io"
-    },
-    "version": "0.0.31",
-    "engines": {
-        "vscode": "^1.63.0"
-    },
-    "preview": true,
-    "icon": "assets/book.png",
-    "license": "MIT",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/carlocardella/vscode-VirtualRepos.git"
-    },
-    "bugs": {
-        "url": "https://github.com/carlocardella/vscode-VirtualRepos/issues"
-    },
-    "categories": [
-        "Other"
-    ],
-    "capabilities": {
-        "untrustedWorkspaces": {
-            "supported": true
-        }
-    },
-    "keywords": [
-        "git",
-        "github",
-        "remote",
-        "repository",
-        "repo",
-        "virtual file system",
-        "virtual repo"
-    ],
-    "activationEvents": [
-        "onView:virtualReposView"
-    ],
-    "main": "./dist/extension-node.js",
-    "browser": "./dist/extension-web.js",
-    "contributes": {
-        "commands": [
-            {
-                "title": "Close repository",
-                "command": "VirtualRepos.closeRepository",
-                "category": "Virtual Repositories",
-                "icon": "$(close)"
-            },
-            {
-                "title": "Remove from Global Storage",
-                "command": "VirtualRepos.removeFromGlobalStorage",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "New public repository...",
-                "command": "VirtualRepos.newPublicRepository",
-                "category": "Virtual Repositories",
-                "icon": "$(repo-create)"
-            },
-            {
-                "title": "New private repository...",
-                "command": "VirtualRepos.newPrivateRepository",
-                "category": "Virtual Repositories",
-                "icon": "$(lock)"
-            },
-            {
-                "title": "Clone repository...",
-                "command": "VirtualRepos.cloneRepository",
-                "category": "Virtual Repositories",
-                "icon": "$(repo-clone)"
-            },
-            {
-                "title": "Fork repository",
-                "command": "VirtualRepos.forkRepository",
-                "category": "Virtual Repositories",
-                "icon": "$(repo-forked)"
-            },
-            {
-                "title": "Star repository",
-                "command": "VirtualRepos.starRepository",
-                "category": "Virtual Repositories",
-                "icon": "$(star-empty)"
-            },
-            {
-                "title": "Unstar repository",
-                "command": "VirtualRepos.unstarRepository",
-                "category": "Virtual Repositories",
-                "icon": "$(star-full)"
-            },
-            {
-                "title": "Download repository...",
-                "command": "VirtualRepos.downloadRepository",
-                "category": "Virtual Repositories",
-                "icon": "$(cloud-download)"
-            },
-            {
-                "title": "Open Repository...",
-                "command": "VirtualRepos.openRepository",
-                "icon": "$(plug)",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Delete Repository...",
-                "command": "VirtualRepos.deleteRepository",
-                "icon": "$(trash)",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "New file...",
-                "command": "VirtualRepos.addFile",
-                "icon": "$(new-file)",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Upload file(s)...",
-                "command": "VirtualRepos.uploadFile",
-                "icon": "$(cloud-upload)",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Delete...",
-                "command": "VirtualRepos.deleteFile",
-                "icon": "$(trash)",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Refresh",
-                "command": "VirtualRepos.refreshTree",
-                "icon": "$(refresh)",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Clear global storage",
-                "command": "VirtualRepos.clearGlobalStorage",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Get Global Storage",
-                "command": "VirtualRepos.getGlobalStorage",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Purge Global Storage",
-                "command": "VirtualRepos.purgeGlobalStorage",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Copy remote url",
-                "command": "VirtualRepos.copyRemoteUrl",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Copy upstream url",
-                "command": "VirtualRepos.copyUpstreamUrl",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Show remote",
-                "command": "VirtualRepos.showOnRemote",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Show upstream",
-                "command": "VirtualRepos.showOnUpstream",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "View user profile on GitHub",
-                "command": "VirtualRepos.viewRepoOwnerProfileOnGitHub",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Rename...",
-                "command": "VirtualRepos.renameFile",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Delete Folder...",
-                "command": "VirtualRepos.deleteFolder",
-                "icon": "$(trash)",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Refresh starred repositories from GitHub",
-                "command": "VirtualRepos.refreshStarredRepos",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Follow user on GitHub",
-                "command": "VirtualRepos.followUser",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Unfollow user on GitHub",
-                "command": "VirtualRepos.unfollowUser",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Refresh followed user from GitHub",
-                "command": "VirtualRepos.refreshFollowedUsers",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "✓ Sort by name",
-                "command": "VirtualRepos.sortRepoByNameEmpty",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Sort by name",
-                "command": "VirtualRepos.sortRepoByName",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "✓ Sort by forks",
-                "command": "VirtualRepos.sortRepoByForksEmpty",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Sort by forks",
-                "command": "VirtualRepos.sortRepoByForks",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "✓ Sort by stars",
-                "command": "VirtualRepos.sortRepoByStarsEmpty",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Sort by stars",
-                "command": "VirtualRepos.sortRepoByStars",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "✓ Sort by creation time",
-                "command": "VirtualRepos.sortRepoByCreationTimeEmpty",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Sort by creation time",
-                "command": "VirtualRepos.sortRepoByCreationTime",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "✓ Sort by update time",
-                "command": "VirtualRepos.sortRepoByUpdateTimeEmpty",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Sort by update time",
-                "command": "VirtualRepos.sortRepoByUpdateTime",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "✓ Sort by watchers",
-                "command": "VirtualRepos.sortRepoByWatchersEmpty",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Sort by watchers",
-                "command": "VirtualRepos.sortRepoByWatchers",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "✓ Sort ascending",
-                "command": "VirtualRepos.sortAscendingEmpty",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Sort ascending",
-                "command": "VirtualRepos.sortAscending",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "✓ Sort descending",
-                "command": "VirtualRepos.sortDescendingEmpty",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Sort descending",
-                "command": "VirtualRepos.sortDescending",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Change to private...",
-                "command": "VirtualRepos.makeRepoPrivate",
-                "category": "Virtual Repositories"
-            },
-            {
-                "title": "Change to public...",
-                "command": "VirtualRepos.makeRepoPublic",
-                "category": "Virtual Repositories"
-            }
-        ],
-        "configuration": {
-            "title": "VirtualRepos",
-            "properties": {
-                "VirtualRepos.EnableTracing": {
-                    "type": "boolean",
-                    "description": "Enable tracing of the extension",
-                    "default": false
-                },
-                "VirtualRepos.PullInterval": {
-                    "type": "number",
-                    "description": "Interval in seconds to pull changes from the remote repository, set to 0 (zero) to disable",
-                    "default": 0
-                },
-                "VirtualRepos.UseRepoOwnerAvatar": {
-                    "type": "boolean",
-                    "description": "Use the owner's avatar for the repository",
-                    "default": false
-                }
-            }
-        },
-        "viewsContainers": {
-            "activitybar": [
-                {
-                    "id": "VirtualRepositoriesContainer",
-                    "title": "Virtual Repositories",
-                    "icon": "assets/repo.svg"
-                }
-            ]
-        },
-        "views": {
-            "VirtualRepositoriesContainer": [
-                {
-                    "id": "virtualReposView",
-                    "name": "Virtual Repositories",
-                    "icon": "assets/repo.svg",
-                    "type": "tree",
-                    "visibility": "collapsed"
-                }
-            ]
-        },
-        "menus": {
-            "commandPalette": [
-                {
-                    "command": "VirtualRepos.closeRepository",
-                    "when": "false"
-                },
-                {
-                    "command": "VirtualRepos.sortRepoByName"
-                },
-                {
-                    "command": "VirtualRepos.sortRepoByForks"
-                },
-                {
-                    "command": "VirtualRepos.sortRepoByStars"
-                },
-                {
-                    "command": "VirtualRepos.sortRepoByCreationTime"
-                },
-                {
-                    "command": "VirtualRepos.sortRepoByUpdateTime"
-                },
-                {
-                    "command": "VirtualRepos.sortRepoByWatchers"
-                },
-                {
-                    "command": "VirtualRepos.sortAscending"
-                },
-                {
-                    "command": "VirtualRepos.sortDescending"
-                },
-                {
-                    "command": "VirtualRepos.openRepository"
-                },
-                {
-                    "command": "VirtualRepos.refreshStarredRepos"
-                },
-                {
-                    "command": "VirtualRepos.refreshFollowedUsers"
-                },
-                {
-                    "command": "VirtualRepos.makeRepoPrivate",
-                    "when": "false"
-                },
-                {
-                    "command": "VirtualRepos.makeRepoPublic",
-                    "when": "false"
-                },
-                {
-                    "command": "VirtualRepos.addFile",
-                    "when": "false"
-                },
-                {
-                    "command": "VirtualRepos.renameFile",
-                    "when": "false"
-                },
-                {
-                    "command": "VirtualRepos.deleteFolder",
-                    "when": "false"
-                },
-                {
-                    "command": "VirtualRepos.viewRepoOwnerProfileOnGitHub",
-                    "when": "false"
-                },
-                {
-                    "command": "VirtualRepos.uploadFile",
-                    "when": "false"
-                },
-                {
-                    "command": "VirtualRepos.deleteFile",
-                    "when": "false"
-                },
-                {
-                    "command": "VirtualRepos.downloadRepository",
-                    "when": "false"
-                },
-                {
-                    "command": "VirtualRepos.forkRepository",
-                    "when": "false"
-                },
-                {
-                    "command": "VirtualRepos.starRepository",
-                    "when": "false"
-                },
-                {
-                    "command": "VirtualRepos.unstarRepository",
-                    "when": "false"
-                },
-                {
-                    "command": "VirtualRepos.followUser",
-                    "when": "false"
-                },
-                {
-                    "command": "VirtualRepos.unfollowUser",
-                    "when": "false"
-                },
-                {
-                    "command": "VirtualRepos.cloneRepository",
-                    "when": "false"
-                },
-                {
-                    "command": "VirtualRepos.deleteRepository",
-                    "when": "false"
-                },
-                {
-                    "command": "VirtualRepos.refreshTree"
-                },
-                {
-                    "command": "VirtualRepos.clearGlobalStorage"
-                },
-                {
-                    "command": "VirtualRepos.purgeGlobalStorage"
-                },
-                {
-                    "command": "VirtualRepos.copyRemoteUrl",
-                    "when": "false"
-                },
-                {
-                    "command": "VirtualRepos.copyUpstreamUrl",
-                    "when": "false"
-                },
-                {
-                    "command": "VirtualRepos.showOnRemote",
-                    "when": "false"
-                },
-                {
-                    "command": "VirtualRepos.showOnUpstream",
-                    "when": "false"
-                }
-            ],
-            "view/title": [
-                {
-                    "command": "VirtualRepos.openRepository",
-                    "when": "view == virtualReposView",
-                    "group": "navigation@1"
-                },
-                {
-                    "command": "VirtualRepos.newPublicRepository",
-                    "when": "view == virtualReposView",
-                    "group": "navigation@2"
-                },
-                {
-                    "command": "VirtualRepos.newPrivateRepository",
-                    "when": "view == virtualReposView",
-                    "group": "navigation@3"
-                },
-                {
-                    "command": "VirtualRepos.refreshTree",
-                    "when": "view == virtualReposView",
-                    "group": "navigation@4"
-                },
-                {
-                    "command": "VirtualRepos.sortRepoByNameEmpty",
-                    "when": "view == virtualReposView && VirtualRepos.sortType.name",
-                    "group": "1_sortType@1"
-                },
-                {
-                    "command": "VirtualRepos.sortRepoByName",
-                    "when": "view == virtualReposView && !VirtualRepos.sortType.name",
-                    "group": "1_sortType@1"
-                },
-                {
-                    "command": "VirtualRepos.sortRepoByForksEmpty",
-                    "when": "view == virtualReposView && VirtualRepos.sortType.forks",
-                    "group": "1_sortType@2"
-                },
-                {
-                    "command": "VirtualRepos.sortRepoByForks",
-                    "when": "view == virtualReposView && !VirtualRepos.sortType.forks",
-                    "group": "1_sortType@2"
-                },
-                {
-                    "command": "VirtualRepos.sortRepoByStarsEmpty",
-                    "when": "view == virtualReposView && VirtualRepos.sortType.stars",
-                    "group": "1_sortType@3"
-                },
-                {
-                    "command": "VirtualRepos.sortRepoByStars",
-                    "when": "view == virtualReposView && !VirtualRepos.sortType.stars",
-                    "group": "1_sortType@3"
-                },
-                {
-                    "command": "VirtualRepos.sortRepoByCreationTimeEmpty",
-                    "when": "view == virtualReposView && VirtualRepos.sortType.creationTime",
-                    "group": "1_sortType@4"
-                },
-                {
-                    "command": "VirtualRepos.sortRepoByCreationTime",
-                    "when": "view == virtualReposView && !VirtualRepos.sortType.creationTime",
-                    "group": "1_sortType@4"
-                },
-                {
-                    "command": "VirtualRepos.sortRepoByUpdateTimeEmpty",
-                    "when": "view == virtualReposView && VirtualRepos.sortType.updateTime",
-                    "group": "1_sortType@5"
-                },
-                {
-                    "command": "VirtualRepos.sortRepoByUpdateTime",
-                    "when": "view == virtualReposView && !VirtualRepos.sortType.updateTime",
-                    "group": "1_sortType@5"
-                },
-                {
-                    "command": "VirtualRepos.sortRepoByWatchersEmpty",
-                    "when": "view == virtualReposView && VirtualRepos.sortType.watchers",
-                    "group": "1_sortType@6"
-                },
-                {
-                    "command": "VirtualRepos.sortRepoByWatchers",
-                    "when": "view == virtualReposView && !VirtualRepos.sortType.watchers",
-                    "group": "1_sortType@6"
-                },
-                {
-                    "command": "VirtualRepos.sortAscendingEmpty",
-                    "when": "view == virtualReposView && VirtualRepos.sortDirection.ascending",
-                    "group": "2_sortDirection@1"
-                },
-                {
-                    "command": "VirtualRepos.sortAscending",
-                    "when": "view == virtualReposView && !VirtualRepos.sortDirection.ascending",
-                    "group": "2_sortDirection@1"
-                },
-                {
-                    "command": "VirtualRepos.sortDescendingEmpty",
-                    "when": "view == virtualReposView && VirtualRepos.sortDirection.descending",
-                    "group": "2_sortDirection@2"
-                },
-                {
-                    "command": "VirtualRepos.sortDescending",
-                    "when": "view == virtualReposView && !VirtualRepos.sortDirection.descending",
-                    "group": "2_sortDirection@2"
-                }
-            ],
-            "view/item/context": [
-                {
-                    "command": "VirtualRepos.addFile",
-                    "when": "viewItem == isOwnedFolder || viewItem =~ /.*isOwnedRepo.*/",
-                    "group": "inline@1"
-                },
-                {
-                    "command": "VirtualRepos.closeRepository",
-                    "when": "viewItem =~ /.*[Rr]epo.*/",
-                    "group": "inline@9"
-                },
-                {
-                    "command": "VirtualRepos.deleteFile",
-                    "when": "viewItem == isOwnedFile",
-                    "group": "inline@9"
-                },
-                {
-                    "command": "VirtualRepos.deleteFolder",
-                    "when": "viewItem == isOwnedFolder",
-                    "group": "inline@9"
-                },
-                {
-                    "command": "VirtualRepos.forkRepository",
-                    "when": "viewItem =~ /.*[Ss]tarredRepo/",
-                    "group": "inline"
-                },
-                {
-                    "command": "VirtualRepos.starRepository",
-                    "when": "viewItem =~ /notStarredRepo.*/",
-                    "group": "inline"
-                },
-                {
-                    "command": "VirtualRepos.unstarRepository",
-                    "when": "viewItem =~ /starredRepo.*/",
-                    "group": "inline"
-                },
-                {
-                    "command": "VirtualRepos.uploadFile",
-                    "when": "viewItem == isOwnedFolder || viewItem =~ /.*isOwnedRepo.*/",
-                    "group": "1_add@2"
-                },
-                {
-                    "command": "VirtualRepos.cloneRepository",
-                    "when": "viewItem =~ /.*[Rr]epo.*/",
-                    "group": "2_repoOperations@1"
-                },
-                {
-                    "command": "VirtualRepos.makeRepoPrivate",
-                    "when": "viewItem =~ /.*isOwnedRepo.*isPublic.*/",
-                    "group": "2_repoOperations@3"
-                },
-                {
-                    "command": "VirtualRepos.makeRepoPublic",
-                    "when": "viewItem =~ /.*isOwnedRepo.*isPrivate.*/",
-                    "group": "2_repoOperations@3"
-                },
-                {
-                    "command": "VirtualRepos.deleteRepository",
-                    "when": "viewItem =~ /.*isOwnedRepo.*/",
-                    "group": "2_repoOperations@9"
-                },
-                {
-                    "command": "VirtualRepos.copyRemoteUrl",
-                    "when": "viewItem =~ /.*[Rr]epo.*/",
-                    "group": "2_close@1"
-                },
-                {
-                    "command": "VirtualRepos.showOnRemote",
-                    "when": "viewItem =~ /.*[Rr]epo.*/",
-                    "group": "2_close@2"
-                },
-                {
-                    "command": "VirtualRepos.copyUpstreamUrl",
-                    "when": "viewItem =~ /.*isFork.*/",
-                    "group": "2_close@3"
-                },
-                {
-                    "command": "VirtualRepos.showOnUpstream",
-                    "when": "viewItem =~ /.*isFork.*/",
-                    "group": "2_close@4"
-                },
-                {
-                    "command": "VirtualRepos.viewRepoOwnerProfileOnGitHub",
-                    "when": "viewItem =~ /.*[Rr]epo.*/",
-                    "group": "3_user@1"
-                },
-                {
-                    "command": "VirtualRepos.followUser",
-                    "when": "viewItem =~ /.*notFollowedUser/",
-                    "group": "3_user@2"
-                },
-                {
-                    "command": "VirtualRepos.unfollowUser",
-                    "when": "viewItem =~ /.*followedUser/",
-                    "group": "3_user@3"
-                },
-                {
-                    "command": "VirtualRepos.renameFile",
-                    "when": "viewItem == isOwnedFile",
-                    "group": "1_edit@1"
-                },
-                {
-                    "command": "VirtualRepos.copyRemoteUrl",
-                    "when": "viewItem =~ /.*[Ff]older.*|.*[Ff]ile.*/",
-                    "group": "2_remote@1"
-                },
-                {
-                    "command": "VirtualRepos.showOnRemote",
-                    "when": "viewItem =~ /.*[Ff]older.*|.*[Ff]ile.*/",
-                    "group": "2_remote@2"
-                }
-            ]
-        }
-    },
-    "scripts": {
-        "webpack": "webpack --mode development",
-        "webpack-dev": "webpack --mode development --watch",
-        "test-compile": "tsc -p ./",
-        "unit-tests": "tsc -w -p ./",
-        "vscode:prepublish": "npm run package-web",
-        "compile-web": "webpack",
-        "watch-web": "webpack --watch",
-        "package-web": "webpack --mode production --devtool hidden-source-map",
-        "webpack-web-production": "webpack --mode production"
-    },
-    "devDependencies": {
-        "@types/glob": "^7.2.0",
-        "@types/lodash": "^4.14.189",
-        "@types/mocha": "^9.1.1",
-        "@types/node": "16.x",
-        "@types/vscode": "^1.63.0",
-        "@typescript-eslint/eslint-plugin": "^5.43.0",
-        "@typescript-eslint/parser": "^5.43.0",
-        "@vscode/test-electron": "^2.2.0",
-        "@webpack-cli/generators": "^3.0.0",
-        "buffer": "^6.0.3",
-        "eslint": "^8.27.0",
-        "glob": "^8.0.3",
-        "mocha": "^10.1.0",
-        "octokit": "^2.0.10",
-        "ts-loader": "^9.4.1",
-        "typescript": "^4.9.3",
-        "webpack": "^5.75.0",
-        "webpack-cli": "^4.10.0"
-    },
-    "dependencies": {
-        "@octokit/core": "^4.1.0",
-        "@octokit/openapi-types": "^13.13.1",
-        "@octokit/plugin-rest-endpoint-methods": "^6.7.0",
-        "@octokit/request": "^6.2.2",
-        "@octokit/rest": "^19.0.5",
-        "@octokit/types": "^7.5.1",
-        "https-browserify": "^1.0.0",
-        "is-binary-path": "^2.1.0",
-        "lodash": "^4.17.21",
-        "os-browserify": "^0.3.0",
-        "path-browserify": "^1.0.1",
-        "process": "^0.11.10"
+  "name": "vscode-VirtualRepos",
+  "displayName": "Virtual Repositories for Visual Studio Code",
+  "description": "Easily open and update virtual repositories without cloning",
+  "publisher": "carlocardella",
+  "author": {
+    "name": "Carlo Cardella",
+    "url": "https://cloudnotes.io"
+  },
+  "version": "0.0.31",
+  "engines": {
+    "vscode": "^1.63.0"
+  },
+  "preview": true,
+  "icon": "assets/book.png",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/carlocardella/vscode-VirtualRepos.git"
+  },
+  "bugs": {
+    "url": "https://github.com/carlocardella/vscode-VirtualRepos/issues"
+  },
+  "categories": [
+    "Other"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
     }
+  },
+  "keywords": [
+    "git",
+    "github",
+    "remote",
+    "repository",
+    "repo",
+    "virtual file system",
+    "virtual repo"
+  ],
+  "activationEvents": [
+    "onView:virtualReposView"
+  ],
+  "main": "./dist/extension-node.js",
+  "browser": "./dist/extension-web.js",
+  "contributes": {
+    "commands": [
+      {
+        "title": "Close repository",
+        "command": "VirtualRepos.closeRepository",
+        "category": "Virtual Repositories",
+        "icon": "$(close)"
+      },
+      {
+        "title": "Remove from Global Storage",
+        "command": "VirtualRepos.removeFromGlobalStorage",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "New public repository...",
+        "command": "VirtualRepos.newPublicRepository",
+        "category": "Virtual Repositories",
+        "icon": "$(repo-create)"
+      },
+      {
+        "title": "New private repository...",
+        "command": "VirtualRepos.newPrivateRepository",
+        "category": "Virtual Repositories",
+        "icon": "$(lock)"
+      },
+      {
+        "title": "Clone repository...",
+        "command": "VirtualRepos.cloneRepository",
+        "category": "Virtual Repositories",
+        "icon": "$(repo-clone)"
+      },
+      {
+        "title": "Fork repository",
+        "command": "VirtualRepos.forkRepository",
+        "category": "Virtual Repositories",
+        "icon": "$(repo-forked)"
+      },
+      {
+        "title": "Star repository",
+        "command": "VirtualRepos.starRepository",
+        "category": "Virtual Repositories",
+        "icon": "$(star-empty)"
+      },
+      {
+        "title": "Unstar repository",
+        "command": "VirtualRepos.unstarRepository",
+        "category": "Virtual Repositories",
+        "icon": "$(star-full)"
+      },
+      {
+        "title": "Download repository...",
+        "command": "VirtualRepos.downloadRepository",
+        "category": "Virtual Repositories",
+        "icon": "$(cloud-download)"
+      },
+      {
+        "title": "Open Repository...",
+        "command": "VirtualRepos.openRepository",
+        "icon": "$(plug)",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Delete Repository...",
+        "command": "VirtualRepos.deleteRepository",
+        "icon": "$(trash)",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "New file...",
+        "command": "VirtualRepos.addFile",
+        "icon": "$(new-file)",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Upload file(s)...",
+        "command": "VirtualRepos.uploadFile",
+        "icon": "$(cloud-upload)",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Delete...",
+        "command": "VirtualRepos.deleteFile",
+        "icon": "$(trash)",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Refresh",
+        "command": "VirtualRepos.refreshTree",
+        "icon": "$(refresh)",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Clear global storage",
+        "command": "VirtualRepos.clearGlobalStorage",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Get Global Storage",
+        "command": "VirtualRepos.getGlobalStorage",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Purge Global Storage",
+        "command": "VirtualRepos.purgeGlobalStorage",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Copy remote url",
+        "command": "VirtualRepos.copyRemoteUrl",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Copy upstream url",
+        "command": "VirtualRepos.copyUpstreamUrl",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Show remote",
+        "command": "VirtualRepos.showOnRemote",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Show upstream",
+        "command": "VirtualRepos.showOnUpstream",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "View user profile on GitHub",
+        "command": "VirtualRepos.viewRepoOwnerProfileOnGitHub",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Rename...",
+        "command": "VirtualRepos.renameFile",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Delete Folder...",
+        "command": "VirtualRepos.deleteFolder",
+        "icon": "$(trash)",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Refresh starred repositories from GitHub",
+        "command": "VirtualRepos.refreshStarredRepos",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Follow user on GitHub",
+        "command": "VirtualRepos.followUser",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Unfollow user on GitHub",
+        "command": "VirtualRepos.unfollowUser",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Refresh followed user from GitHub",
+        "command": "VirtualRepos.refreshFollowedUsers",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "✓ Sort by name",
+        "command": "VirtualRepos.sortRepoByNameEmpty",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Sort by name",
+        "command": "VirtualRepos.sortRepoByName",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "✓ Sort by forks",
+        "command": "VirtualRepos.sortRepoByForksEmpty",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Sort by forks",
+        "command": "VirtualRepos.sortRepoByForks",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "✓ Sort by stars",
+        "command": "VirtualRepos.sortRepoByStarsEmpty",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Sort by stars",
+        "command": "VirtualRepos.sortRepoByStars",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "✓ Sort by creation time",
+        "command": "VirtualRepos.sortRepoByCreationTimeEmpty",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Sort by creation time",
+        "command": "VirtualRepos.sortRepoByCreationTime",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "✓ Sort by update time",
+        "command": "VirtualRepos.sortRepoByUpdateTimeEmpty",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Sort by update time",
+        "command": "VirtualRepos.sortRepoByUpdateTime",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "✓ Sort by watchers",
+        "command": "VirtualRepos.sortRepoByWatchersEmpty",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Sort by watchers",
+        "command": "VirtualRepos.sortRepoByWatchers",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "✓ Sort ascending",
+        "command": "VirtualRepos.sortAscendingEmpty",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Sort ascending",
+        "command": "VirtualRepos.sortAscending",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "✓ Sort descending",
+        "command": "VirtualRepos.sortDescendingEmpty",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Sort descending",
+        "command": "VirtualRepos.sortDescending",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Change to private...",
+        "command": "VirtualRepos.makeRepoPrivate",
+        "category": "Virtual Repositories"
+      },
+      {
+        "title": "Change to public...",
+        "command": "VirtualRepos.makeRepoPublic",
+        "category": "Virtual Repositories"
+      }
+    ],
+    "configuration": {
+      "title": "VirtualRepos",
+      "properties": {
+        "VirtualRepos.EnableTracing": {
+          "type": "boolean",
+          "description": "Enable tracing of the extension",
+          "default": false
+        },
+        "VirtualRepos.PullInterval": {
+          "type": "number",
+          "description": "Interval in seconds to pull changes from the remote repository, set to 0 (zero) to disable",
+          "default": 0
+        },
+        "VirtualRepos.UseRepoOwnerAvatar": {
+          "type": "boolean",
+          "description": "Use the owner's avatar for the repository",
+          "default": false
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "VirtualRepositoriesContainer",
+          "title": "Virtual Repositories",
+          "icon": "assets/repo.svg"
+        }
+      ]
+    },
+    "views": {
+      "VirtualRepositoriesContainer": [
+        {
+          "id": "virtualReposView",
+          "name": "Virtual Repositories",
+          "icon": "assets/repo.svg",
+          "type": "tree",
+          "visibility": "collapsed"
+        }
+      ]
+    },
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "VirtualRepos.closeRepository",
+          "when": "false"
+        },
+        {
+          "command": "VirtualRepos.sortRepoByName"
+        },
+        {
+          "command": "VirtualRepos.sortRepoByForks"
+        },
+        {
+          "command": "VirtualRepos.sortRepoByStars"
+        },
+        {
+          "command": "VirtualRepos.sortRepoByCreationTime"
+        },
+        {
+          "command": "VirtualRepos.sortRepoByUpdateTime"
+        },
+        {
+          "command": "VirtualRepos.sortRepoByWatchers"
+        },
+        {
+          "command": "VirtualRepos.sortAscending"
+        },
+        {
+          "command": "VirtualRepos.sortDescending"
+        },
+        {
+          "command": "VirtualRepos.openRepository"
+        },
+        {
+          "command": "VirtualRepos.refreshStarredRepos"
+        },
+        {
+          "command": "VirtualRepos.refreshFollowedUsers"
+        },
+        {
+          "command": "VirtualRepos.makeRepoPrivate",
+          "when": "false"
+        },
+        {
+          "command": "VirtualRepos.makeRepoPublic",
+          "when": "false"
+        },
+        {
+          "command": "VirtualRepos.addFile",
+          "when": "false"
+        },
+        {
+          "command": "VirtualRepos.renameFile",
+          "when": "false"
+        },
+        {
+          "command": "VirtualRepos.deleteFolder",
+          "when": "false"
+        },
+        {
+          "command": "VirtualRepos.viewRepoOwnerProfileOnGitHub",
+          "when": "false"
+        },
+        {
+          "command": "VirtualRepos.uploadFile",
+          "when": "false"
+        },
+        {
+          "command": "VirtualRepos.deleteFile",
+          "when": "false"
+        },
+        {
+          "command": "VirtualRepos.downloadRepository",
+          "when": "false"
+        },
+        {
+          "command": "VirtualRepos.forkRepository",
+          "when": "false"
+        },
+        {
+          "command": "VirtualRepos.starRepository",
+          "when": "false"
+        },
+        {
+          "command": "VirtualRepos.unstarRepository",
+          "when": "false"
+        },
+        {
+          "command": "VirtualRepos.followUser",
+          "when": "false"
+        },
+        {
+          "command": "VirtualRepos.unfollowUser",
+          "when": "false"
+        },
+        {
+          "command": "VirtualRepos.cloneRepository",
+          "when": "false"
+        },
+        {
+          "command": "VirtualRepos.deleteRepository",
+          "when": "false"
+        },
+        {
+          "command": "VirtualRepos.refreshTree"
+        },
+        {
+          "command": "VirtualRepos.clearGlobalStorage"
+        },
+        {
+          "command": "VirtualRepos.purgeGlobalStorage"
+        },
+        {
+          "command": "VirtualRepos.copyRemoteUrl",
+          "when": "false"
+        },
+        {
+          "command": "VirtualRepos.copyUpstreamUrl",
+          "when": "false"
+        },
+        {
+          "command": "VirtualRepos.showOnRemote",
+          "when": "false"
+        },
+        {
+          "command": "VirtualRepos.showOnUpstream",
+          "when": "false"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "VirtualRepos.openRepository",
+          "when": "view == virtualReposView",
+          "group": "navigation@1"
+        },
+        {
+          "command": "VirtualRepos.newPublicRepository",
+          "when": "view == virtualReposView",
+          "group": "navigation@2"
+        },
+        {
+          "command": "VirtualRepos.newPrivateRepository",
+          "when": "view == virtualReposView",
+          "group": "navigation@3"
+        },
+        {
+          "command": "VirtualRepos.refreshTree",
+          "when": "view == virtualReposView",
+          "group": "navigation@4"
+        },
+        {
+          "command": "VirtualRepos.sortRepoByNameEmpty",
+          "when": "view == virtualReposView && VirtualRepos.sortType.name",
+          "group": "1_sortType@1"
+        },
+        {
+          "command": "VirtualRepos.sortRepoByName",
+          "when": "view == virtualReposView && !VirtualRepos.sortType.name",
+          "group": "1_sortType@1"
+        },
+        {
+          "command": "VirtualRepos.sortRepoByForksEmpty",
+          "when": "view == virtualReposView && VirtualRepos.sortType.forks",
+          "group": "1_sortType@2"
+        },
+        {
+          "command": "VirtualRepos.sortRepoByForks",
+          "when": "view == virtualReposView && !VirtualRepos.sortType.forks",
+          "group": "1_sortType@2"
+        },
+        {
+          "command": "VirtualRepos.sortRepoByStarsEmpty",
+          "when": "view == virtualReposView && VirtualRepos.sortType.stars",
+          "group": "1_sortType@3"
+        },
+        {
+          "command": "VirtualRepos.sortRepoByStars",
+          "when": "view == virtualReposView && !VirtualRepos.sortType.stars",
+          "group": "1_sortType@3"
+        },
+        {
+          "command": "VirtualRepos.sortRepoByCreationTimeEmpty",
+          "when": "view == virtualReposView && VirtualRepos.sortType.creationTime",
+          "group": "1_sortType@4"
+        },
+        {
+          "command": "VirtualRepos.sortRepoByCreationTime",
+          "when": "view == virtualReposView && !VirtualRepos.sortType.creationTime",
+          "group": "1_sortType@4"
+        },
+        {
+          "command": "VirtualRepos.sortRepoByUpdateTimeEmpty",
+          "when": "view == virtualReposView && VirtualRepos.sortType.updateTime",
+          "group": "1_sortType@5"
+        },
+        {
+          "command": "VirtualRepos.sortRepoByUpdateTime",
+          "when": "view == virtualReposView && !VirtualRepos.sortType.updateTime",
+          "group": "1_sortType@5"
+        },
+        {
+          "command": "VirtualRepos.sortRepoByWatchersEmpty",
+          "when": "view == virtualReposView && VirtualRepos.sortType.watchers",
+          "group": "1_sortType@6"
+        },
+        {
+          "command": "VirtualRepos.sortRepoByWatchers",
+          "when": "view == virtualReposView && !VirtualRepos.sortType.watchers",
+          "group": "1_sortType@6"
+        },
+        {
+          "command": "VirtualRepos.sortAscendingEmpty",
+          "when": "view == virtualReposView && VirtualRepos.sortDirection.ascending",
+          "group": "2_sortDirection@1"
+        },
+        {
+          "command": "VirtualRepos.sortAscending",
+          "when": "view == virtualReposView && !VirtualRepos.sortDirection.ascending",
+          "group": "2_sortDirection@1"
+        },
+        {
+          "command": "VirtualRepos.sortDescendingEmpty",
+          "when": "view == virtualReposView && VirtualRepos.sortDirection.descending",
+          "group": "2_sortDirection@2"
+        },
+        {
+          "command": "VirtualRepos.sortDescending",
+          "when": "view == virtualReposView && !VirtualRepos.sortDirection.descending",
+          "group": "2_sortDirection@2"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "VirtualRepos.addFile",
+          "when": "viewItem == isOwnedFolder || viewItem =~ /.*isOwnedRepo.*/",
+          "group": "inline@1"
+        },
+        {
+          "command": "VirtualRepos.closeRepository",
+          "when": "viewItem =~ /.*[Rr]epo.*/",
+          "group": "inline@9"
+        },
+        {
+          "command": "VirtualRepos.deleteFile",
+          "when": "viewItem == isOwnedFile",
+          "group": "inline@9"
+        },
+        {
+          "command": "VirtualRepos.deleteFolder",
+          "when": "viewItem == isOwnedFolder",
+          "group": "inline@9"
+        },
+        {
+          "command": "VirtualRepos.forkRepository",
+          "when": "viewItem =~ /.*[Ss]tarredRepo/",
+          "group": "inline"
+        },
+        {
+          "command": "VirtualRepos.starRepository",
+          "when": "viewItem =~ /notStarredRepo.*/",
+          "group": "inline"
+        },
+        {
+          "command": "VirtualRepos.unstarRepository",
+          "when": "viewItem =~ /starredRepo.*/",
+          "group": "inline"
+        },
+        {
+          "command": "VirtualRepos.uploadFile",
+          "when": "viewItem == isOwnedFolder || viewItem =~ /.*isOwnedRepo.*/",
+          "group": "1_add@2"
+        },
+        {
+          "command": "VirtualRepos.cloneRepository",
+          "when": "viewItem =~ /.*[Rr]epo.*/",
+          "group": "2_repoOperations@1"
+        },
+        {
+          "command": "VirtualRepos.makeRepoPrivate",
+          "when": "viewItem =~ /.*isOwnedRepo.*isPublic.*/",
+          "group": "2_repoOperations@3"
+        },
+        {
+          "command": "VirtualRepos.makeRepoPublic",
+          "when": "viewItem =~ /.*isOwnedRepo.*isPrivate.*/",
+          "group": "2_repoOperations@3"
+        },
+        {
+          "command": "VirtualRepos.deleteRepository",
+          "when": "viewItem =~ /.*isOwnedRepo.*/",
+          "group": "2_repoOperations@9"
+        },
+        {
+          "command": "VirtualRepos.copyRemoteUrl",
+          "when": "viewItem =~ /.*[Rr]epo.*/",
+          "group": "2_close@1"
+        },
+        {
+          "command": "VirtualRepos.showOnRemote",
+          "when": "viewItem =~ /.*[Rr]epo.*/",
+          "group": "2_close@2"
+        },
+        {
+          "command": "VirtualRepos.copyUpstreamUrl",
+          "when": "viewItem =~ /.*isFork.*/",
+          "group": "2_close@3"
+        },
+        {
+          "command": "VirtualRepos.showOnUpstream",
+          "when": "viewItem =~ /.*isFork.*/",
+          "group": "2_close@4"
+        },
+        {
+          "command": "VirtualRepos.viewRepoOwnerProfileOnGitHub",
+          "when": "viewItem =~ /.*[Rr]epo.*/",
+          "group": "3_user@1"
+        },
+        {
+          "command": "VirtualRepos.followUser",
+          "when": "viewItem =~ /.*notFollowedUser/",
+          "group": "3_user@2"
+        },
+        {
+          "command": "VirtualRepos.unfollowUser",
+          "when": "viewItem =~ /.*followedUser/",
+          "group": "3_user@3"
+        },
+        {
+          "command": "VirtualRepos.renameFile",
+          "when": "viewItem == isOwnedFile",
+          "group": "1_edit@1"
+        },
+        {
+          "command": "VirtualRepos.copyRemoteUrl",
+          "when": "viewItem =~ /.*[Ff]older.*|.*[Ff]ile.*/",
+          "group": "2_remote@1"
+        },
+        {
+          "command": "VirtualRepos.showOnRemote",
+          "when": "viewItem =~ /.*[Ff]older.*|.*[Ff]ile.*/",
+          "group": "2_remote@2"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "webpack": "webpack --mode development",
+    "webpack-dev": "webpack --mode development --watch",
+    "test-compile": "tsc -p ./",
+    "unit-tests": "tsc -w -p ./",
+    "vscode:prepublish": "npm run package-web",
+    "compile-web": "webpack",
+    "watch-web": "webpack --watch",
+    "package-web": "webpack --mode production --devtool hidden-source-map",
+    "webpack-web-production": "webpack --mode production"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.2.0",
+    "@types/lodash": "^4.14.191",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "16.x",
+    "@types/vscode": "^1.63.0",
+    "@typescript-eslint/eslint-plugin": "^5.54.1",
+    "@typescript-eslint/parser": "^5.54.1",
+    "@vscode/test-electron": "^2.3.0",
+    "@webpack-cli/generators": "^3.0.1",
+    "buffer": "^6.0.3",
+    "eslint": "^8.35.0",
+    "glob": "^8.1.0",
+    "mocha": "^10.2.0",
+    "octokit": "^2.0.14",
+    "ts-loader": "^9.4.2",
+    "typescript": "^4.9.5",
+    "webpack": "^5.76.0",
+    "webpack-cli": "^4.10.0"
+  },
+  "dependencies": {
+    "@octokit/core": "^4.2.0",
+    "@octokit/openapi-types": "^13.13.1",
+    "@octokit/plugin-rest-endpoint-methods": "^6.8.1",
+    "@octokit/request": "^6.2.3",
+    "@octokit/rest": "^19.0.7",
+    "@octokit/types": "^7.5.1",
+    "https-browserify": "^1.0.0",
+    "is-binary-path": "^2.1.0",
+    "lodash": "^4.17.21",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
+    "process": "^0.11.10"
+  }
 }
