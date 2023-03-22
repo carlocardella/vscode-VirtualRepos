@@ -55,7 +55,7 @@ You can sync your open repositories across multiple devices by enabling [Setting
 
 ### Create new repo
 
-You can create a new repository (public or private), other repo operations (delete, star, fork, clone, download) will come in future releases.
+You can create a new repository (public or private).
 
 ![create private repo](https://user-images.githubusercontent.com/5784415/192894098-2cb95397-6696-467a-ab9c-6ca272f460b0.gif)
 
