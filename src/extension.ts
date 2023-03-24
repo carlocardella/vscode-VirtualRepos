@@ -1,7 +1,6 @@
 import { Credentials } from "./GitHub/authentication";
 import * as config from "./config";
-import * as trace from "./tracing";
-import { commands, ExtensionContext, workspace, window } from "vscode";
+import { commands, ExtensionContext, workspace, window, LogOutputChannel, version } from "vscode";
 import { ContentNode, RepoNode, RepoProvider } from "./Tree/nodes";
 import { RepoFileSystemProvider, REPO_SCHEME } from "./FileSystem/fileSystem";
 import {
@@ -27,11 +26,11 @@ import {
     toggleRepoVisibility,
 } from "./GitHub/commands";
 import { TGitHubUser } from "./GitHub/types";
-import { GlobalStorageKeys } from "./GitHub/constants";
+import { EXTENSION_NAME, GlobalStorageKeys } from "./GitHub/constants";
 import { getGitHubAuthenticatedUser } from "./GitHub/api";
 import { SortDirection, SortType, Store } from "./FileSystem/storage";
 
-export let output: trace.Output;
+export let output: LogOutputChannel;
 export const credentials = new Credentials();
 export let gitHubAuthenticatedUser: TGitHubUser;
 export let extensionContext: ExtensionContext;
@@ -54,8 +53,8 @@ declare global {
 export async function activate(context: ExtensionContext) {
     extensionContext = context;
 
-    if (config.get("EnableTracing")) {
-        output = new trace.Output();
+    if (parseFloat(version) >= 1.74) {
+        output = window.createOutputChannel(EXTENSION_NAME, { log: true });
     }
 
     gitHubAuthenticatedUser = await getGitHubAuthenticatedUser();
@@ -68,14 +67,14 @@ export async function activate(context: ExtensionContext) {
         const octokit = await credentials.getOctokit();
         const userInfo = await octokit.users.getAuthenticated();
 
-        output?.appendLine(`Logged to GitHub as ${userInfo.data.login}`, output.messageType.info);
+        output?.info(`Logged to GitHub as ${userInfo.data.login}`);
     });
 
     await store.init();
     setSortTypeContext(store.sortType);
     setSortDirectionContext(store.sortDirection);
 
-    output?.appendLine("Virtual Repositories extension is now active!", output.messageType.info);
+    output?.info(`Logged to GitHub as ${gitHubAuthenticatedUser.login}`);
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.refreshTree", async () => {
@@ -87,13 +86,13 @@ export async function activate(context: ExtensionContext) {
         commands.registerCommand("VirtualRepos.getGlobalStorage", async () => {
             const reposFromGlobalStorage = await store.getRepoFromGlobalState(context);
             if (reposFromGlobalStorage.length > 0) {
-                output?.appendLine(`Repos: ${reposFromGlobalStorage}`, output.messageType.info);
+                output?.info(`Repos: ${reposFromGlobalStorage}`);
             } else {
-                output?.appendLine(`No repos in global storage`, output.messageType.info);
+                output?.info(`Repos: ${reposFromGlobalStorage}`);
             }
 
-            output?.appendLine(`Sort Type: ${store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortType)}`, output.messageType.info);
-            output?.appendLine(`Sort Direction: ${store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection)}`, output.messageType.info);
+            output?.info(`Sort Direction: ${store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection)}`);
+            output?.info(`Sort Type: ${store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortType)}`);
         })
     );
 
@@ -101,12 +100,12 @@ export async function activate(context: ExtensionContext) {
         commands.registerCommand("VirtualRepos.openRepository", async () => {
             const pick = (await pickRepository()) as string;
             if (pick) {
-                output?.appendLine(`Picked repository: ${pick}`, output.messageType.info);
+                output?.info(`Picked repository: ${pick}`);
                 if (await store.addRepoToGlobalStorage(context, pick)) {
                     repoProvider.refresh();
                 }
             } else {
-                output?.appendLine("Open repository cancelled by uer", output.messageType.info);
+                output?.info("Open repository cancelled by uer");
             }
         })
     );
@@ -302,11 +301,11 @@ export async function activate(context: ExtensionContext) {
             repoProvider.refresh();
 
             while (repoProvider.refreshing) {
-                output?.appendLine(`waiting for ${newFileUri}`, output.messageType.debug);
+                output?.debug(`waiting for ${newFileUri}`);
                 await new Promise((resolve) => setTimeout(resolve, 2000));
             }
 
-            output?.appendLine(`Open ${newFileUri}`, output.messageType.debug);
+            output?.debug(`Open ${newFileUri}`);
             commands.executeCommand("vscode.open", newFileUri);
         })
     );
@@ -408,7 +407,7 @@ export async function activate(context: ExtensionContext) {
         }, pullInterval);
     }
     if (pullInterval > 0) {
-        output?.appendLine(`Set refresh interval to ${pullInterval / 1000} seconds`, trace.MessageType.info);
+        output?.info(`Set refresh interval to ${pullInterval / 1000} seconds`);
     }
 
     // register global storage
@@ -429,14 +428,6 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         workspace.onDidChangeConfiguration((e) => {
-            if (e.affectsConfiguration("VirtualRepos.EnableTracing")) {
-                if (config.get("EnableTracing")) {
-                    output = new trace.Output();
-                } else {
-                    output?.dispose();
-                }
-            }
-
             if (e.affectsConfiguration("VirtualRepos.PullInterval")) {
                 if (config.get("PullInterval") > 0) {
                     pullInterval = config.get("PullInterval") * 1000;
@@ -445,16 +436,16 @@ export async function activate(context: ExtensionContext) {
                     pullIntervalTimer = setInterval(() => {
                         repoProvider.refresh();
                     }, pullInterval);
-                    output?.appendLine(`Updated refresh interval to ${pullInterval / 1000} seconds`, trace.MessageType.info);
+                    output?.info(`Updated refresh interval to ${pullInterval / 1000} seconds`);
                 } else {
                     clearInterval(pullIntervalTimer);
-                    output?.appendLine(`Disabled refresh interval`, trace.MessageType.info);
+                    output?.info(`Disabled refresh interval`);
                 }
             }
 
             if (e.affectsConfiguration("VirtualRepos.UseRepoOwnerAvatar")) {
                 repoProvider.refresh();
-                output?.appendLine("UseRepoOwnerAvatar changed", output.messageType.info);
+                output?.info(`UseRepoOwnerAvatar changed`);
             }
         })
     );

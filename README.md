@@ -97,9 +97,13 @@ You can identity repositories using their GitHub owner's avatar, just switch `Vi
 
 ## Tracing
 
-You can enable `VirtualRepos.EnableTracing` in your User or Workspace settings to enable tracing in a `Virtual Repositories` output channel; this is off by default but it can be useful for troubleshooting errors or if you are curious to see what the extension is doing under the hood.
+The extension uses the built-in Output Channel to enable local tracing to a channel called "Virtual Repositories". This data is local only, it does not leave your machine.
 
-![image](https://user-images.githubusercontent.com/5784415/192893074-ffeb0ec1-1932-45ed-a961-1c15492c1a9e.png)
+![image](https://user-images.githubusercontent.com/5784415/227406009-1775db2a-7e0f-4f01-9c89-a7714bb7e2da.png)
+
+You can control the tracing level or disable, for all Output Channels or for specific extensions, using the built-in command `Developer: Set Log Level...`:
+
+![image](https://user-images.githubusercontent.com/5784415/227406186-61ab711e-2a59-4376-b759-0efdc364ec1b.png)
 
 ## GitHub authentication scopes
 

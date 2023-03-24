@@ -9,7 +9,7 @@
   },
   "version": "0.0.31",
   "engines": {
-    "vscode": "^1.63.0"
+    "vscode": "^1.66.0"
   },
   "preview": true,
   "icon": "assets/book.png",
@@ -697,7 +697,7 @@
     "@types/lodash": "^4.14.191",
     "@types/mocha": "^9.1.1",
     "@types/node": "16.x",
-    "@types/vscode": "^1.63.0",
+    "@types/vscode": "^1.66.0",
     "@typescript-eslint/eslint-plugin": "^5.54.1",
     "@typescript-eslint/parser": "^5.54.1",
     "@vscode/test-electron": "^2.3.0",

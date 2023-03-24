@@ -40,7 +40,7 @@ export async function getGitHubReposForAuthenticatedUser(): Promise<TRepo[] | un
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output?.appendLine(`Could not get repositories for the authenticated user. ${e.message}`, output.messageType.error);
+        output?.error(`Could not get repositories for the authenticated user. ${e.message}`);
     }
 
     return Promise.reject(undefined);
@@ -115,7 +115,7 @@ export async function createOrUpdateFile(repo: RepoNode, file: TContent, content
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output?.appendLine(`Error writing file ${repo.owner}/${repo.name}/${file!.path}. ${e.message.trim()}`, output.messageType.error);
+        output?.error(`Error writing file ${repo.owner}/${repo.name}/${file!.path}. ${e.message.trim()}`);
     }
 
     return Promise.reject();
@@ -145,7 +145,7 @@ export async function getGitHubTree(repo: TRepo, treeSHA: string): Promise<TTree
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output?.logError(repo, e);
+        output?.error(`Could not get tree for ${repo.owner.login}/${repo.name}. ${e.message}`);
     }
 
     return Promise.reject(undefined);
@@ -174,7 +174,7 @@ export async function refreshGitHubTree(repo: TRepo, branchName: string): Promis
 
         return getGitHubTree(repo, data.object.sha);
     } catch (e: any) {
-        output?.logError(repo, e);
+        output?.error(`Could not refresh tree for ${repo.owner.login}/${repo.name}. ${e.message}`);
     }
 
     return Promise.reject(undefined);
@@ -202,7 +202,7 @@ export async function getGitHubRepo(repo: TRepo, repoName: string): Promise<TRep
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output?.logError(repo, e);
+        output?.error(`Could not get repository ${repo.owner.login}/${repoName}. ${e.message}`);
     }
 
     return Promise.reject(undefined);
@@ -231,7 +231,7 @@ export async function getGitHubBranch(repo: TRepo, branchName: string): Promise<
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output?.logError(repo, e);
+        output?.error(`Could not get branch ${repo.owner.login}/${repo.name}/${branchName}. ${e.message}`);
     }
 
     return undefined;
@@ -258,7 +258,7 @@ export async function listGitHubBranches(repo: TRepo): Promise<TBranch[] | undef
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output?.logError(repo, e);
+        output?.error(`Could not list branches for ${repo.owner.login}/${repo.name}. ${e.message}`);
     }
 
     return Promise.reject(undefined);
@@ -290,7 +290,7 @@ export async function getGitHubRepository(owner: string, repoName: string): Prom
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output?.appendLine(`${e.message}: ${owner}/${repoName}`, output.messageType.error);
+        output?.error(`Could not get repository ${owner}/${repoName}. ${e.message}`);
     }
 
     return undefined;
@@ -319,7 +319,7 @@ export async function deleteGitHubFile(repo: TRepo, file: TContent) {
             sha: file!.sha!,
         });
     } catch (e: any) {
-        output?.logError(repo, e);
+        output?.error(`Could not delete file ${file!.path!} from ${repo.owner.login}/${repo.name}. ${e.message}`);
     }
 }
 
@@ -350,7 +350,7 @@ export async function newGitHubRepository(owner: string, repoName: string, isPri
 
         return Promise.resolve(newRepo.data);
     } catch (e: any) {
-        output?.appendLine(`${e.message}: ${owner}/${repoName}`, output.messageType.error);
+        output?.error(`Could not create repository ${owner}/${repoName}. ${e.message}`);
     }
 
     return Promise.reject(undefined);
@@ -380,7 +380,7 @@ export async function deleteGitHubRepository(repo: TRepo): Promise<boolean> {
 
         return Promise.resolve(true);
     } catch (e: any) {
-        output?.logError(repo, e);
+        output?.error(`Could not delete repository ${repo.owner.login}/${repo.name}. ${e.message}`);
     }
 
     return Promise.reject(false);
@@ -405,7 +405,7 @@ export async function getStarredGitHubRepositories(): Promise<TRepo[]> {
 
         return Promise.resolve(starredRepos as TRepo[]);
     } catch (e: any) {
-        output?.appendLine(e.message, output.messageType.error);
+        output?.error(`Could not get starred repositories. ${e.message}`);
     }
 
     return Promise.reject([]);
@@ -431,7 +431,7 @@ export async function getGitHubUser(username: string): Promise<TUser | undefined
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output?.appendLine(`Cannot find user ${username}: ${e.message}`, output.messageType.error);
+        output?.error(`Cannot find user ${username}: ${e.message}`);
     }
 
     return Promise.reject(undefined);
@@ -458,7 +458,7 @@ export async function forkGitHubRepository(repo: TRepo): Promise<TRepo | undefin
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output?.logError(repo, e);
+        output?.error(`Could not fork repository ${repo.owner.login}/${repo.name}. ${e.message}`);
     }
 
     return Promise.reject(undefined);
@@ -490,7 +490,7 @@ export async function createGitHubTree(repo: RepoNode, newTree: TTreeRename[], d
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output?.appendLine(`Error creating new Tree: ${e.message.trim()}`, output.messageType.error);
+        output?.error(`Error creating new Tree: ${e.message.trim()}`);
     }
 
     return Promise.reject(undefined);
@@ -550,7 +550,7 @@ export async function createGitHubCommit(repo: RepoNode, message: string, tree: 
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output?.appendLine(`Error creating new commit: ${e.message.trim()}`, output.messageType.error);
+        output?.error(`Error creating new commit: ${e.message.trim()}`);
     }
 
     return Promise.reject(undefined);
@@ -581,7 +581,7 @@ export async function updateGitHubRef(repo: RepoNode, ref: string, sha: string):
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output?.appendLine(`Error updating ref: ${e.message.trim()}`, output.messageType.error);
+        output?.error(`Error updating ref: ${e.message.trim()}`);
     }
 
     return Promise.reject(undefined);
@@ -608,7 +608,7 @@ export async function starGitHubRepository(repo: RepoNode) {
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output?.appendLine(`Error starring repository ${repo.full_name}: ${e.message.trim()}`, output.messageType.error);
+        output?.error(`Error starring repository ${repo.full_name}: ${e.message.trim()}`);
     }
 
     return Promise.reject(undefined);
@@ -635,7 +635,7 @@ export async function unstarGitHubRepository(repo: RepoNode) {
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output?.appendLine(`Error unstarring repository ${repo.full_name}: ${e.message.trim()}`, output.messageType.error);
+        output?.error(`Error unstarring repository ${repo.full_name}: ${e.message.trim()}`);
     }
 
     return Promise.reject(undefined);
@@ -651,7 +651,7 @@ export async function followGitHubUser(user: string) {
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output?.appendLine(`Error following user ${user}: ${e.message.trim()}`, output.messageType.error);
+        output?.error(`Error following user ${user}: ${e.message.trim()}`);
     }
 
     return Promise.reject(undefined);
@@ -667,7 +667,7 @@ export async function unfollowGitHubUser(user: string) {
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output?.appendLine(`Error unfollowing user ${user}: ${e.message.trim()}`, output.messageType.error);
+        output?.error(`Error unfollowing user ${user}: ${e.message.trim()}`);
     }
 
     return Promise.reject(undefined);
@@ -683,7 +683,7 @@ export async function getGutHubFollowedUsers(): Promise<TUser[] | undefined> {
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output?.appendLine(`Error getting followed users: ${e.message.trim()}`, output.messageType.error);
+        output?.error(`Error getting followed users: ${e.message.trim()}`);
     }
 
     return Promise.reject(undefined);
@@ -701,7 +701,7 @@ export async function isFollowedUser(user: TUser): Promise<boolean> {
             return Promise.resolve(true);
         }
     } catch (e: any) {
-        output?.appendLine(`Error checking if user ${user.login} is followed: ${e.message.trim()}`, output.messageType.error);
+        output?.error(`Error checking if user ${user.login} is followed: ${e.message.trim()}`);
     }
 
     return Promise.reject(false);
@@ -733,7 +733,7 @@ export async function updateGitHubRepository(repo: RepoNode, isPrivate?: boolean
 
         return Promise.resolve(data);
     } catch (e: any) {
-        output?.appendLine(`Error updating repository ${repo.full_name}: ${e.message.trim()}`, output.messageType.error);
+        output?.error(`Error updating repository ${repo.full_name}: ${e.message.trim()}`);
     }
 
     return Promise.reject(undefined);

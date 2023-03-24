@@ -115,7 +115,7 @@ export async function pickRepository() {
                 quickPick.items = starredRepos.map((repo) => ({ label: repo }));
                 quickPick.show();
             } else {
-                output?.appendLine(`onDidAccept: ${pick}`, output.messageType.debug);
+                output?.debug(`onDidAccept: ${pick}`);
                 quickPick.hide();
                 resolve(pick);
             }
@@ -123,7 +123,7 @@ export async function pickRepository() {
 
         quickPick.onDidChangeSelection(async (selection) => {
             pick = selection[0].label; // @fix: rejected promise not handled within 1 second: TypeError: Cannot read properties of undefined (reading 'label')
-            output?.appendLine(`onDidChangeSelection: ${pick}`, output.messageType.debug);
+            output?.debug(`onDidChangeSelection: ${pick}`);
         });
     });
 }
@@ -192,7 +192,7 @@ export async function deleteFile(nodes: ContentNode[]) {
     let updatedRef = await updateGitHubRef(repo, `heads/${repo.repo.default_branch}`, newCommit!.sha);
 
     if (updatedRef) {
-        output?.appendLine(`Deleted ${tree.map((t) => t.path)}`, output.messageType.info);
+        output?.info(`Deleted ${tree.map((t) => t.path)}`);
         repoProvider.refresh(repo);
     }
 }
@@ -230,7 +230,7 @@ export async function uploadFiles(destination: ContentNode | RepoNode): Promise<
         let updatedRef = await updateGitHubRef(repo, `heads/${repo.repo.default_branch}`, newCommit!.sha);
 
         if (updatedRef) {
-            output?.appendLine(`Uploaded ${tree.map((t) => t.path)}`, output.messageType.info);
+            output?.info(`Uploaded ${tree.map((t) => t.path)}`);
             repoProvider.refresh();
         }
     });
@@ -300,7 +300,7 @@ export async function deleteRepository(repo: RepoNode): Promise<void> {
  * @returns {*}
  */
 export async function cloneRepository(repo: RepoNode) {
-    output?.appendLine(`Cloning ${repo.repo.clone_url}`, output.messageType.info);
+    output?.info(`Cloning ${repo.repo.clone_url}`);
     commands.executeCommand("git.clone", repo.repo.clone_url);
 }
 
@@ -322,7 +322,7 @@ export function copyRemoteUrl(node: RepoNode | ContentNode) {
 
     if (url) {
         env.clipboard.writeText(url);
-        output?.appendLine(`Copied ${url} to the clipboard`, output.messageType.info);
+        output?.info(`Copied ${url} to the clipboard`);
     }
 }
 
@@ -344,7 +344,7 @@ export function showRemote(node: RepoNode | ContentNode) {
 
     if (url) {
         env.openExternal(Uri.parse(url));
-        output?.appendLine(`Show ${url} on remote`, output.messageType.info);
+        output?.info(`Show ${url} on remote`);
     }
 }
 
@@ -375,7 +375,7 @@ export async function forkRepository(repo: RepoNode) {
     const forkedRepo = await forkGitHubRepository(repo.repo);
     if (forkedRepo) {
         await store.addRepoToGlobalStorage(extensionContext, `${forkedRepo.owner.login}/${forkedRepo.name}`);
-        output?.appendLine(`Forked ${repo.name} to ${forkedRepo.owner.login}/${forkedRepo.name}`, output.messageType.info);
+        output?.info(`Forked ${repo.name} to ${forkedRepo.owner.login}/${forkedRepo.name}`);
         return Promise.resolve();
     }
 
@@ -403,7 +403,7 @@ export async function renameFile(file: ContentNode) {
 
     const newUri = RepoFileSystemProvider.getFileUri(file.repo, newFileName);
     const oldUri = file.uri;
-    output?.appendLine(`Rename "${file.path}" to "${newFileName}"`, output.messageType.info);
+    output?.info(`Rename "${file.path}" to "${newFileName}"`);
     await repoFileSystemProvider.rename(oldUri, newUri, { overwrite: false });
 }
 
@@ -421,7 +421,7 @@ export async function deleteFolder(folder: ContentNode) {
         return;
     }
 
-    output?.appendLine(`Delete "${folder.path}"`, output.messageType.info);
+    output?.info(`Delete "${folder.path}"`);
     await repoFileSystemProvider.deleteDirectory(folder.uri);
 }
 
@@ -439,12 +439,12 @@ export async function toggleRepoStar(repo: RepoNode) {
         await unstarGitHubRepository(repo);
         starredRepos = starredRepos?.filter((r) => r !== repo.full_name);
         repo.isStarred = false;
-        output?.appendLine(`Unstarred ${repo.full_name}`, output.messageType.info);
+        output?.info(`Unstarred ${repo.full_name}`);
     } else {
         await starGitHubRepository(repo);
         starredRepos?.push(repo.full_name);
         repo.isStarred = true;
-        output?.appendLine(`Starred ${repo.full_name}`, output.messageType.info);
+        output?.info(`Starred ${repo.full_name}`);
     }
 
     await getOrRefreshStarredRepos(starredRepos);
@@ -465,7 +465,7 @@ export async function getOrRefreshStarredRepos(starredRepoNames?: string[] | TRe
     }
 
     if (starredRepoNames?.length === 0 || forceRefreshFromGitHub) {
-        output?.appendLine("Fetching starred repositories from GitHub", output.messageType.info);
+        output?.info("Fetching starred repositories from GitHub");
         starredRepoNames = await getStarredGitHubRepositories();
         starredRepoNames = starredRepoNames.map((repo) => `${repo.owner.login}/${repo.name}`);
         extensionContext.globalState.update("starredRepos", starredRepoNames);
@@ -495,12 +495,12 @@ export async function toggleFollowUser(user: string) {
             await unfollowGitHubUser(user);
             followingUsers = followingUsers?.filter((u) => u !== user);
             // user.following = false;
-            output?.appendLine(`Unfollowed ${user}`, output.messageType.info);
+            output?.info(`Unfollowed ${user}`);
         } else {
             await followGitHubUser(user);
             followingUsers?.push(user);
             // user.following = true;
-            output?.appendLine(`Followed ${user}`, output.messageType.info);
+            output?.info(`Followed ${user}`);
         }
 
         await getOrRefreshFollowedUsers(followingUsers);
@@ -522,7 +522,7 @@ export async function getOrRefreshFollowedUsers(followedUsers?: string[] | TUser
     }
 
     if (followedUsers?.length === 0 || forceRefreshFromGitHub) {
-        output?.appendLine("Fetching following users from GitHub", output.messageType.info);
+        output?.info("Fetching following users from GitHub");
         followedUsers = await getGutHubFollowedUsers();
         followedUsers = followedUsers!.map((user) => user.login);
         extensionContext.globalState.update("followedUsers", followedUsers);
@@ -558,7 +558,7 @@ export function showUpstream(node: RepoNode) {
 
     if (url) {
         env.openExternal(Uri.parse(url));
-        output?.appendLine(`Show upstream ${url}`, output.messageType.info);
+        output?.info(`Show upstream ${url}`);
     }
 }
 
@@ -578,7 +578,7 @@ export async function toggleRepoVisibility(repo: RepoNode) {
         return;
     }
 
-    output?.appendLine(`Toggle visibility of ${repo.full_name} to ${visibility}`, output.messageType.info);
+    output?.info(`Toggle visibility of ${repo.full_name} to ${visibility}`);
     await updateGitHubRepository(repo, !repo.private, undefined);
     repo.private = !repo.private;
     store.init();

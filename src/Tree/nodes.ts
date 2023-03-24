@@ -209,7 +209,7 @@ export class RepoProvider implements TreeDataProvider<RepoNode | ContentNode> {
             this.sorting = true;
         }
         let message = node ? `Refresh repos: ${node?.full_name}` : "Refresh repos";
-        output?.appendLine(message, output.messageType.info);
+        output?.info(message);
         this._onDidChangeTreeData.fire(node);
     }
 }

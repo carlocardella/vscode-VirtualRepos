@@ -98,7 +98,7 @@ export class Store {
         await getOrRefreshFollowedUsers();
         const reposFromGlobalStorage = this.getRepoFromGlobalState(extensionContext);
         if (reposFromGlobalStorage.length === 0) {
-            output?.appendLine("No repos found in global storage", output.messageType.info);
+            output?.info("No repos found in global storage");
             return Promise.resolve([]);
         }
 
@@ -126,9 +126,9 @@ export class Store {
                         return repoNode;
                     } catch (error: any) {
                         if (error.name === "HttpError") {
-                            output?.appendLine(`Error reading repo ${repo!.name}: ${error.response.data.message}`, output.messageType.error);
+                            output?.error(`Error reading repo ${repo!.name}: ${error.response.data.message}`);;
                         } else {
-                            output?.appendLine(`${repo!.name}: ${error.response}`, output.messageType.error);
+                            output?.error(`${repo!.name}: ${error.response}`);
                         }
                     }
                 })
@@ -242,7 +242,7 @@ export class Store {
         this.addToGlobalState(extensionContext, GlobalStorageKeys.sortDirection, sortDirection);
         this.isSorted = true;
 
-        output?.appendLine(`Sorted repos by ${SortType[sortType]} ${SortDirection[sortDirection]}`, output.messageType.info);
+        output?.info(`Sorted repos by ${SortType[sortType]} ${SortDirection[sortDirection]}`);
 
         this.repos = repos;
         // return repos;
@@ -258,7 +258,7 @@ export class Store {
         context.globalState.update(GlobalStorageKeys.sortDirection, []);
         context.globalState.update(GlobalStorageKeys.sortType, []);
 
-        output?.appendLine(`Cleared global storage`, output.messageType.info);
+        output.info("Cleared global storage");
         this.init();
     }
 
@@ -284,7 +284,7 @@ export class Store {
                     let validRepo = await getGitHubRepository(repoOwner, repoName);
                     if (!validRepo) {
                         this.removeRepoFromGlobalStorage(context, repo);
-                        output?.appendLine(`Removed ${repo} from global storage`, output.messageType.info);
+                        output?.info(`Global storage: ${globalStorage}`)
                         return Promise.resolve(repo);
                     } else {
                         return Promise.reject();
@@ -310,8 +310,8 @@ export class Store {
 
             this.init();
 
-            output?.appendLine(`Removed ${repoFullName} from global storage`, output.messageType.info);
-            output?.appendLine(`Global storage: ${globalStorage}`, output.messageType.info);
+            output?.info(`Removed ${repoFullName} from global storage`);
+            output?.info(`Global storage: ${globalStorage}`);
         }
     }
 
@@ -337,7 +337,7 @@ export class Store {
         let fullName = `${owner}/${repoName}`;
 
         if (globalStorage.includes(fullName)) {
-            output?.appendLine(`${fullName} is already in global storage`, output.messageType.info);
+            output?.info(`${fullName} is already in global storage`);
             return false;
         }
 
@@ -346,8 +346,8 @@ export class Store {
 
         this.init();
 
-        output?.appendLine(`Added ${fullName} to global storage`, output.messageType.info);
-        output?.appendLine(`Global storage: ${globalStorage}`, output.messageType.info);
+        output?.info(`Added ${fullName} to global storage`);
+        output?.info(`Global storage: ${globalStorage}`);
 
         return true;
     }

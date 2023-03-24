@@ -26,7 +26,6 @@ import { getRepoFileContent } from "../GitHub/commands";
 import { TGitHubUpdateContent, TContent, TRepo, TTree } from "../GitHub/types";
 import { RepoNode } from "../Tree/nodes";
 import { getFileNameFromUri, getFilePathWithoutRepoNameFromUri, getRepoFullNameFromUri, getRepoNameFromUri, removeLeadingSlash } from "../utils";
-import { MessageType } from "../tracing";
 
 export const REPO_SCHEME = "github-repo";
 const REPO_QUERY = `${REPO_SCHEME}=`;
@@ -209,7 +208,7 @@ export class RepoFileSystemProvider implements FileSystemProvider {
                 file!.url = response.content?.git_url;
             })
             .then(() => {
-                output?.appendLine(`File ${file!.path} created or updated`, MessageType.info);
+                output?.info(`File ${file!.path} created or updated`);
                 refreshGitHubTree(repository.repo, repository.repo.default_branch).then((tree) => {
                     repository.repo.tree = tree as TTree;
                 });
