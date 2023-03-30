@@ -79,14 +79,14 @@ enum QuickPickItems {
  */
 export async function pickRepository() {
     return await new Promise((resolve, reject) => {
-        let pick: string | undefined;
+        let pick: string | string[] | undefined;
 
         let quickPick = window.createQuickPick();
         quickPick.onDidHide(() => quickPick.dispose());
         quickPick.title = "Select or type the repository you would like to open";
         quickPick.canSelectMany = false;
 
-        quickPick.show();
+        quickPick.show();   
 
         quickPick.items = [{ label: QuickPickItems.repoName }, { label: QuickPickItems.myRepos }, { label: QuickPickItems.starredRepos }];
 
@@ -99,19 +99,20 @@ export async function pickRepository() {
                 });
                 quickPick.hide();
                 resolve(accepted);
-            } else if (pick === QuickPickItems.myRepos) {
+            } else if (pick === QuickPickItems.myRepos || Array.isArray(pick) && pick.includes(QuickPickItems.myRepos)) {
                 quickPick.busy = true;
                 quickPick.placeholder = "Enter the repository to open, e.g. 'owner/repo'";
                 const repos = await getGitHubReposForAuthenticatedUser();
                 quickPick.busy = false;
+                quickPick.canSelectMany = true;
                 quickPick.items = repos!.map((repo) => ({ label: `${repo.owner.login}/${repo.name}` }));
                 quickPick.show();
-            } else if (pick === QuickPickItems.starredRepos) {
+            } else if (pick === QuickPickItems.starredRepos || (Array.isArray(pick) && pick.includes(QuickPickItems.starredRepos))) {
                 quickPick.busy = true;
                 quickPick.placeholder = "Enter the repository to open, e.g. 'owner/repo'";
-                // const starredRepos = await getStarredGitHubRepositories();
                 const starredRepos = extensionContext.globalState.get("starredRepos") as string[];
                 quickPick.busy = false;
+                quickPick.canSelectMany = true;
                 quickPick.items = starredRepos.map((repo) => ({ label: repo }));
                 quickPick.show();
             } else {
@@ -122,7 +123,7 @@ export async function pickRepository() {
         });
 
         quickPick.onDidChangeSelection(async (selection) => {
-            pick = selection[0].label; // @fix: rejected promise not handled within 1 second: TypeError: Cannot read properties of undefined (reading 'label')
+            pick = selection.map((item) => item.label);
             output?.debug(`onDidChangeSelection: ${pick}`);
         });
     });

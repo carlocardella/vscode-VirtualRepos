@@ -62,13 +62,10 @@ export class Store {
      * @public
      * @type {SortType}
      */
-    // private _sortType: SortType | undefined;
     get sortType(): SortType {
-        // return this._sortType;
         return this.getFromGlobalState(extensionContext, GlobalStorageKeys.sortType) ?? SortType.name;
     }
     set sortType(value: SortType) {
-        // this._sortType = value;
         this.addToGlobalState(extensionContext, GlobalStorageKeys.sortType, value);
     }
 
@@ -78,13 +75,10 @@ export class Store {
      * @public
      * @type {SortDirection}
      */
-    // private _sortDirection: SortDirection | undefined;
     get sortDirection(): SortDirection {
-        // return this._sortDirection;
         return this.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection) ?? SortDirection.ascending;
     }
     set sortDirection(value: SortDirection) {
-        // this._sortDirection = value;
         this.addToGlobalState(extensionContext, GlobalStorageKeys.sortDirection, value);
     }
 
@@ -110,7 +104,6 @@ export class Store {
                 if (repoFromGitHub) {
                     return Promise.resolve(repoFromGitHub as TRepo);
                 }
-                return Promise.reject();
             })
         );
 
@@ -136,8 +129,10 @@ export class Store {
 
         this.repos = childNodes;
 
-        this.sortType = this.getFromGlobalState(extensionContext, GlobalStorageKeys.sortType);
-        this.sortDirection = this.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
+        this.sortType = this.getFromGlobalState(extensionContext, GlobalStorageKeys.sortType) ?? SortType.name;
+        this.sortDirection = this.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection) ?? SortDirection.ascending;
+        if (this.sortType.length === 0) { this.sortType = SortType.name; }
+        if (this.sortDirection.length === 0) { this.sortDirection = SortDirection.ascending; }
         let sortType = this.sortType;
         let sortDirection = this.sortDirection;
 

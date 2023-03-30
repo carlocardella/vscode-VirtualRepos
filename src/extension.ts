@@ -83,14 +83,9 @@ export async function activate(context: ExtensionContext) {
     );
 
     context.subscriptions.push(
-        commands.registerCommand("VirtualRepos.getGlobalStorage", async () => {
-            const reposFromGlobalStorage = await store.getRepoFromGlobalState(context);
-            if (reposFromGlobalStorage.length > 0) {
-                output?.info(`Repos: ${reposFromGlobalStorage}`);
-            } else {
-                output?.info(`Repos: ${reposFromGlobalStorage}`);
-            }
-
+        commands.registerCommand("VirtualRepos.getGlobalStorage", () => {
+            const reposFromGlobalStorage = store.getRepoFromGlobalState(context);
+            output?.info(`Repos: ${reposFromGlobalStorage}`);
             output?.info(`Sort Direction: ${store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection)}`);
             output?.info(`Sort Type: ${store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortType)}`);
         })
@@ -98,12 +93,16 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.openRepository", async () => {
-            const pick = (await pickRepository()) as string;
+            const pick = (await pickRepository()) as string[];
             if (pick) {
                 output?.info(`Picked repository: ${pick}`);
-                if (await store.addRepoToGlobalStorage(context, pick)) {
-                    repoProvider.refresh();
-                }
+                let refresh: false;
+                await Promise.all(
+                    pick.map(async (repo: string) => {
+                        await store.addRepoToGlobalStorage(context, repo);
+                    })
+                );
+                repoProvider.refresh();
             } else {
                 output?.info("Open repository cancelled by uer");
             }
@@ -313,6 +312,7 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.clearGlobalStorage", async () => {
             store.clearGlobalStorage(context);
+            repoProvider.refresh();
         })
     );
 
