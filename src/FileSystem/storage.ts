@@ -93,8 +93,10 @@ export class Store {
         const reposFromGlobalStorage = this.getRepoFromGlobalState(extensionContext);
         if (reposFromGlobalStorage.length === 0) {
             output?.info("No repos found in global storage");
-            return Promise.resolve([]);
+            return Promise.resolve((this.repos = []));
         }
+
+        // @investigate: if the user is just removing a repo, do we need to re-fetch all of them?
 
         let childNodes = this.repos;
         let repos = await Promise.all(
@@ -119,7 +121,7 @@ export class Store {
                         return repoNode;
                     } catch (error: any) {
                         if (error.name === "HttpError") {
-                            output?.error(`Error reading repo ${repo!.name}: ${error.response.data.message}`);;
+                            output?.error(`Error reading repo ${repo!.name}: ${error.response.data.message}`);
                         } else {
                             output?.error(`${repo!.name}: ${error.response}`);
                         }
@@ -131,8 +133,12 @@ export class Store {
 
         this.sortType = this.getFromGlobalState(extensionContext, GlobalStorageKeys.sortType) ?? SortType.name;
         this.sortDirection = this.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection) ?? SortDirection.ascending;
-        if (this.sortType.length === 0) { this.sortType = SortType.name; }
-        if (this.sortDirection.length === 0) { this.sortDirection = SortDirection.ascending; }
+        if (this.sortType.length === 0) {
+            this.sortType = SortType.name;
+        }
+        if (this.sortDirection.length === 0) {
+            this.sortDirection = SortDirection.ascending;
+        }
         let sortType = this.sortType;
         let sortDirection = this.sortDirection;
 
@@ -184,7 +190,12 @@ export class Store {
      * @returns {string[]}
      */
     public getRepoFromGlobalState(context: ExtensionContext): string[] {
-        return context.globalState.get(GlobalStorageKeys.repoGlobalStorage, []);
+        let repos = this.getFromGlobalState(context, GlobalStorageKeys.repoGlobalStorage) ?? [];
+        if (repos.length === 0) {
+            return [];
+        }
+
+        return repos;
     }
 
     /**
@@ -278,8 +289,8 @@ export class Store {
                     let repoName = repo.split("/")[1];
                     let validRepo = await getGitHubRepository(repoOwner, repoName);
                     if (!validRepo) {
-                        this.removeRepoFromGlobalStorage(context, repo);
-                        output?.info(`Global storage: ${globalStorage}`)
+                        await this.removeRepoFromGlobalStorage(context, repo);
+                        output?.info(`Global storage: ${globalStorage}`);
                         return Promise.resolve(repo);
                     } else {
                         return Promise.reject();
@@ -297,13 +308,13 @@ export class Store {
      * @param {ExtensionContext} context Extension context
      * @param {string} repoFullName Full name (owner/name) or the repository to remove from global storage
      */
-    removeRepoFromGlobalStorage(context: ExtensionContext, repoFullName: string): void {
+    async removeRepoFromGlobalStorage(context: ExtensionContext, repoFullName: string): Promise<void> {
         let globalStorage = context.globalState.get(GlobalStorageKeys.repoGlobalStorage) as string[];
         if (globalStorage) {
             globalStorage = globalStorage.filter((item) => item.toLocaleLowerCase() !== repoFullName.toLocaleLowerCase());
             context.globalState.update(GlobalStorageKeys.repoGlobalStorage, globalStorage);
 
-            this.init();
+            await this.init();
 
             output?.info(`Removed ${repoFullName} from global storage`);
             output?.info(`Global storage: ${globalStorage}`);

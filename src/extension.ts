@@ -124,7 +124,7 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.closeRepository", async (node) => {
-            store.removeRepoFromGlobalStorage(context, node.repo.full_name);
+            await store.removeRepoFromGlobalStorage(context, node.repo.full_name);
             repoProvider.refresh();
         })
     );
@@ -287,7 +287,7 @@ export async function activate(context: ExtensionContext) {
                 canPickMany: false,
             });
             if (repoToRemove) {
-                store.removeRepoFromGlobalStorage(context, repoToRemove);
+                await store.removeRepoFromGlobalStorage(context, repoToRemove);
             }
         })
     );

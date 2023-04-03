@@ -288,7 +288,7 @@ export async function deleteRepository(repo: RepoNode): Promise<void> {
 
     const deleted = await deleteGitHubRepository(repo.repo);
     if (deleted) {
-        store.removeRepoFromGlobalStorage(extensionContext, `${repo.repo.owner.login}/${repo.name}`);
+        await store.removeRepoFromGlobalStorage(extensionContext, `${repo.repo.owner.login}/${repo.name}`);
     }
 }
 
