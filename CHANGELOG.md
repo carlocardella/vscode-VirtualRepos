@@ -8,6 +8,16 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 See the [list of open enhancements on GitHub](https://github.com/carlocardella/vscode-VirtualRepos/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3Aenhancement)
 
+## [0.1.1] - 2023-04-03
+
+### Changed
+
+* `Open Repository...` allows to open multiple repos at once, when selecting from `Open my repository` and `Open starred repository`
+
+### Fixed
+
+* Fixed a couple of bugs around global storage handling and refreshing the treeview
+
 ## [0.1.0] - 2023-03-23
 
 ### Changed
