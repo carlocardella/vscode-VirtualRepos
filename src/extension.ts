@@ -85,9 +85,9 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.getGlobalStorage", () => {
             const reposFromGlobalStorage = store.getRepoFromGlobalState(context);
-            output?.info(`Repos: ${reposFromGlobalStorage}`);
-            output?.info(`Sort Direction: ${store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection)}`);
-            output?.info(`Sort Type: ${store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortType)}`);
+            output?.debug(`Repos: ${reposFromGlobalStorage}`);
+            output?.debug(`Sort Direction: ${store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection)}`);
+            output?.debug(`Sort Type: ${store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortType)}`);
         })
     );
 

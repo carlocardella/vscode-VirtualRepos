@@ -66,7 +66,7 @@ export function getRepoDetails(repo: string): [string, string] {
  */
 enum QuickPickItems {
     repoName = "$(rocket) Open repository",
-    myRepos = "$(account) Open my repository",
+    userRepos = "$(account) Open my repository",
     starredRepos = "$(star) Open starred repository",
 }
 
@@ -83,29 +83,35 @@ export async function pickRepository() {
 
         let quickPick = window.createQuickPick();
         quickPick.onDidHide(() => quickPick.dispose());
-        quickPick.title = "Select or type the repository you would like to open";
+        // quickPick.title = "Select or type the repository you would like to open";
+        quickPick.placeholder = "Select or type the repository you would like to open";
         quickPick.canSelectMany = false;
+        quickPick.matchOnDescription = true;
 
-        quickPick.show();   
+        quickPick.show();
 
-        quickPick.items = [{ label: QuickPickItems.repoName }, { label: QuickPickItems.myRepos }, { label: QuickPickItems.starredRepos }];
+        quickPick.items = [{ label: QuickPickItems.repoName }, { label: QuickPickItems.userRepos }, { label: QuickPickItems.starredRepos }];
 
         quickPick.onDidAccept(async () => {
-            if (pick === QuickPickItems.repoName) {
-                let accepted = await window.showInputBox({
+            if (pick === QuickPickItems.repoName || (Array.isArray(pick) && pick.includes(QuickPickItems.repoName))) {
+                let repo = await window.showInputBox({
                     ignoreFocusOut: true,
                     placeHolder: "owner/repo",
                     title: "Enter the repository to open, e.g. 'owner/repo'",
                 });
+                if (repo) {
+                    // quickPick.items = [{ label: `${accepted}` }];
+                    quickPick.items = [{ label: `${repo}` }];
+                }
                 quickPick.hide();
-                resolve(accepted);
-            } else if (pick === QuickPickItems.myRepos || Array.isArray(pick) && pick.includes(QuickPickItems.myRepos)) {
+                resolve([repo]);
+            } else if (pick === QuickPickItems.userRepos || (Array.isArray(pick) && pick.includes(QuickPickItems.userRepos))) {
                 quickPick.busy = true;
                 quickPick.placeholder = "Enter the repository to open, e.g. 'owner/repo'";
-                const repos = await getGitHubReposForAuthenticatedUser();
+                const repos = extensionContext.globalState.get("userRepos") as TRepo[];
                 quickPick.busy = false;
                 quickPick.canSelectMany = true;
-                quickPick.items = repos!.map((repo) => ({ label: `${repo.owner.login}/${repo.name}` }));
+                quickPick.items = repos!.map((repo) => ({ label: `${repo}` }));
                 quickPick.show();
             } else if (pick === QuickPickItems.starredRepos || (Array.isArray(pick) && pick.includes(QuickPickItems.starredRepos))) {
                 quickPick.busy = true;
@@ -474,9 +480,28 @@ export async function getOrRefreshStarredRepos(starredRepoNames?: string[] | TRe
         starredRepoNames = starredRepoNames as string[];
     }
 
-    extensionContext.globalState.update("starredRepos", starredRepoNames); // @investigate: duplicate of L471?
+    extensionContext.globalState.update("starredRepos", starredRepoNames);
     commands.executeCommand("setContext", "starredRepos", starredRepoNames);
     return Promise.resolve(starredRepoNames);
+}
+
+export async function getOrRefreshAuthenticatedUserRepos(repoNames?: string[] | TRepo[], forceRefreshFromGitHub?: boolean): Promise<string[] | undefined> {
+    if (!repoNames) {
+        repoNames = extensionContext.globalState.get<string[]>("userRepos", []);
+    }
+
+    if (repoNames?.length === 0 || forceRefreshFromGitHub) {
+        output?.info("Fetching starred repositories from GitHub");
+        repoNames = await getGitHubReposForAuthenticatedUser();
+        repoNames = repoNames.map((repo) => `${repo.owner.login}/${repo.name}`);
+        extensionContext.globalState.update("userRepos", repoNames);
+    } else {
+        repoNames = repoNames as string[];
+    }
+
+    extensionContext.globalState.update("userRepos", repoNames);
+    commands.executeCommand("setContext", "userRepos", repoNames);
+    return Promise.resolve(repoNames);
 }
 
 /**

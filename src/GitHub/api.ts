@@ -28,7 +28,7 @@ export async function getGitHubAuthenticatedUser(): Promise<TGitHubUser> {
  * @async
  * @returns {Promise<TRepo[]>}
  */
-export async function getGitHubReposForAuthenticatedUser(): Promise<TRepo[] | undefined> {
+export async function getGitHubReposForAuthenticatedUser(): Promise<TRepo[]> {
     const octokit = new rest.Octokit({
         auth: await credentials.getAccessToken(),
     });
@@ -43,7 +43,7 @@ export async function getGitHubReposForAuthenticatedUser(): Promise<TRepo[] | un
         output?.error(`Could not get repositories for the authenticated user. ${e.message}`);
     }
 
-    return Promise.reject(undefined);
+    return Promise.reject([]);
 }
 
 /**

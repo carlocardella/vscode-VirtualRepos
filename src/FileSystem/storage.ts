@@ -1,9 +1,9 @@
 import { RepoNode } from "../Tree/nodes";
 import { ExtensionContext } from "vscode";
 import { GlobalStorageKeys } from "../GitHub/constants";
-import { credentials, extensionContext, output, repoProvider } from "../extension";
+import { credentials, extensionContext, output } from "../extension";
 import { getGitHubBranch, getGitHubRepository, getGitHubTree } from "../GitHub/api";
-import { getOrRefreshFollowedUsers, getOrRefreshStarredRepos, getRepoDetails } from "../GitHub/commands";
+import { getOrRefreshAuthenticatedUserRepos, getOrRefreshFollowedUsers, getOrRefreshStarredRepos, getRepoDetails } from "../GitHub/commands";
 import { TRepo } from "../GitHub/types";
 
 /**
@@ -90,6 +90,7 @@ export class Store {
     async init() {
         await getOrRefreshStarredRepos();
         await getOrRefreshFollowedUsers();
+        await getOrRefreshAuthenticatedUserRepos();
         const reposFromGlobalStorage = this.getRepoFromGlobalState(extensionContext);
         if (reposFromGlobalStorage.length === 0) {
             output?.info("No repos found in global storage");
@@ -277,29 +278,30 @@ export class Store {
      * @returns {Promise<string[]>}
      */
     async purgeRepoGlobalStorage(context: ExtensionContext, repos?: string[]): Promise<string[]> {
+        output?.debug("Purging global storage");
         let cleanedGlobalStorage: string[] = [];
         if (repos) {
             cleanedGlobalStorage = repos.filter((item) => item !== undefined);
             context.globalState.update(GlobalStorageKeys.repoGlobalStorage, cleanedGlobalStorage);
         } else {
             const globalStorage = context.globalState.get(GlobalStorageKeys.repoGlobalStorage, []) as string[];
-            cleanedGlobalStorage = await Promise.all(
+            await Promise.all(
                 globalStorage.map(async (repo) => {
                     let repoOwner = repo.split("/")[0];
                     let repoName = repo.split("/")[1];
                     let validRepo = await getGitHubRepository(repoOwner, repoName);
                     if (!validRepo) {
                         await this.removeRepoFromGlobalStorage(context, repo);
-                        output?.info(`Global storage: ${globalStorage}`);
                         return Promise.resolve(repo);
                     } else {
                         return Promise.reject();
                     }
                 })
             );
+            output?.debug(`Purged global storage: ${context.globalState.get(GlobalStorageKeys.repoGlobalStorage, [])}`);
         }
 
-        return cleanedGlobalStorage;
+        return context.globalState.get(GlobalStorageKeys.repoGlobalStorage, []);
     }
 
     /**
