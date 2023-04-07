@@ -26,7 +26,7 @@ import {
     toggleRepoVisibility,
 } from "./GitHub/commands";
 import { TGitHubUser } from "./GitHub/types";
-import { EXTENSION_NAME, GlobalStorageKeys } from "./GitHub/constants";
+import { EXTENSION_NAME, GlobalStorageKeysForSync } from "./GitHub/constants";
 import { getGitHubAuthenticatedUser } from "./GitHub/api";
 import { SortDirection, SortType, Store } from "./FileSystem/storage";
 
@@ -84,10 +84,10 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.getGlobalStorage", () => {
-            const reposFromGlobalStorage = store.getRepoFromGlobalState(context);
-            output?.debug(`Repos: ${reposFromGlobalStorage}`);
-            output?.debug(`Sort Direction: ${store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection)}`);
-            output?.debug(`Sort Type: ${store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortType)}`);
+            const reposFromGlobalStorage = store.getRepos(context);
+            output?.debug(`Virtual Repos: ${reposFromGlobalStorage}`);
+            output?.debug(`Sort Direction: ${store.get(extensionContext, GlobalStorageKeysForSync.sortDirection)}`);
+            output?.debug(`Sort Type: ${store.get(extensionContext, GlobalStorageKeysForSync.sortType)}`);
         })
     );
 
@@ -99,7 +99,7 @@ export async function activate(context: ExtensionContext) {
                 let refresh: false;
                 await Promise.all(
                     pick.map(async (repo: string) => {
-                        await store.addRepoToGlobalStorage(context, repo);
+                        await store.addRepo(context, repo);
                     })
                 );
                 repoProvider.refresh();
@@ -118,13 +118,13 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.purgeGlobalStorage", async () => {
-            store.purgeRepoGlobalStorage(extensionContext);
+            store.purgeRepo(extensionContext);
         })
     );
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.closeRepository", async (node) => {
-            await store.removeRepoFromGlobalStorage(context, node.repo.full_name);
+            await store.removeRepo(context, node.repo.full_name);
             repoProvider.refresh();
         })
     );
@@ -205,7 +205,7 @@ export async function activate(context: ExtensionContext) {
     // sort repos
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.sortRepoByName", async () => {
-            const sortDirection = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
+            const sortDirection = store.get(extensionContext, GlobalStorageKeysForSync.sortDirection);
             setSortTypeContext(SortType.name);
             store.sortRepos(SortType.name, sortDirection);
             repoProvider.refresh(undefined, true);
@@ -213,7 +213,7 @@ export async function activate(context: ExtensionContext) {
     );
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.sortRepoByCreationTime", async () => {
-            const sortDirection = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
+            const sortDirection = store.get(extensionContext, GlobalStorageKeysForSync.sortDirection);
             setSortTypeContext(SortType.creationTime);
             store.sortRepos(SortType.creationTime, sortDirection);
             repoProvider.refresh(undefined, true);
@@ -221,7 +221,7 @@ export async function activate(context: ExtensionContext) {
     );
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.sortRepoByForks", async () => {
-            const sortDirection = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
+            const sortDirection = store.get(extensionContext, GlobalStorageKeysForSync.sortDirection);
             setSortTypeContext(SortType.forks);
             store.sortRepos(SortType.forks, sortDirection);
             repoProvider.refresh(undefined, true);
@@ -229,7 +229,7 @@ export async function activate(context: ExtensionContext) {
     );
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.sortRepoByStars", async () => {
-            const sortDirection = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
+            const sortDirection = store.get(extensionContext, GlobalStorageKeysForSync.sortDirection);
             setSortTypeContext(SortType.stars);
             store.sortRepos(SortType.stars, sortDirection);
             repoProvider.refresh(undefined, true);
@@ -237,7 +237,7 @@ export async function activate(context: ExtensionContext) {
     );
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.sortRepoByUpdateTime", async () => {
-            const sortDirection = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
+            const sortDirection = store.get(extensionContext, GlobalStorageKeysForSync.sortDirection);
             setSortTypeContext(SortType.updateTime);
             store.sortRepos(SortType.updateTime, sortDirection);
             repoProvider.refresh(undefined, true);
@@ -245,7 +245,7 @@ export async function activate(context: ExtensionContext) {
     );
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.sortRepoByWatchers", async () => {
-            const sortDirection = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection);
+            const sortDirection = store.get(extensionContext, GlobalStorageKeysForSync.sortDirection);
             setSortTypeContext(SortType.watchers);
             store.sortRepos(SortType.watchers, sortDirection);
             repoProvider.refresh(undefined, true);
@@ -253,7 +253,7 @@ export async function activate(context: ExtensionContext) {
     );
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.sortAscending", async () => {
-            const sortType = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortType);
+            const sortType = store.get(extensionContext, GlobalStorageKeysForSync.sortType);
             setSortDirectionContext(SortDirection.ascending);
             store.sortRepos(sortType, SortDirection.ascending);
             repoProvider.refresh(undefined, true);
@@ -261,7 +261,7 @@ export async function activate(context: ExtensionContext) {
     );
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.sortDescending", async () => {
-            const sortType = store.getFromGlobalState(extensionContext, GlobalStorageKeys.sortType);
+            const sortType = store.get(extensionContext, GlobalStorageKeysForSync.sortType);
             setSortDirectionContext(SortDirection.descending);
             store.sortRepos(sortType, SortDirection.descending);
             repoProvider.refresh(undefined, true);
@@ -280,14 +280,14 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.removeFromGlobalStorage", async () => {
-            const reposFromGlobalStorage = await store.getRepoFromGlobalState(context);
+            const reposFromGlobalStorage = await store.getRepos(context);
             const repoToRemove = await window.showQuickPick(reposFromGlobalStorage, {
                 placeHolder: "Select repository to remove from global storage",
                 ignoreFocusOut: true,
                 canPickMany: false,
             });
             if (repoToRemove) {
-                await store.removeRepoFromGlobalStorage(context, repoToRemove);
+                await store.removeRepo(context, repoToRemove);
             }
         })
     );
@@ -311,7 +311,7 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         commands.registerCommand("VirtualRepos.clearGlobalStorage", async () => {
-            store.clearGlobalStorage(context);
+            store.clear(context);
             repoProvider.refresh();
         })
     );
@@ -411,7 +411,7 @@ export async function activate(context: ExtensionContext) {
     }
 
     // register global storage
-    const keysForSync = [GlobalStorageKeys.repoGlobalStorage];
+    const keysForSync = [GlobalStorageKeysForSync.repoGlobalStorage];
     context.globalState.setKeysForSync(keysForSync);
 
     const treeView = window.createTreeView("virtualReposView", {

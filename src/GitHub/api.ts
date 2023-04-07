@@ -181,34 +181,6 @@ export async function refreshGitHubTree(repo: TRepo, branchName: string): Promis
 }
 
 /**
- * Returns a GitHub repo
- *
- * @export
- * @async
- * @param {TRepo} repo The owner of the repo
- * @param {string} repoName The name of the repo
- * @returns {Promise<TRepo>}
- */
-export async function getGitHubRepo(repo: TRepo, repoName: string): Promise<TRepo | undefined> {
-    const octokit = new rest.Octokit({
-        auth: await credentials.getAccessToken(),
-    });
-
-    try {
-        const { data } = await octokit.repos.get({
-            owner: repo.owner.login,
-            repo: repoName,
-        });
-
-        return Promise.resolve(data);
-    } catch (e: any) {
-        output?.error(`Could not get repository ${repo.owner.login}/${repoName}. ${e.message}`);
-    }
-
-    return Promise.reject(undefined);
-}
-
-/**
  * Returns a GitHub branch
  *
  * @export

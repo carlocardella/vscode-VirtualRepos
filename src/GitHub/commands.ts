@@ -24,6 +24,7 @@ import {
 import { TContent, TTreeRename, TRepo, TUser } from "./types";
 import { credentials, extensionContext, output, repoFileSystemProvider, repoProvider, store } from "../extension";
 import { byteArrayToString, charCodeAt, getFileNameFromUri, removeLeadingSlash, stringToByteArray } from "../utils";
+import { StorageKeys } from "./constants";
 
 /**
  * Returns the binary content of a file in the repository.
@@ -108,7 +109,7 @@ export async function pickRepository() {
             } else if (pick === QuickPickItems.userRepos || (Array.isArray(pick) && pick.includes(QuickPickItems.userRepos))) {
                 quickPick.busy = true;
                 quickPick.placeholder = "Enter the repository to open, e.g. 'owner/repo'";
-                const repos = extensionContext.globalState.get("userRepos") as TRepo[];
+                const repos = extensionContext.globalState.get(StorageKeys.myRepos) as TRepo[];
                 quickPick.busy = false;
                 quickPick.canSelectMany = true;
                 quickPick.items = repos!.map((repo) => ({ label: `${repo}` }));
@@ -116,7 +117,7 @@ export async function pickRepository() {
             } else if (pick === QuickPickItems.starredRepos || (Array.isArray(pick) && pick.includes(QuickPickItems.starredRepos))) {
                 quickPick.busy = true;
                 quickPick.placeholder = "Enter the repository to open, e.g. 'owner/repo'";
-                const starredRepos = extensionContext.globalState.get("starredRepos") as string[];
+                const starredRepos = extensionContext.globalState.get(StorageKeys.starredRepos) as string[];
                 quickPick.busy = false;
                 quickPick.canSelectMany = true;
                 quickPick.items = starredRepos.map((repo) => ({ label: repo }));
@@ -273,7 +274,7 @@ export async function newRepository(isPrivate: boolean): Promise<void> {
 
     if (githubRepo) {
         //add the new repository to the tree view
-        await store.addRepoToGlobalStorage(extensionContext, `${githubRepo.owner.login}/${githubRepo.name}`);
+        await store.addRepo(extensionContext, `${githubRepo.owner.login}/${githubRepo.name}`);
     }
 }
 
@@ -294,7 +295,7 @@ export async function deleteRepository(repo: RepoNode): Promise<void> {
 
     const deleted = await deleteGitHubRepository(repo.repo);
     if (deleted) {
-        await store.removeRepoFromGlobalStorage(extensionContext, `${repo.repo.owner.login}/${repo.name}`);
+        await store.removeRepo(extensionContext, `${repo.repo.owner.login}/${repo.name}`);
     }
 }
 
@@ -381,7 +382,7 @@ export async function viewRepoOwnerProfileOnGitHub(username: string) {
 export async function forkRepository(repo: RepoNode) {
     const forkedRepo = await forkGitHubRepository(repo.repo);
     if (forkedRepo) {
-        await store.addRepoToGlobalStorage(extensionContext, `${forkedRepo.owner.login}/${forkedRepo.name}`);
+        await store.addRepo(extensionContext, `${forkedRepo.owner.login}/${forkedRepo.name}`);
         output?.info(`Forked ${repo.name} to ${forkedRepo.owner.login}/${forkedRepo.name}`);
         return Promise.resolve();
     }
@@ -468,39 +469,39 @@ export async function toggleRepoStar(repo: RepoNode) {
  */
 export async function getOrRefreshStarredRepos(starredRepoNames?: string[] | TRepo[], forceRefreshFromGitHub?: boolean): Promise<string[] | undefined> {
     if (!starredRepoNames) {
-        starredRepoNames = extensionContext.globalState.get<string[]>("starredRepos", []);
+        starredRepoNames = extensionContext.globalState.get<string[]>(StorageKeys.starredRepos, []);
     }
 
     if (starredRepoNames?.length === 0 || forceRefreshFromGitHub) {
         output?.info("Fetching starred repositories from GitHub");
         starredRepoNames = await getStarredGitHubRepositories();
         starredRepoNames = starredRepoNames.map((repo) => `${repo.owner.login}/${repo.name}`);
-        extensionContext.globalState.update("starredRepos", starredRepoNames);
+        extensionContext.globalState.update(StorageKeys.starredRepos, starredRepoNames);
     } else {
         starredRepoNames = starredRepoNames as string[];
     }
 
-    extensionContext.globalState.update("starredRepos", starredRepoNames);
-    commands.executeCommand("setContext", "starredRepos", starredRepoNames);
+    extensionContext.globalState.update(StorageKeys.starredRepos, starredRepoNames);
+    commands.executeCommand("setContext", StorageKeys.starredRepos, starredRepoNames);
     return Promise.resolve(starredRepoNames);
 }
 
 export async function getOrRefreshAuthenticatedUserRepos(repoNames?: string[] | TRepo[], forceRefreshFromGitHub?: boolean): Promise<string[] | undefined> {
     if (!repoNames) {
-        repoNames = extensionContext.globalState.get<string[]>("userRepos", []);
+        repoNames = extensionContext.globalState.get<string[]>(StorageKeys.myRepos, []);
     }
 
     if (repoNames?.length === 0 || forceRefreshFromGitHub) {
         output?.info("Fetching starred repositories from GitHub");
         repoNames = await getGitHubReposForAuthenticatedUser();
         repoNames = repoNames.map((repo) => `${repo.owner.login}/${repo.name}`);
-        extensionContext.globalState.update("userRepos", repoNames);
+        extensionContext.globalState.update(StorageKeys.myRepos, repoNames);
     } else {
         repoNames = repoNames as string[];
     }
 
-    extensionContext.globalState.update("userRepos", repoNames);
-    commands.executeCommand("setContext", "userRepos", repoNames);
+    extensionContext.globalState.update(StorageKeys.myRepos, repoNames);
+    commands.executeCommand("setContext", StorageKeys.myRepos, repoNames);
     return Promise.resolve(repoNames);
 }
 

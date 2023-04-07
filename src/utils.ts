@@ -2,7 +2,7 @@ import { commands, Uri } from "vscode";
 import { extensionContext, store } from "./extension";
 import { REPO_SCHEME } from "./FileSystem/fileSystem";
 import { SortDirection, SortType } from "./FileSystem/storage";
-import { GlobalStorageKeys } from "./GitHub/constants";
+import { GlobalStorageKeysForSync } from "./GitHub/constants";
 
 /**
  * Given a URI, returns the repository full_name (owner/name).
@@ -125,7 +125,7 @@ export function setSortTypeContext(sortType: SortType) {
         }
     });
     store.sortType = sortType;
-    store.addToGlobalState(extensionContext, GlobalStorageKeys.sortType, sortType);
+    store.add(extensionContext, GlobalStorageKeysForSync.sortType, sortType);
 }
 
 /**
@@ -143,5 +143,5 @@ export function setSortDirectionContext(sortDirection: SortDirection) {
         }
     });
     store.sortDirection = sortDirection;
-    store.addToGlobalState(extensionContext, GlobalStorageKeys.sortDirection, sortDirection);
+    store.add(extensionContext, GlobalStorageKeysForSync.sortDirection, sortDirection);
 }

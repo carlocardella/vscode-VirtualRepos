@@ -1,6 +1,6 @@
 import { RepoNode } from "../Tree/nodes";
 import { ExtensionContext } from "vscode";
-import { GlobalStorageKeys } from "../GitHub/constants";
+import { GlobalStorageKeysForSync } from "../GitHub/constants";
 import { credentials, extensionContext, output } from "../extension";
 import { getGitHubBranch, getGitHubRepository, getGitHubTree } from "../GitHub/api";
 import { getOrRefreshAuthenticatedUserRepos, getOrRefreshFollowedUsers, getOrRefreshStarredRepos, getRepoDetails } from "../GitHub/commands";
@@ -63,10 +63,10 @@ export class Store {
      * @type {SortType}
      */
     get sortType(): SortType {
-        return this.getFromGlobalState(extensionContext, GlobalStorageKeys.sortType) ?? SortType.name;
+        return this.get(extensionContext, GlobalStorageKeysForSync.sortType) ?? SortType.name;
     }
     set sortType(value: SortType) {
-        this.addToGlobalState(extensionContext, GlobalStorageKeys.sortType, value);
+        this.add(extensionContext, GlobalStorageKeysForSync.sortType, value);
     }
 
     /**
@@ -76,10 +76,10 @@ export class Store {
      * @type {SortDirection}
      */
     get sortDirection(): SortDirection {
-        return this.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection) ?? SortDirection.ascending;
+        return this.get(extensionContext, GlobalStorageKeysForSync.sortDirection) ?? SortDirection.ascending;
     }
     set sortDirection(value: SortDirection) {
-        this.addToGlobalState(extensionContext, GlobalStorageKeys.sortDirection, value);
+        this.add(extensionContext, GlobalStorageKeysForSync.sortDirection, value);
     }
 
     /**
@@ -87,11 +87,11 @@ export class Store {
      *
      * @async
      */
-    async init() {
-        await getOrRefreshStarredRepos();
-        await getOrRefreshFollowedUsers();
-        await getOrRefreshAuthenticatedUserRepos();
-        const reposFromGlobalStorage = this.getRepoFromGlobalState(extensionContext);
+    async init(forceRefreshFromGitHub?: boolean) {
+        await getOrRefreshStarredRepos(undefined, forceRefreshFromGitHub);
+        await getOrRefreshFollowedUsers(undefined, forceRefreshFromGitHub);
+        await getOrRefreshAuthenticatedUserRepos(undefined, forceRefreshFromGitHub);
+        const reposFromGlobalStorage = this.getRepos(extensionContext);
         if (reposFromGlobalStorage.length === 0) {
             output?.info("No repos found in global storage");
             return Promise.resolve((this.repos = []));
@@ -132,8 +132,8 @@ export class Store {
 
         this.repos = childNodes;
 
-        this.sortType = this.getFromGlobalState(extensionContext, GlobalStorageKeys.sortType) ?? SortType.name;
-        this.sortDirection = this.getFromGlobalState(extensionContext, GlobalStorageKeys.sortDirection) ?? SortDirection.ascending;
+        this.sortType = this.get(extensionContext, GlobalStorageKeysForSync.sortType) ?? SortType.name;
+        this.sortDirection = this.get(extensionContext, GlobalStorageKeysForSync.sortDirection) ?? SortDirection.ascending;
         if (this.sortType.length === 0) {
             this.sortType = SortType.name;
         }
@@ -153,10 +153,10 @@ export class Store {
      *
      * @public
      * @param {ExtensionContext} context Extension context
-     * @param {GlobalStorageKeys} key Key to store the value under
+     * @param {GlobalStorageKeysForSync} key Key to store the value under
      * @param {*} value Value to store, must be json serializable
      */
-    public addToGlobalState(context: ExtensionContext, key: GlobalStorageKeys, value: any) {
+    public add(context: ExtensionContext, key: GlobalStorageKeysForSync, value: any) {
         context.globalState.update(key, value);
     }
 
@@ -165,10 +165,10 @@ export class Store {
      *
      * @public
      * @param {ExtensionContext} context Extension context
-     * @param {GlobalStorageKeys} key Key to read the value from
+     * @param {GlobalStorageKeysForSync} key Key to read the value from
      * @returns {*}
      */
-    public getFromGlobalState(context: ExtensionContext, key: GlobalStorageKeys): any {
+    public get(context: ExtensionContext, key: GlobalStorageKeysForSync): any {
         return context.globalState.get(key);
     }
 
@@ -177,9 +177,9 @@ export class Store {
      *
      * @public
      * @param {ExtensionContext} context Extension context
-     * @param {GlobalStorageKeys} key Key to remove from global storage
+     * @param {GlobalStorageKeysForSync} key Key to remove from global storage
      */
-    public removeFromGlobalState(context: ExtensionContext, key: GlobalStorageKeys) {
+    public remove(context: ExtensionContext, key: GlobalStorageKeysForSync) {
         context.globalState.update(key, undefined);
     }
 
@@ -190,8 +190,8 @@ export class Store {
      * @param {ExtensionContext} context Extension context
      * @returns {string[]}
      */
-    public getRepoFromGlobalState(context: ExtensionContext): string[] {
-        let repos = this.getFromGlobalState(context, GlobalStorageKeys.repoGlobalStorage) ?? [];
+    public getRepos(context: ExtensionContext): string[] {
+        let repos = this.get(context, GlobalStorageKeysForSync.repoGlobalStorage) ?? [];
         if (repos.length === 0) {
             return [];
         }
@@ -245,8 +245,8 @@ export class Store {
             repos.reverse();
         }
 
-        this.addToGlobalState(extensionContext, GlobalStorageKeys.sortType, sortType);
-        this.addToGlobalState(extensionContext, GlobalStorageKeys.sortDirection, sortDirection);
+        this.add(extensionContext, GlobalStorageKeysForSync.sortType, sortType);
+        this.add(extensionContext, GlobalStorageKeysForSync.sortDirection, sortDirection);
         this.isSorted = true;
 
         output?.info(`Sorted repos by ${SortType[sortType]} ${SortDirection[sortDirection]}`);
@@ -260,10 +260,10 @@ export class Store {
      *
      * @param {ExtensionContext} context Extension context
      */
-    clearGlobalStorage(context: ExtensionContext) {
-        context.globalState.update(GlobalStorageKeys.repoGlobalStorage, []);
-        context.globalState.update(GlobalStorageKeys.sortDirection, []);
-        context.globalState.update(GlobalStorageKeys.sortType, []);
+    clear(context: ExtensionContext) {
+        context.globalState.update(GlobalStorageKeysForSync.repoGlobalStorage, []);
+        context.globalState.update(GlobalStorageKeysForSync.sortDirection, []);
+        context.globalState.update(GlobalStorageKeysForSync.sortType, []);
 
         output.info("Cleared global storage");
         this.init();
@@ -277,31 +277,31 @@ export class Store {
      * @param {?string[]} [repos] Repositories to validate
      * @returns {Promise<string[]>}
      */
-    async purgeRepoGlobalStorage(context: ExtensionContext, repos?: string[]): Promise<string[]> {
+    async purgeRepo(context: ExtensionContext, repos?: string[]): Promise<string[]> {
         output?.debug("Purging global storage");
         let cleanedGlobalStorage: string[] = [];
         if (repos) {
             cleanedGlobalStorage = repos.filter((item) => item !== undefined);
-            context.globalState.update(GlobalStorageKeys.repoGlobalStorage, cleanedGlobalStorage);
+            context.globalState.update(GlobalStorageKeysForSync.repoGlobalStorage, cleanedGlobalStorage);
         } else {
-            const globalStorage = context.globalState.get(GlobalStorageKeys.repoGlobalStorage, []) as string[];
+            const globalStorage = context.globalState.get(GlobalStorageKeysForSync.repoGlobalStorage, []) as string[];
             await Promise.all(
                 globalStorage.map(async (repo) => {
                     let repoOwner = repo.split("/")[0];
                     let repoName = repo.split("/")[1];
                     let validRepo = await getGitHubRepository(repoOwner, repoName);
                     if (!validRepo) {
-                        await this.removeRepoFromGlobalStorage(context, repo);
+                        await this.removeRepo(context, repo);
                         return Promise.resolve(repo);
                     } else {
                         return Promise.reject();
                     }
                 })
             );
-            output?.debug(`Purged global storage: ${context.globalState.get(GlobalStorageKeys.repoGlobalStorage, [])}`);
+            output?.debug(`Purged global storage: ${context.globalState.get(GlobalStorageKeysForSync.repoGlobalStorage, [])}`);
         }
 
-        return context.globalState.get(GlobalStorageKeys.repoGlobalStorage, []);
+        return context.globalState.get(GlobalStorageKeysForSync.repoGlobalStorage, []);
     }
 
     /**
@@ -310,11 +310,11 @@ export class Store {
      * @param {ExtensionContext} context Extension context
      * @param {string} repoFullName Full name (owner/name) or the repository to remove from global storage
      */
-    async removeRepoFromGlobalStorage(context: ExtensionContext, repoFullName: string): Promise<void> {
-        let globalStorage = context.globalState.get(GlobalStorageKeys.repoGlobalStorage) as string[];
+    async removeRepo(context: ExtensionContext, repoFullName: string): Promise<void> {
+        let globalStorage = context.globalState.get(GlobalStorageKeysForSync.repoGlobalStorage) as string[];
         if (globalStorage) {
             globalStorage = globalStorage.filter((item) => item.toLocaleLowerCase() !== repoFullName.toLocaleLowerCase());
-            context.globalState.update(GlobalStorageKeys.repoGlobalStorage, globalStorage);
+            context.globalState.update(GlobalStorageKeysForSync.repoGlobalStorage, globalStorage);
 
             await this.init();
 
@@ -331,8 +331,8 @@ export class Store {
      * @param {string} value Repository full name (owner/name) to add to global storage
      * @returns {Promise<void>}
      */
-    async addRepoToGlobalStorage(context: ExtensionContext, value: string): Promise<boolean> {
-        let globalStorage = this.getRepoFromGlobalState(context);
+    async addRepo(context: ExtensionContext, value: string): Promise<boolean> {
+        let globalStorage = this.getRepos(context);
 
         let [owner, repoName] = ["", ""];
         if (value.indexOf("/") === -1) {
@@ -350,7 +350,7 @@ export class Store {
         }
 
         globalStorage.push(fullName);
-        context.globalState.update(GlobalStorageKeys.repoGlobalStorage, globalStorage);
+        context.globalState.update(GlobalStorageKeysForSync.repoGlobalStorage, globalStorage);
 
         this.init();
 
@@ -358,5 +358,9 @@ export class Store {
         output?.info(`Global storage: ${globalStorage}`);
 
         return true;
+    }
+
+    async refresh() {
+        await this.init(true);
     }
 }

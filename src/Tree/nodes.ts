@@ -5,6 +5,7 @@ import { getGitHubRepoContent } from "../GitHub/api";
 import { getOrRefreshFollowedUsers } from "../GitHub/commands";
 import { TRepo, ContentType, TContent, TTree } from "../GitHub/types";
 import * as config from "./../config";
+import { StorageKeys } from "../GitHub/constants";
 
 export class RepoNode extends TreeItem {
     owner: string;
@@ -54,7 +55,7 @@ export class RepoNode extends TreeItem {
         this.clone_url = repo.clone_url;
         this.fork = repo.fork;
 
-        let starredRepos: string[] = extensionContext.globalState.get("starredRepos", []);
+        let starredRepos: string[] = extensionContext.globalState.get(StorageKeys.starredRepos, []);
         this.isStarred = starredRepos.includes(this.full_name);
         this.stargazers_count = repo.stargazers_count;
         this.watchers_count = repo.watchers_count;
@@ -194,6 +195,10 @@ export class RepoProvider implements TreeDataProvider<RepoNode | ContentNode> {
                 await store.init();
             }
         }
+
+
+        // refresh local storage
+        await store.refresh();
 
         this.refreshing = false;
         this.sorting = false;
