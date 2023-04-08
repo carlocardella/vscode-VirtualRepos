@@ -7,6 +7,11 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [Unreleased]
 
 See the [list of open enhancements on GitHub](https://github.com/carlocardella/vscode-VirtualRepos/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3Aenhancement)
+## [0.1.2] - 2023-04-07
+
+### Fixed
+
+* [#48 Cached Starred Repos and My Repos are not refreshed](https://github.com/carlocardella/vscode-VirtualRepos/issues/48)
 
 ## [0.1.1] - 2023-04-03
 
