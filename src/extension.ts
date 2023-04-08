@@ -24,6 +24,7 @@ import {
     copyUpstreamUrl,
     showUpstream,
     toggleRepoVisibility,
+    getOrRefreshAuthenticatedUserRepos,
 } from "./GitHub/commands";
 import { TGitHubUser } from "./GitHub/types";
 import { EXTENSION_NAME, GlobalStorageKeysForSync } from "./GitHub/constants";
@@ -56,6 +57,7 @@ export async function activate(context: ExtensionContext) {
     if (parseFloat(version) >= 1.74) {
         output = window.createOutputChannel(EXTENSION_NAME, { log: true });
     }
+    output?.info(`Virtual Repositories ${extensionContext.extension.packageJSON.version} is now active!`);
 
     gitHubAuthenticatedUser = await getGitHubAuthenticatedUser();
     await credentials.initialize(context);
@@ -421,9 +423,10 @@ export async function activate(context: ExtensionContext) {
     });
 
     // refresh starred repos and followed users every hour
-    pullIntervalTimer = setInterval(() => {
-        getOrRefreshStarredRepos();
-        getOrRefreshFollowedUsers();
+    pullIntervalTimer = setInterval(async () => {
+        await getOrRefreshStarredRepos(undefined, true);
+        await getOrRefreshFollowedUsers(undefined, true);
+        await getOrRefreshAuthenticatedUserRepos(undefined, true);
     }, 3600000);
 
     context.subscriptions.push(

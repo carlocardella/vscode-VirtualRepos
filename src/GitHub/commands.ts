@@ -84,7 +84,6 @@ export async function pickRepository() {
 
         let quickPick = window.createQuickPick();
         quickPick.onDidHide(() => quickPick.dispose());
-        // quickPick.title = "Select or type the repository you would like to open";
         quickPick.placeholder = "Select or type the repository you would like to open";
         quickPick.canSelectMany = false;
         quickPick.matchOnDescription = true;
@@ -101,7 +100,6 @@ export async function pickRepository() {
                     title: "Enter the repository to open, e.g. 'owner/repo'",
                 });
                 if (repo) {
-                    // quickPick.items = [{ label: `${accepted}` }];
                     quickPick.items = [{ label: `${repo}` }];
                 }
                 quickPick.hide();
@@ -492,7 +490,7 @@ export async function getOrRefreshAuthenticatedUserRepos(repoNames?: string[] | 
     }
 
     if (repoNames?.length === 0 || forceRefreshFromGitHub) {
-        output?.info("Fetching starred repositories from GitHub");
+        output?.info("Fetching my repositories from GitHub");
         repoNames = await getGitHubReposForAuthenticatedUser();
         repoNames = repoNames.map((repo) => `${repo.owner.login}/${repo.name}`);
         extensionContext.globalState.update(StorageKeys.myRepos, repoNames);
@@ -521,12 +519,10 @@ export async function toggleFollowUser(user: string) {
         if (isFollowedUser) {
             await unfollowGitHubUser(user);
             followingUsers = followingUsers?.filter((u) => u !== user);
-            // user.following = false;
             output?.info(`Unfollowed ${user}`);
         } else {
             await followGitHubUser(user);
             followingUsers?.push(user);
-            // user.following = true;
             output?.info(`Followed ${user}`);
         }
 
@@ -549,7 +545,7 @@ export async function getOrRefreshFollowedUsers(followedUsers?: string[] | TUser
     }
 
     if (followedUsers?.length === 0 || forceRefreshFromGitHub) {
-        output?.info("Fetching following users from GitHub");
+        output?.info("Fetching followed users from GitHub");
         followedUsers = await getGutHubFollowedUsers();
         followedUsers = followedUsers!.map((user) => user.login);
         extensionContext.globalState.update("followedUsers", followedUsers);
@@ -558,7 +554,7 @@ export async function getOrRefreshFollowedUsers(followedUsers?: string[] | TUser
     }
 
     extensionContext.globalState.update("followedUsers", followedUsers);
-    commands.executeCommand("setContext", "followedUsers", followedUsers); // @investigate: can be duplicate with L511
+    commands.executeCommand("setContext", "followedUsers", followedUsers);
     return Promise.resolve(followedUsers);
 }
 

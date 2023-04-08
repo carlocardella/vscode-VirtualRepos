@@ -192,12 +192,14 @@ export class RepoProvider implements TreeDataProvider<RepoNode | ContentNode> {
             return Promise.resolve(childNodes);
         } else {
             if (!this.sorting) {
+                output?.debug("Init store...");
                 await store.init();
             }
         }
 
 
         // refresh local storage
+        output?.debug("Refreshing local storage...");
         await store.refresh();
 
         this.refreshing = false;
