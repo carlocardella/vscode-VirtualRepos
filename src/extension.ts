@@ -38,18 +38,11 @@ export let extensionContext: ExtensionContext;
 export const repoProvider = new RepoProvider();
 export const repoFileSystemProvider = new RepoFileSystemProvider();
 let pullInterval = config.get("PullInterval") * 1000;
-let pullIntervalTimer: NodeJS.Timer | undefined = undefined;
+let pullIntervalTimer: ReturnType<typeof setInterval> | undefined = undefined;
 
 export let store = new Store();
 
-// @hack: https://angularfixing.com/how-to-access-textencoder-as-a-global-instead-of-importing-it-from-the-util-package/
-import { TextEncoder as _TextEncoder } from "node:util";
-import { TextDecoder as _TextDecoder } from "node:util";
 import { setSortDirectionContext, setSortTypeContext } from "./utils";
-declare global {
-    var TextEncoder: typeof _TextEncoder;
-    var TextDecoder: typeof _TextDecoder;
-}
 
 export async function activate(context: ExtensionContext) {
     extensionContext = context;

@@ -7,6 +7,19 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [Unreleased]
 
 See the [list of open enhancements on GitHub](https://github.com/carlocardella/vscode-VirtualRepos/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3Aenhancement)
+
+## [0.1.3] - 2026-09-13
+
+### Changed
+
+* Updated npm dependencies and removed unused packages
+* Updated the minimum required VS Code version to 1.92
+* Modernized the extension test and build toolchain
+
+### Fixed
+
+* Resolved all known npm dependency vulnerabilities
+
 ## [0.1.2] - 2023-04-07
 
 ### Fixed

@@ -105,3 +105,4 @@ out
 .tern-port
 
 *.vsix
+.vscode-test/

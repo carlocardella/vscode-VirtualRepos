@@ -19,6 +19,7 @@ const webConfig = /** @type WebpackConfig */ {
         extensions: [".ts", ".js"], // support ts-files and js-files
         alias: {
             // provides alternate implementation for node module and source files
+            "process/browser$": require.resolve("process/browser.js"),
             // util: "util"
         },
         fallback: {
@@ -65,7 +66,7 @@ const webConfig = /** @type WebpackConfig */ {
     },
     plugins: [
         new webpack.ProvidePlugin({
-            process: "process/browser", // provide a shim for the global `process` variable
+            process: require.resolve("process/browser.js"), // provide a shim for the global `process` variable
             Buffer: ["buffer", "Buffer"],
             // util: "util",
             // sys: "util",
