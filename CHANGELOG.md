@@ -8,6 +8,26 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 See the [list of open enhancements on GitHub](https://github.com/carlocardella/vscode-VirtualRepos/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3Aenhancement)
 
+## [0.1.4] - 2026-11-02
+
+### Changed
+
+* Updated npm dependencies and locked compatible TypeScript and Mocha versions for VS Code 1.92 support
+* Tests now rebuild desktop and web production bundles before running
+
+### Added
+
+* Extension-host smoke tests for activation, mocked GitHub data initialization, command registration, filesystem registration, and refresh
+* Minimum-version testing through the `VSCODE_TEST_VERSION` environment variable
+
+### Fixed
+
+* Resolved all fixable dependency advisories, including vulnerable build and test transitive dependencies; production dependencies audit clean
+
+### Known Issues
+
+* Three moderate development-only audit findings remain in glob, minimatch, and Mocha pending upstream fixes or a test-framework migration
+
 ## [0.1.3] - 2026-09-13
 
 ### Changed
